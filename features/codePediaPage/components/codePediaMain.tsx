@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import React from 'react'
+import ImageCodepedia from './cPediaMainComponents/ImageCodepedia'
 
 export default function CodePediaMain() {
     return (
@@ -35,6 +36,9 @@ export default function CodePediaMain() {
                     <p className="text-lg font-bold">Articulo Destacado</p>
                     <h2 className="text-md font-semibold mt-2">Titulo del articulo destacado</h2>
                     <p className="">Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis neque veniam fugiat, totam voluptates blanditiis doloribus dicta odit quam? Accusantium numquam aut perspiciatis explicabo aliquam hic delectus quas error quo?</p>
+                    <div className="w-full">
+                        <ImageCodepedia id='imagen-portada' imageSrc="/log.png" title="Titulo del articulo destacado" description="Descripción del articulo destacado Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis neque veniam fugiat, totam voluptates blanditiis" />
+                    </div>
                 </div>
                 <div className='border border-gray-400 p-4 row-span-4'>
                     <p className="text-lg font-bold">Articulo Destacado</p>
