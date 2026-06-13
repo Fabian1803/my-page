@@ -18,7 +18,7 @@ export default function UserActionsHeader({ className, mobileoption, left }: Use
           </div>
         )}
 
-      <ProfileMenu />
+      <ProfileMenu imageSrc='/perfil.jpeg' />
     </div>
   )
 }

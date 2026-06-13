@@ -46,7 +46,7 @@ export default function WaffleMenu({ left }: WaffleMenuProps) {
                 ))}
             </button>
             {isOpen && (
-                <div className={`absolute ${left ? 'left-0' : 'right-0'} top-11 w-80 max-h-[450px] overflow-y-auto bg-white border border-gray-300 shadow-xl rounded-2xl p-4 z-50 animate-fade-in flex flex-col gap-4`}>
+                <div className={`absolute ${left ? 'left-0' : 'md:-right-5 -right-10'} top-11 w-80 max-h-[450px] overflow-y-auto bg-white border border-gray-300 shadow-xl rounded-2xl p-4 z-50 animate-fade-in flex flex-col gap-4`}>
 
                     <div className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 px-2">
                         Mis Aplicaciones
