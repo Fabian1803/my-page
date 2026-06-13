@@ -27,7 +27,7 @@ export default function FabianPageHeader() {
         max-[1164px]:max-w-[860px]
         max-[940px]:max-w-[760px]">
                 <div className="items-center flex col-span-3  min-[500px]:hidden">
-                    <UserActionsHeader className='px-3 justify-between w-full' mobileoption={true} />
+                    <UserActionsHeader className='px-3 justify-between w-full' mobileoption={true} left={true} />
                 </div>
                 <div className="flex justify-center items-center max-[940px]:hidden">
                     <Image src="/log.png" alt="GoogleIcon" width={90} height={30} priority />

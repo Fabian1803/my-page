@@ -10,7 +10,7 @@ export default function SearchMainPage() {
         
         <div className="flex justify-center text-[100px]">
           <Image 
-            src="/log.png" 
+            src="/log.webp" 
             alt="GoogleIcon" 
             height={100} 
             width={270} 
@@ -21,7 +21,7 @@ export default function SearchMainPage() {
         <InputSearch type="SearchPageInputType" placeholder="" />
 
         {/* Botones */}
-        <div className="flex justify-center gap-3 text-black">
+        <div className="flex justify-center gap-3">
           <Link 
             href="/Fabian-Rivera" 
             className="bg-gray-500/10 no-underline py-[5px] px-3 rounded-[5px] border border-transparent hover:border-gray-500/30 transition-colors"
@@ -37,7 +37,7 @@ export default function SearchMainPage() {
         </div>
 
         <p className="text-center text-[16px] max-[450px]:text-[14px]">
-          Google disponible en: <span className="text-blue-600 cursor-pointer hover:underline">Español (Latinoamérica)</span>
+          Google disponible en: <span className="text-blue-700 cursor-pointer hover:underline">Español (Latinoamérica)</span>
         </p>
       </div>
     </main>

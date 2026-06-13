@@ -17,7 +17,7 @@ export default function CodePediaMain() {
                 <div className="absolute inset-0 z-20 w-full h-full md:pl-4 md:pr-8 flex gap-4 flex-col md:flex-row justify-center md:justify-between md:items-center">
                     <div>
                         <h1 className="text-xl md:text-3xl font-semibold">Nombre del proyecto</h1>
-                        <p className="text-sm line-clamp-2 md:line-clamp-3 lg:line-clamp-3 max-w-150">Descripcion corta del proyecto! Descripcion corta del proyecto! Descripcion corta Descripcion corta del proyecto! Descripcion corta del proyecto! Descripcion corta Descripcion corta del proyecto! Descripcion corta del proyecto! Descripcion corta del proyecto! Descripcion corta del proyecto!</p>
+                        <p className="text-sm line-clamp-2 md:line-clamp-3 lg:line-clamp-3 max-w-100 lg:max-w-125 xl:max-w-150">Descripcion corta del proyecto! Descripcion corta del proyecto! Descripcion corta Descripcion corta del proyecto! Descripcion corta del proyecto! Descripcion corta Descripcion corta del proyecto! Descripcion corta del proyecto! Descripcion corta del proyecto! Descripcion corta del proyecto!</p>
                     </div>
                     <div className="flex flex-col justify-center md:items-end gap-2 md:gap-4">
                         <p className="text-[14px]"><span className="text-blue-600 font-bold">100</span> articulos <span className="text-blue-600">en español</span></p>

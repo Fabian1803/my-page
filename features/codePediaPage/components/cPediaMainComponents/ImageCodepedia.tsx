@@ -1,9 +1,7 @@
 "use client";
-
 import Image from "next/image"
-import React, { useEffect, useRef, useState } from "react"
 import { BiDownload, BiExitFullscreen, BiFullscreen, BiMinusFront, BiX } from "react-icons/bi";
-
+import { useImageCodepedia } from "./useImageCodepedia";
 interface ImageCodepediaProps {
     title: string
     description: string
@@ -12,59 +10,16 @@ interface ImageCodepediaProps {
 }
 
 export default function ImageCodepedia({ title, description, imageSrc, id }: ImageCodepediaProps) {
-    const [openImage, setOpenImage] = useState(false)
-    const visorRef = useRef<HTMLDivElement>(null); // El control remoto
-    const [isFullscreen, setIsFullscreen] = useState(false);
-
-    // Función para alternar el modo pantalla completa
-    const toggleFullscreen = () => {
-        if (!visorRef.current) return;
-
-        if (!document.fullscreenElement) {
-            visorRef.current.requestFullscreen()
-                .catch((err) => {
-                    alert(`Error al intentar activar pantalla completa: ${err.message}`);
-                });
-        } else {
-            document.exitFullscreen();
-        }
-    };
-
-    // Escuchar cambios en el estado de fullscreen del navegador
-    useEffect(() => {
-        const handleFullscreenChange = () => {
-            setIsFullscreen(!!document.fullscreenElement);
-        };
-
-        document.addEventListener('fullscreenchange', handleFullscreenChange);
-        return () => {
-            document.removeEventListener('fullscreenchange', handleFullscreenChange);
-        };
-    }, []);
-
-    // Manejo del Hash para abrir/cerrar como Wikipedia
-    useEffect(() => {
-        const handleHashChange = () => {
-            if (window.location.hash === `#media/${id}`) {
-                setOpenImage(true)
-            } else {
-                setOpenImage(false)
-            }
-        }
-        handleHashChange()
-        window.addEventListener("hashchange", handleHashChange)
-        return () => window.removeEventListener("hashchange", handleHashChange)
-    }, [id])
-
-    const openModal = () => {
-        window.location.hash = `media/${id}`
-    }
-
-    const closeModal = () => {
-        if (window.location.hash === `#media/${id}`) {
-            window.history.back()
-        }
-    }
+    const {
+        openImage,
+        visorRef,
+        isFullscreen,
+        toggleFullscreen,
+        openModal,
+        closeModal,
+        handleCopyUrl,
+        handleDownload
+    } = useImageCodepedia({ id, imageSrc, title });
 
     return (
         <>
@@ -82,15 +37,15 @@ export default function ImageCodepedia({ title, description, imageSrc, id }: Ima
             {/* MODAL DEL VISOR (Estilo Wikipedia) */}
             {openImage && (
                 <div
-                    ref={visorRef} // 👈 1. ¡CLAVE! Aquí asignamos la ref para que funcione el Fullscreen
+                    ref={visorRef}
                     className="fixed inset-0 bg-black z-50 flex flex-col items-center justify-center select-none"
                 >
-                    {/* Contenedor principal de la imagen */}
-                    <div className="relative w-full h-[85vh] flex items-center justify-center bg-black">
+                    {/* Contenedor principal de la imagen (Ajusta la altura de forma dinámica) */}
+                    <div className={`relative w-full flex items-center justify-center bg-black transition-all ${
+                        isFullscreen ? 'h-[100vh]' : 'h-[85vh]'
+                    }`}>
 
-                        {/* Sub-contenedor relativo corregido */}
                         <div className="relative w-full h-full flex items-center justify-center">
-
                             <Image
                                 src={imageSrc}
                                 alt="CodePediaImage Preview"
@@ -119,22 +74,14 @@ export default function ImageCodepedia({ title, description, imageSrc, id }: Ima
                             {/* 🔵 BOTONES ABAJO A LA DERECHA */}
                             <div className="absolute bottom-4 right-4 flex flex-col items-center gap-4 bg-black/40 p-2 rounded-md backdrop-blur-sm z-10">
                                 <button
-                                    onClick={() => {
-                                        navigator.clipboard.writeText(window.location.origin + imageSrc);
-                                        alert("¡URL de la imagen copiada!");
-                                    }}
+                                    onClick={handleCopyUrl}
                                     className="text-gray-300 hover:text-white transition-colors"
                                     title="Copiar URL"
                                 >
                                     <BiMinusFront size={26} />
                                 </button>
                                 <button
-                                    onClick={() => {
-                                        const link = document.createElement('a');
-                                        link.href = imageSrc;
-                                        link.download = title || "codepedia-download"; // Usamos title por seguridad si description es muy larga para un archivo
-                                        link.click();
-                                    }}
+                                    onClick={handleDownload}
                                     className="text-gray-300 hover:text-white transition-colors"
                                     title="Descargar imagen"
                                 >
@@ -144,7 +91,8 @@ export default function ImageCodepedia({ title, description, imageSrc, id }: Ima
 
                         </div>
                     </div>
-                    {/* SECCIÓN INFERIOR: DESCRIPCIÓN (Fondo blanco abajo - Se oculta en Fullscreen) */}
+
+                    {/* SECCIÓN INFERIOR: DESCRIPCIÓN (Oculta en Fullscreen) */}
                     {!isFullscreen && (
                         <div className="w-full h-[15vh] flex items-start justify-center px-4 bg-white border-t border-gray-200 animate-fade-in">
                             {description && (
