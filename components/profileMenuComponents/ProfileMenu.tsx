@@ -78,7 +78,7 @@ export default function ProfileMenu({ left, imageSrc }: ProfileMenuProps) {
                 `}>
                     <div className={`
                         w-full h-full overflow-y-auto p-6 sm:p-5 flex flex-col items-center text-center gap-4
-                        [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden
+                        sm:[scrollbar-width:none] sm:[-ms-overflow-style:none] sm:[&::-webkit-scrollbar]:hidden
                     `}>
                         <button
                             onClick={toggleMenu}
@@ -87,7 +87,7 @@ export default function ProfileMenu({ left, imageSrc }: ProfileMenuProps) {
                         >
                             <BiX size={32} />
                         </button>
-                        <div className="text-[14px] font-medium text-gray-600 w-full truncate mt-8 sm:mt-0">
+                        <div className="text-[14px] font-medium text-gray-600 w-full mt-8 sm:mt-0">
                             {user.email}
                         </div>
                         <div className="relative flex h-24 w-24 items-center justify-center rounded-full text-white font-normal text-3xl flex-shrink-0">
@@ -107,9 +107,7 @@ export default function ProfileMenu({ left, imageSrc }: ProfileMenuProps) {
 
                         <div className="w-full max-w-sm flex flex-col gap-3 pr-0 sm:pr-0.5 pb-2">
                             <Link
-                                href="https://linkedin.com"
-                                target="_blank"
-                                rel="noopener noreferrer"
+                                href="/login"
                                 className="flex items-center gap-3 px-5 py-4 bg-white rounded-full hover:bg-gray-200 text-sm text-gray-700 font-medium transition-colors shadow-sm border border-gray-200/50"
                             >
                                 <AiOutlineChrome className="text-lg" />
