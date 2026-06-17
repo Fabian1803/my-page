@@ -13,7 +13,6 @@ export default function DashboardAsidePage({ isMenuOpen }: HeaderProps) {
 
     const links = [
         { href: '/dashboard', label: 'Proyectos', icon: <MdOutlineDashboard size={20} /> },
-        { href: '/dashboard/crear-proyecto', label: 'Crear Proyecto', icon: <MdAdd size={20} /> },
         { href: '/dashboard/certificados', label: 'Certificados', icon: <MdOutlineAssignmentInd size={20} /> },
         { href: '/dashboard/redes-sociales', label: 'Redes Sociales', icon: <MdOutlineAlternateEmail size={20} /> },
         { href: '/dashboard/cv', label: 'CV', icon: <MdOutlineAssignmentInd size={20} /> }

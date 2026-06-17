@@ -13,12 +13,16 @@ interface ContentBlock {
 }
 
 export function useCreateProject() {
+    // FALTA 1: Estado para identificar si estamos editando o creando
+    const [editingId, setEditingId] = useState<string | number | null>(null)
+    
     const [nombre, setNombre] = useState('')
     const [descripcion, setDescripcion] = useState('')
     const [dynamicLinks, setDynamicLinks] = useState<ProjectLink[]>([])
     const [contentBlocks, setContentBlocks] = useState<ContentBlock[]>([])
     const [thumbnailFile, setThumbnailFile] = useState<File | null>(null)
-
+    const [tags, setTags] = useState<string[]>([])
+    
     // Handlers para Enlaces Dinámicos
     const handleAddLink = (type: 'github' | 'docker' | 'gitlab' | 'web') => {
         setDynamicLinks(prev => [...prev, { id: crypto.randomUUID(), type, url: '' }])
@@ -49,7 +53,15 @@ export function useCreateProject() {
     // Procesamiento del submit final
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
-        console.log({ nombre, descripcion, dynamicLinks, contentBlocks, thumbnailFile })
+        console.log({ 
+            editingId, // Lo mapeas en el log para controlar la mutación en backend
+            nombre, 
+            descripcion, 
+            dynamicLinks, 
+            contentBlocks, 
+            thumbnailFile, 
+            tags 
+        })
     }
 
     return {
@@ -58,7 +70,10 @@ export function useCreateProject() {
         descripcion,
         setDescripcion,
         dynamicLinks,
+        // FALTA 2: Exponer los setters directos para que la página principal los limpie o los inyecte al editar
+        setDynamicLinks, 
         contentBlocks,
+        setContentBlocks,
         setThumbnailFile,
         handleAddLink,
         handleUrlChange,
@@ -66,6 +81,11 @@ export function useCreateProject() {
         handleAddBlock,
         handleBlockChange,
         handleRemoveBlock,
-        handleSubmit
+        handleSubmit,
+        tags,
+        setTags,
+        // FALTA 3: Controladores del ID en edición
+        editingId,
+        setEditingId
     }
 }
