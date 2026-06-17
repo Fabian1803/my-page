@@ -26,7 +26,7 @@ function BodySection({ className = '', placeholder = '', showIcon = false, iconC
             {showFabianLogo && (
                 <div className="min-[940px]:hidden  rounded-full justify-center flex w-8">
                     <Image
-                        src="/FLog.webp"
+                        src="/Flog.webp"
                         alt="Fabian logo"
                         width={30}
                         height={30}

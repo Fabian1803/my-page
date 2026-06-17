@@ -30,7 +30,7 @@ export default function FabianPageHeader() {
                     <UserActionsHeader className='px-3 justify-between w-full' mobileoption={true} left={true} />
                 </div>
                 <div className="flex justify-center items-center max-[940px]:hidden">
-                    <Image src="/log.png" alt="GoogleIcon" width={90} height={30} priority />
+                    <Image src="/log.webp" alt="GoogleIcon" width={90} height={30} priority />
                 </div>
                 <div className="flex items-center px-3 min-[1461px]:col-span-2 max-[940px]:col-span-2 max-[500px]:col-span-3">
                     <InputSearch type="FabianPageInputType" placeholder="" />
