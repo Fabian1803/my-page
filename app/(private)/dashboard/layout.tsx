@@ -8,11 +8,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
     return (
         <div className="min-h-screen bg-[#f0f4f9] text-[#202124] antialiased flex flex-col md:flex-row">
-
             <DashboardHeaderPage onOpenMenu={setIsMenuOpen} />
-
             <DashboardAsidePage isMenuOpen={isMenuOpen} />
-
             {isMenuOpen && (
                 <div
                     onClick={() => setIsMenuOpen(false)}

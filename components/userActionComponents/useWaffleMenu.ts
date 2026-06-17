@@ -7,8 +7,6 @@ export function useWaffleMenu() {
     const menuRef = useRef<HTMLDivElement>(null);
     const toggleMenu = () => setIsOpen((prev) => !prev);
     const closeMenu = () => setIsOpen(false);
-
-    // Cerrar el menú si se hace clic fuera del contenedor
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -21,8 +19,6 @@ export function useWaffleMenu() {
         }
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, [isOpen]);
-
-    // Cerrar el menú con la tecla Escape
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
             if (event.key === "Escape") closeMenu();

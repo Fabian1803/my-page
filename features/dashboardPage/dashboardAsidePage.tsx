@@ -13,9 +13,10 @@ export default function DashboardAsidePage({ isMenuOpen }: HeaderProps) {
 
     const links = [
         { href: '/dashboard', label: 'Proyectos', icon: <MdOutlineDashboard size={20} /> },
-        { href: '/dashboard/crear-producto', label: 'Crear Proyecto', icon: <MdAdd size={20} /> },
-        { href: '/dashboard/inventario', label: 'Redes Sociales', icon: <MdOutlineAlternateEmail size={20} /> },
-        { href: '/dashboard/configuracion', label: 'CV', icon: <MdOutlineAssignmentInd size={20} /> }
+        { href: '/dashboard/crear-proyecto', label: 'Crear Proyecto', icon: <MdAdd size={20} /> },
+        { href: '/dashboard/certificados', label: 'Certificados', icon: <MdOutlineAssignmentInd size={20} /> },
+        { href: '/dashboard/redes-sociales', label: 'Redes Sociales', icon: <MdOutlineAlternateEmail size={20} /> },
+        { href: '/dashboard/cv', label: 'CV', icon: <MdOutlineAssignmentInd size={20} /> }
     ]
 
     return (
@@ -39,7 +40,7 @@ export default function DashboardAsidePage({ isMenuOpen }: HeaderProps) {
                                 href={link.href}
                                 className={`flex items-center gap-3 pl-4 py-3 text-[15px] font-medium  transition-all duration-200
                                     ${isActive 
-                                        ? 'text-white bg-[#70a4f1] shadow-sm' 
+                                        ? 'text-white bg-[#0b57d0] shadow-sm' 
                                         : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                                     }`}
                             >
@@ -50,8 +51,6 @@ export default function DashboardAsidePage({ isMenuOpen }: HeaderProps) {
                     })}
                 </nav>
             </div>
-
-            {/* Botón Salir */}
             <div className="pt-2 border-t border-gray-100 flex items-center px-3">
                 <button className="w-full flex justify-center gap-3 items-center py-3 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200 font-medium text-[15px]">
                     <MdExitToApp size={20} />
