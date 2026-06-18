@@ -12,8 +12,6 @@ export default function DashboardHeaderPage({ onOpenMenu }: HeaderProps) {
                 </div>
                 <span className="font-semibold text-lg tracking-tight">Corelia</span>
             </div>
-
-            {/* Botón de Hamburguesa para abrir el menú */}
             <button
                 onClick={() => onOpenMenu(true)}
                 className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg focus:outline-none"

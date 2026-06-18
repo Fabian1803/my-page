@@ -60,3 +60,18 @@ body {
 .tiptap li {
   display: list-item !important;
 }
+
+@keyframes entryRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.animate-entry {
+  animation: entryRight 0.2s ease-out forwards;
+}

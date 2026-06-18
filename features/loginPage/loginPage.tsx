@@ -12,7 +12,7 @@ export default function LoginPage() {
             <div className="w-full lg:max-w-[1050px] bg-transparent lg:bg-white border-none lg:border lg:border-[#dadce0] lg:rounded-3xl lg:p-12 flex flex-col md:flex-row justify-between items-start gap-8 md:gap-16 lg:gap-16">
                 <div className="w-full md:w-[45%] lg:w-1/2">
                     <div className="mb-6 md:mb-4 -ml-4">
-                        <Image src="/Flog.webp" alt="Logo" width={60} height={60} />
+                        <Image src="/FLogo.webp" alt="Logo" width={60} height={60} />
                     </div>
                     <h1 className="text-[28px] md:text-[38px] text-[#202124] mb-3 font-normal tracking-tight leading-tight transition-all duration-300">
                         {step === 'email' ? 'Inicia sesión' : 'Te damos la bienvenida'}

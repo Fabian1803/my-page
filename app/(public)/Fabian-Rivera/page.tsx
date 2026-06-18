@@ -1,6 +1,6 @@
-import FabianPage from '@/features/fabianPage/fabianPage'
+import { FabianPageFooter, FabianPageHeader, FabianPageMain } from '@/features/fabianPage'
 export default function page() {
   return (
-    <FabianPage />
+      <FabianPageMain />
   )
 }

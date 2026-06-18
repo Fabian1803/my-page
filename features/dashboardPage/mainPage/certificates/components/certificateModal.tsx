@@ -17,7 +17,6 @@ interface CertificateModalProps {
     bullets: string[];
     currentBullet: string;
     setCurrentBullet: (val: string) => void;
-    // CORREGIDO: Añadimos las propiedades de las etiquetas al tipado de las Props
     tags: string[];
     setTags: (tags: string[]) => void;
     fileInputRef: React.RefObject<HTMLInputElement | null>;
@@ -41,7 +40,6 @@ export default function CertificateModal({
     bullets,
     currentBullet,
     setCurrentBullet,
-    // CORREGIDO: Desestructuramos para usarlas en el JSX
     tags,
     setTags,
     fileInputRef,
@@ -53,14 +51,25 @@ export default function CertificateModal({
     if (!isOpen) return null
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 animate-fadeIn">
-            <div className="bg-white border border-[#dadce0] rounded-2xl w-full max-w-xl max-h-[90vh] overflow-y-auto p-6 shadow-2xl space-y-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm sm:p-4 animate-fadeIn">
+            <div 
+                className="bg-white border border-[#dadce0] w-full h-full rounded-none max-h-screen sm:max-w-xl sm:max-h-[90vh] overflow-y-auto p-5 md:p-6 shadow-2xl space-y-4"
+                style={{
+                    scrollbarWidth: 'none',
+                    msOverflowStyle: 'none',
+                }}
+            >
+                {/* Oculta la barra de scroll en motores basados en Webkit (Chrome, Safari) */}
+                <style dangerouslySetInnerHTML={{__html: `
+                    div::-webkit-scrollbar { display: none; }
+                `}} />
+
                 <div className="flex justify-between items-center pb-3 border-b border-[#dadce0]">
                     <h2 className="text-lg font-medium text-[#202124] flex items-center gap-2">
                         <MdSchool className="text-[#0b57d0]" size={22} />
                         {editingId ? 'Modificar Certificación' : 'Registrar Nueva Certificación'}
                     </h2>
-                    <button type="button" onClick={onClose} className="text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-100">
+                    <button type="button" onClick={onClose} className="text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-100 shrink-0">
                         <MdClose size={22} />
                     </button>
                 </div>
@@ -109,7 +118,6 @@ export default function CertificateModal({
                         )}
                     </div>
 
-                    {/* El TagSelector ahora recibe perfectamente las variables validadas */}
                     <TagSelector
                         selectedTags={tags}
                         onTagsChange={setTags}

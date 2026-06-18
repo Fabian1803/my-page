@@ -2,7 +2,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { MdAdd, MdExitToApp, MdOutlineAlternateEmail, MdOutlineAssignmentInd, MdOutlineDashboard } from 'react-icons/md'
+import { MdExitToApp, MdOutlineAlternateEmail, MdOutlineAssignmentInd, MdOutlineDashboard } from 'react-icons/md'
 
 interface HeaderProps {
     isMenuOpen: boolean
@@ -10,7 +10,6 @@ interface HeaderProps {
 
 export default function DashboardAsidePage({ isMenuOpen }: HeaderProps) {
     const pathname = usePathname()
-
     const links = [
         { href: '/dashboard', label: 'Proyectos', icon: <MdOutlineDashboard size={20} /> },
         { href: '/dashboard/certificados', label: 'Certificados', icon: <MdOutlineAssignmentInd size={20} /> },
