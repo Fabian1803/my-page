@@ -23,13 +23,13 @@ export default function SearchMainPage() {
         {/* Botones */}
         <div className="flex justify-center gap-3">
           <Link 
-            href="/fabian-rivera" 
+            href="/fabianrivera" 
             className="bg-gray-500/10 no-underline py-[5px] px-3 rounded-[5px] border border-transparent hover:border-gray-500/30 transition-colors"
           >
             Buscar en Google
           </Link>
           <Link 
-            href="/fabian-rivera" 
+            href="/fabianrivera" 
             className="bg-gray-500/10 no-underline py-[5px] px-3 rounded-[5px] border border-transparent hover:border-gray-500/30 transition-colors"
           >
             Voy a tener suerte

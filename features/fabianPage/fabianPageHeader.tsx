@@ -41,12 +41,12 @@ function Tabs({ tabs, currentPath }: TabsProps) {
 export default function FabianPageHeader() {
     const pathname = usePathname()
     const linksTaps = [
-        { href: '/fabian-rivera', label: 'Todo' },
-        { href: '/fabian-rivera/proyectos', label: 'Proyectos' },
-        { href: '/fabian-rivera/certificados', label: 'Certificados' },
-        { href: '/fabian-rivera/redes-sociales', label: 'Redes Sociales' },
-        { href: '/fabian-rivera/cv', label: 'CV' },
-        { href: '/fabian-rivera/contacto', label: 'Contacto' },
+        { href: '/fabianrivera', label: 'Todo' },
+        { href: '/fabianrivera/proyectos', label: 'Proyectos' },
+        { href: '/fabianrivera/certificados', label: 'Certificados' },
+        { href: '/fabianrivera/redes-sociales', label: 'Redes Sociales' },
+        { href: '/fabianrivera/cv', label: 'CV' },
+        { href: '/fabianrivera/contacto', label: 'Contacto' },
         { href: '/fabian-rivera/sobre-mi', label: 'Sobre mí' }
     ]
 
