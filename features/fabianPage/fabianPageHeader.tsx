@@ -43,8 +43,8 @@ export default function FabianPageHeader() {
     const linksTaps = [
         { href: '/fabianrivera', label: 'Todo' },
         { href: '/fabianrivera/proyectos', label: 'Proyectos' },
+        { href: '/fabianrivera/imagenes', label: 'Imagenes' },
         { href: '/fabianrivera/certificados', label: 'Certificados' },
-        { href: '/fabianrivera/redes-sociales', label: 'Redes Sociales' },
         { href: '/fabianrivera/cv', label: 'CV' },
         { href: '/fabianrivera/contacto', label: 'Contacto' },
         { href: '/fabian-rivera/sobre-mi', label: 'Sobre mí' }
