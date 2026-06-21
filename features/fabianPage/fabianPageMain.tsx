@@ -3,7 +3,7 @@ import SearchMapComponent from './components/searchMapComponent'
 export default function fabianPageMain() {
     return (
         <SearchMapComponent>
-            <Link href="/Codepedia" className="gap-2 p-4 grid grid-cols-[auto_140] min-[500px]:grid-cols-[auto_180] max-w-200">
+            <Link href="/Codepedia/project/loquesea" className="gap-2 p-4 grid grid-cols-[auto_140] min-[500px]:grid-cols-[auto_180] max-w-200">
                 <div className="flex gap-2 flex-col max-[500px]:col-span-2">
                     <p className="text-md font-bold">Destacado</p>
                     <div className="grid grid-cols-[40_auto] grid-rows-2 items-center h-9">

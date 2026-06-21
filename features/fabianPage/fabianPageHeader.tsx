@@ -46,8 +46,8 @@ export default function FabianPageHeader() {
         { href: '/fabianrivera/imagenes', label: 'Imagenes' },
         { href: '/fabianrivera/certificados', label: 'Certificados' },
         { href: '/fabianrivera/cv', label: 'CV' },
-        { href: '/fabianrivera/contacto', label: 'Contacto' },
-        { href: '/fabian-rivera/sobre-mi', label: 'Sobre mí' }
+        { href: '/fabianrivera/skills', label: 'Skills' },
+        { href: '/fabianrivera/sobre-mi', label: 'Sobre mí' }
     ]
 
     return (

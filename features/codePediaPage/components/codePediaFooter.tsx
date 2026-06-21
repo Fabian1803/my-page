@@ -12,10 +12,10 @@ export default function codePediaFooter() {
         'Declaración de cookies',
         'Versión para móviles',
     ]
-    const sombreado = 'text-blue-600 transition-colors hover:underline cursor-pointer'
+    const sombreado = 'text-blue-600 dark:text-blue-300 transition-colors hover:underline cursor-pointer'
 
     return (
-        <footer className="px-4 lg:px-10 py-6 text-sm text-black">
+        <footer className="px-4 lg:px-10 py-6 text-sm">
             <div className=" border-t border-gray-300 pt-4 flex gap-4 sm:flex-row flex-col items-center justify-between">
                 <div className="flex flex-col gap-5 ">
                     <div className="space-y-2 text-xs leading-5">
@@ -39,11 +39,11 @@ export default function codePediaFooter() {
                     </div>
                 </div>
                 <div className="flex gap-2 items-center justify-center sm:flex-col lg:flex-row">
-                    <a className="flex border-1 p-2 gap-2 items-center bg-gray-100 min-w-23" href="https://github.com" target="_blank" rel="noopener noreferrer">
+                    <a className="flex border-1 p-2 gap-2 items-center bg-gray-100 dark:bg-gray-800 dark:border-gray-400 min-w-23" href="https://github.com" target="_blank" rel="noopener noreferrer">
                         <FaGithub size={20} className="text-black" />
                         <span className="text-xs"> GitHub</span>
                     </a>
-                    <a className="flex border-1 p-2 gap-2 items-center bg-gray-100 min-w-23" href="https://linkedin.com" target="_blank" rel="noopener noreferrer">
+                    <a className="flex border-1 p-2 gap-2 items-center bg-gray-100 dark:bg-gray-800 dark:border-gray-400 min-w-23" href="https://linkedin.com" target="_blank" rel="noopener noreferrer">
                         <IoLogoLinkedin size={20} className="text-blue-600" />
                         <span className="text-xs ">LinkedIn</span>
                     </a>
