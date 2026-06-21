@@ -8,12 +8,12 @@ export default function CodepediaLayout({ children }: { children: React.ReactNod
     <CodePediaProvider>
       <div className="min-h-screen flex flex-col bg-white text-gray-900 dark:bg-[#101418] dark:text-gray-100 transition-colors duration-300">
         <CodePediaHeader />
-        <main className="flex flex-1 px-4 lg:px-10 w-full">
-          <div className="w-full min-w-0">
+        <main className="flex px-4 lg:px-10 w-full">
+          <div className="w-full">
             {children}
           </div>
           
-          <div className="w-70 hidden lg:flex shrink-0">
+          <div className="hidden w-65 lg:flex">
             <CodePediaSection />
           </div>
         </main>

@@ -54,23 +54,23 @@ export default function CodePediaSection() {
     const { textSize, setTextSize, color, setColor } = useCodePedia()
 
     return (
-        <section className="px-10 py-15 flex flex-col text-sm border-l border-gray-100 dark:border-gray-800 h-full">
-            <p className="font-semibold border-b border-gray-200 dark:border-gray-300 py-1 text-gray-900 dark:text-white">
+        <section className="lg:pl-10 w-full lg:py-16 flex flex-col text-sm  border-gray-100 h-full">
+            <p className="font-semibold border-b border-gray-300 dark:border-gray-600 py-1 text-gray-900 dark:text-white">
                 Apariencia
             </p>
             
             <fieldset className="mb-4 mt-4">
-                <legend className="mb-2 border-b border-gray-700 dark:border-gray-400 py-1 w-full text-gray-700 dark:text-gray-400">Texto</legend>
+                <legend className="mb-2 border-b border-gray-300 dark:border-gray-600 py-1 w-full text-gray-700 dark:text-gray-400">Texto</legend>
                 <RadioGroup name="text-size" options={textSizes} currentValue={textSize} onChange={setTextSize} />
             </fieldset>
 
             <fieldset className="mb-4">
-                <legend className="mb-2 border-b border-gray-700 dark:border-gray-400 py-1 w-full text-gray-700 dark:text-gray-400">Anchura</legend>
+                <legend className="mb-2 border-b border-gray-300 dark:border-gray-600 py-1 w-full text-gray-700 dark:text-gray-400">Anchura</legend>
                 <RadioGroup name="width" options={widths} currentValue="normal" onChange={() => {}} />
             </fieldset>
 
             <fieldset className="mb-4">
-                <legend className="mb-2 border-b border-gray-700 dark:border-gray-400 py-1 w-full text-gray-700 dark:text-gray-400">Color (Beta)</legend>
+                <legend className="mb-2 border-b border-gray-300 dark:border-gray-600 py-1 w-full text-gray-700 dark:text-gray-400">Color (Beta)</legend>
                 <RadioGroup name="color" options={colors} currentValue={color} onChange={setColor} />
             </fieldset>
         </section>

@@ -13,7 +13,6 @@ export default function CodePediaMain() {
 
     return (
         <div className="w-full h-full pt-4 gap-4 flex flex-col">
-            {/* CABECERA: Se mantiene fija, ignorando el selector de tamaño */}
             <section className="relative h-45 md:h-50 w-full overflow-hidden border-y md:border border-gray-400">
                 <Image
                     src="/wikiback.png"
@@ -40,7 +39,7 @@ export default function CodePediaMain() {
             </section>
 
             {/* ARTÍCULOS: Aquí aplicamos el font-size heredable mediante style */}
-            <div 
+            <div
                 className="grid lg:grid-cols-[55%_45%] lg:pr-4 gap-4 grid-rows-auto w-full"
                 style={{ fontSize: fontSizes[textSize] }}
             >
@@ -49,9 +48,9 @@ export default function CodePediaMain() {
                     <p className="text-lg font-bold">Articulo Destacado</p>
                     <h2 className="text-md font-semibold mt-2">Titulo del articulo destacado</h2>
                     <p className="mt-1">Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis neque veniam fugiat, totam voluptates.</p>
-                    <div className="w-full">
-                        <ImageCodepedia id='imagen-portada' imageSrc="/log.webp" title="Titulo del articulo destacado" description="Descripción del articulo destacado" />
-                    </div>
+
+                    <ImageCodepedia id='imagen-portada' imageSrc="/log.webp" title="Titulo del articulo destacado" description="Descripción del articulo destacado" />
+
                 </div>
 
                 {/* Artículo 2 (Lateral largo) */}

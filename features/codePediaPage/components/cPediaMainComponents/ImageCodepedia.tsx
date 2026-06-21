@@ -24,23 +24,20 @@ export default function ImageCodepedia({ title, description, imageSrc, id }: Ima
     return (
         <>
             {/* Tarjeta pequeña en la grilla */}
-            <div className="@container border bg-gray-100 border-gray-400 p-1 grid grid-rows-[auto_auto] gap-2">
+            <div className="w-full @container border bg-gray-100 dark:bg-gray-800 border-gray-400 p-1 grid grid-rows-[auto_auto] gap-2">
                 <button
                     onClick={openModal}
-                    className="w-full h-full border border-gray-400 cursor-zoom-in"
+                    className="w-full h-full border dark:bg-gray-900 border-gray-400 cursor-zoom-in"
                 >
                     <Image src={imageSrc} alt="CodePediaImage" width={400} height={200} priority className="w-full h-auto object-cover" />
                 </button>
-                <p className="text-md text-center line-clamp-3 @md:line-clamp-1 break-words">{title}</p>
+                <p className="text-md text-center line-clamp-3 @md:line-clamp-1 break-words dark:text-white">{title}</p>
             </div>
-
-            {/* MODAL DEL VISOR (Estilo Wikipedia) */}
             {openImage && (
                 <div
                     ref={visorRef}
                     className="fixed inset-0 bg-black z-50 flex flex-col items-center justify-center select-none"
                 >
-                    {/* Contenedor principal de la imagen (Ajusta la altura de forma dinámica) */}
                     <div className={`relative w-full flex items-center justify-center bg-black transition-all ${
                         isFullscreen ? 'h-[100vh]' : 'h-[85vh]'
                     }`}>
@@ -52,8 +49,6 @@ export default function ImageCodepedia({ title, description, imageSrc, id }: Ima
                                 fill
                                 className="object-contain"
                             />
-
-                            {/* 🔴 BOTONES ARRIBA A LA DERECHA */}
                             <div className="absolute top-4 right-4 flex flex-col items-center gap-4 bg-black/40 p-2 rounded-md backdrop-blur-sm z-10">
                                 <button
                                     onClick={closeModal}
@@ -70,8 +65,6 @@ export default function ImageCodepedia({ title, description, imageSrc, id }: Ima
                                     {isFullscreen ? <BiExitFullscreen size={26} /> : <BiFullscreen size={26} />}
                                 </button>
                             </div>
-
-                            {/* 🔵 BOTONES ABAJO A LA DERECHA */}
                             <div className="absolute bottom-4 right-4 flex flex-col items-center gap-4 bg-black/40 p-2 rounded-md backdrop-blur-sm z-10">
                                 <button
                                     onClick={handleCopyUrl}
@@ -91,12 +84,10 @@ export default function ImageCodepedia({ title, description, imageSrc, id }: Ima
 
                         </div>
                     </div>
-
-                    {/* SECCIÓN INFERIOR: DESCRIPCIÓN (Oculta en Fullscreen) */}
                     {!isFullscreen && (
-                        <div className="w-full h-[15vh] flex items-start justify-center px-4 bg-white border-t border-gray-200 animate-fade-in">
+                        <div className="w-full h-[15vh] flex items-start justify-center px-4 bg-white border-t border-gray-200 dark:bg-[#101418] dark:border-gray-600 animate-fade-in">
                             {description && (
-                                <p className="mt-4 text-base font-normal text-gray-800 max-w-3xl text-center break-words">
+                                <p className="mt-4 text-base font-normal text-gray-800 dark:text-gray-300 max-w-3xl text-center break-words">
                                     {description}
                                 </p>
                             )}
