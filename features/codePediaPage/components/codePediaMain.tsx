@@ -15,7 +15,7 @@ export default function CodePediaMain() {
         <div className="w-full h-full pt-4 gap-4 flex flex-col">
             <section className="relative h-45 md:h-50 w-full overflow-hidden border-y md:border border-gray-400">
                 <Image
-                    src="/wikiback.png"
+                    src="/wikiBack.png"
                     alt="CodePedia background"
                     fill
                     priority

@@ -5,7 +5,6 @@ import { BsEyeglasses } from "react-icons/bs"
 import { IoIosSearch } from "react-icons/io"
 import { TfiMoreAlt } from "react-icons/tfi"
 import Link from 'next/link'
-import React from 'react'
 import { AiOutlineFileSearch } from 'react-icons/ai'
 import CodePediaSection from './codePediaSection'
 import { useCodePediaHeader } from '../hooks/useCodePediaHeader'
@@ -28,7 +27,7 @@ export default function CodePediaHeader() {
       <div className={`h-full max-w-screen-2xl w-full 
        ${openSearchInput ? 'grid-cols-[auto_50_50] md:grid-cols-[auto_50_260]' : 'grid-cols-[50_auto_50_50_50] md:grid-cols-[50_auto_50_50_260]'}
       grid lg:grid-cols-[50_220_auto_260] items-center`}>
-        
+
         <div className={`h-full flex items-center ${openSearchInput ? 'hidden lg:flex' : ''}`}>
           <button aria-label="Abrir menú" className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700">
             <FiMenu size={20} />
@@ -40,14 +39,14 @@ export default function CodePediaHeader() {
             <Image src="/wikiLog.webp" alt="Logo" width={45} height={45} className="object-contai hidden md:block" priority />
             <div className="flex flex-col justify-center">
               <Image src="/wikitittleLogo.webp" alt="Nombre" width={120} height={40} className="object-contain dark:content-[url('/wikiTitleLogoDark.webp')]" priority />
-              <Image src="/wikiSubtexLogo.webp" alt="Subtexto" width={120} height={30} className="object-contain dark:content-[url('/wikiSubtextDark.webp')]" priority />
+              <Image src="/wikiSubtexLogo.webp" alt="Subtexto" width={120} height={30} className="object-contain dark:content-[url('/wikiSubTextDark.webp')]" priority />
             </div>
           </Link>
         </div>
-        
-        <div 
-          ref={searchContainerRef} 
-          className={`h-full items-center lg:flex ${openSearchInput ? 'flex' : 'hidden '}`}
+
+        <div
+          ref={searchContainerRef}
+          className={`h-full items-center lg:flex ${openSearchInput ? 'flex pr-3' : 'hidden'}`}
         >
           <div className="relative items-center grid grid-cols-[auto_70px] w-full lg:max-w-120">
             <div className="w-full grid grid-cols-[30px_auto] h-full dark:text-gray-300 border-y border-l dark:hover:border border-gray-700 dark:border-gray-500 dark:hover:border-gray-400 transition-colors duration-300 items-center px-2 bg-white dark:bg-transparent">
@@ -87,7 +86,7 @@ export default function CodePediaHeader() {
                     </Link>
                   ))
                 )}
-                <Link 
+                <Link
                   href='/corelia/search'
                   onClick={() => { setOpenSearchInput(false); setShowSuggestions(false); }}
                   className="flex items-center gap-2 px-3 py-3 border-t border-gray-300 dark:border-gray-600 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-left"
@@ -106,9 +105,9 @@ export default function CodePediaHeader() {
           </button>
         </div>
 
-        <div ref={appearanceRef} className={`lg:hidden items-center flex justify-end py-2 px-1 relative ${openSearchInput ? 'hidden' : ''}`}>
-          <button 
-            onClick={() => { setOpenAppearance(!openAppearance); setOpenUserMenu(false); }} 
+        <div ref={appearanceRef} className="lg:hidden items-center flex justify-end py-2 px-1 relative">
+          <button
+            onClick={() => { setOpenAppearance(!openAppearance); setOpenUserMenu(false); }}
             className={navButtonClass}
           >
             <BsEyeglasses size={22} className="text-black dark:text-white" />
@@ -121,13 +120,13 @@ export default function CodePediaHeader() {
         </div>
 
         <div ref={userMenuRef} className="items-center flex justify-end py-2 px-1 md:hidden relative">
-          <button 
+          <button
             onClick={() => { setOpenUserMenu(!openUserMenu); setOpenAppearance(false); }}
             className={navButtonClass}
           >
             <TfiMoreAlt size={22} className="text-black dark:text-white" />
           </button>
-          
+
           {openUserMenu && (
             <div className="absolute top-15 right-0 w-44 bg-white dark:bg-[#101418] border border-gray-300 dark:border-gray-700 shadow-xl rounded-md p-2 z-50 flex flex-col gap-1 animate-fade-in">
               <button className={dropDownOptionClass}>Donaciones</button>
