@@ -1,74 +1,27 @@
 "use client"
 import Image from 'next/image'
 import { FiMenu } from 'react-icons/fi'
-import { BsEyeglasses } from "react-icons/bs";
-import { IoIosSearch } from "react-icons/io";
+import { BsEyeglasses } from "react-icons/bs"
+import { IoIosSearch } from "react-icons/io"
 import { TfiMoreAlt } from "react-icons/tfi"
-import Link from 'next/link';
-import { useState, useEffect, useRef } from 'react';
-import { AiOutlineFileSearch } from 'react-icons/ai';
-import CodePediaSection from './codePediaSection'; // Ajusta la ruta si es necesario
+import Link from 'next/link'
+import React from 'react'
+import { AiOutlineFileSearch } from 'react-icons/ai'
+import CodePediaSection from './codePediaSection'
+import { useCodePediaHeader } from '../hooks/useCodePediaHeader'
 
 export default function CodePediaHeader() {
-  const [searchQuery, setSearchQuery] = useState('')
-  const [showSuggestions, setShowSuggestions] = useState(false)
-  const [openSearchInput, setOpenSearchInput] = useState(false)
-  const [openAppearance, setOpenAppearance] = useState(false)
-  
-  // 1. Nuevo estado y referencia para el menú de usuario móvil
-  const [openUserMenu, setOpenUserMenu] = useState(false)
-
-  const searchContainerRef = useRef<HTMLDivElement>(null)
-  const appearanceRef = useRef<HTMLDivElement>(null)
-  const userMenuRef = useRef<HTMLDivElement>(null) // Referencia asignada
-
-  const sugerenciasMock = [
-    { label: 'Java & Spring Boot', url: '/Codepedia/project/spring-boot' },
-    { label: 'Docker & Microservicios', url: '/Codepedia/project/docker' },
-    { label: 'Next.js & React', url: '/Codepedia/project/nextjs' },
-    { label: 'Arquitectura Hexagonal', url: '/Codepedia/project/architecture' },
-  ]
-  
-  const sugerenciasFiltradas = sugerenciasMock.filter(item =>
-    item.label.toLowerCase().includes(searchQuery.toLowerCase())
-  )
-
-  // 2. Agregamos el tercer menú a la lógica de clics externos
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      // Cierre del buscador
-      if (
-        openSearchInput && 
-        searchContainerRef.current && 
-        !searchContainerRef.current.contains(event.target as Node)
-      ) {
-        setOpenSearchInput(false);
-        setShowSuggestions(false);
-      }
-      
-      // Cierre de la apariencia flotante
-      if (
-        openAppearance &&
-        appearanceRef.current &&
-        !appearanceRef.current.contains(event.target as Node)
-      ) {
-        setOpenAppearance(false);
-      }
-
-      // Cierre del menú de usuario externo
-      if (
-        openUserMenu &&
-        userMenuRef.current &&
-        !userMenuRef.current.contains(event.target as Node)
-      ) {
-        setOpenUserMenu(false);
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [openSearchInput, openAppearance, openUserMenu]);
+  const {
+    searchQuery, setSearchQuery,
+    showSuggestions, setShowSuggestions,
+    openSearchInput, setOpenSearchInput,
+    openAppearance, setOpenAppearance,
+    openUserMenu, setOpenUserMenu,
+    searchContainerRef, appearanceRef, userMenuRef,
+    sugerenciasFiltradas
+  } = useCodePediaHeader()
+  const navButtonClass = "p-3 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-sm"
+  const dropDownOptionClass = "w-full text-left px-3 py-2 text-sm text-blue-600 dark:text-blue-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-sm"
 
   return (
     <header className="h-17 px-4 lg:pl-9 lg:pr-12 bg-white dark:bg-[#101418] border-b border-gray-100 dark:border-gray-800 transition-colors duration-300">
@@ -148,7 +101,7 @@ export default function CodePediaHeader() {
         </div>
 
         <div className={`lg:hidden items-center flex justify-end py-2 px-1 ${openSearchInput ? 'hidden' : ''}`}>
-          <button onClick={() => { setOpenSearchInput(!openSearchInput); setOpenAppearance(false); setOpenUserMenu(false); }} className="p-3 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-sm">
+          <button onClick={() => { setOpenSearchInput(!openSearchInput); setOpenAppearance(false); setOpenUserMenu(false); }} className={navButtonClass}>
             <IoIosSearch size={22} className="text-black dark:text-white" />
           </button>
         </div>
@@ -156,7 +109,7 @@ export default function CodePediaHeader() {
         <div ref={appearanceRef} className={`lg:hidden items-center flex justify-end py-2 px-1 relative ${openSearchInput ? 'hidden' : ''}`}>
           <button 
             onClick={() => { setOpenAppearance(!openAppearance); setOpenUserMenu(false); }} 
-            className="p-3 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-sm"
+            className={navButtonClass}
           >
             <BsEyeglasses size={22} className="text-black dark:text-white" />
           </button>
@@ -167,29 +120,27 @@ export default function CodePediaHeader() {
           )}
         </div>
 
-        {/* 3. BOTÓN DE MÁS ACCIONES CONECTADO Y CON MENÚ DESPLEGABLE EN MÓVIL */}
         <div ref={userMenuRef} className="items-center flex justify-end py-2 px-1 md:hidden relative">
           <button 
             onClick={() => { setOpenUserMenu(!openUserMenu); setOpenAppearance(false); }}
-            className="p-3 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-sm"
+            className={navButtonClass}
           >
             <TfiMoreAlt size={22} className="text-black dark:text-white" />
           </button>
           
           {openUserMenu && (
             <div className="absolute top-15 right-0 w-44 bg-white dark:bg-[#101418] border border-gray-300 dark:border-gray-700 shadow-xl rounded-md p-2 z-50 flex flex-col gap-1 animate-fade-in">
-              <button className="w-full text-left px-3 py-2 text-sm text-blue-600 dark:text-blue-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-sm">Donaciones</button>
-              <button className="w-full text-left px-3 py-2 text-sm text-blue-600 dark:text-blue-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-sm">Crear una cuenta</button>
-              <button className="w-full text-left px-3 py-2 text-sm text-blue-600 dark:text-blue-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-sm">Acceder</button>
+              <button className={dropDownOptionClass}>Donaciones</button>
+              <button className={dropDownOptionClass}>Crear una cuenta</button>
+              <button className={dropDownOptionClass}>Acceder</button>
             </div>
           )}
         </div>
-
         <div className="md:flex items-center justify-end hidden">
-          <ul className="flex gap-4 text-sm font-medium text-blue-600 dark:text-blue-300">
-            <li className="cursor-pointer hover:underline">Donaciones</li>
-            <li className="cursor-pointer hover:underline">Crear una cuenta</li>
-            <li className="cursor-pointer hover:underline">Acceder</li>
+          <ul className="flex gap-2 text-sm text-blue-600 dark:text-blue-300 ">
+            <li>Donaciones</li>
+            <li>Crear una cuenta</li>
+            <li>Acceder</li>
           </ul>
         </div>
       </div>
