@@ -29,19 +29,19 @@ body {
 
 /* Solución de emergencia: Forzar estilos dentro del editor de TipTap */
 .tiptap h1 {
-  font-size: 1.875rem !important; /* text-3xl */
+  font-size: 1.875rem !important;
   font-weight: 700 !important;
   margin-bottom: 0.5rem;
 }
 
 .tiptap h2 {
-  font-size: 1.5rem !important; /* text-2xl */
+  font-size: 1.5rem !important;
   font-weight: 700 !important;
   margin-bottom: 0.5rem;
 }
 
 .tiptap h3 {
-  font-size: 1.25rem !important; /* text-xl */
+  font-size: 1.25rem !important; 
   font-weight: 700 !important;
   margin-bottom: 0.25rem;
 }
@@ -76,3 +76,4 @@ body {
 .animate-entry {
   animation: entryRight 0.2s ease-out forwards;
 }
+

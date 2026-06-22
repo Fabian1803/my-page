@@ -23,8 +23,8 @@ export default function ImageCodepedia({ title, description, imageSrc, id }: Ima
 
     return (
         <>
-            {/* Tarjeta pequeña en la grilla */}
-            <div className="w-full @container border bg-gray-100 dark:bg-gray-800 border-gray-400 p-1 grid grid-rows-[auto_auto] gap-2">
+        <div className="w-full flex items-center justify-center">
+            <div className="w-full max-w-2xl @container border bg-gray-100 dark:bg-gray-800 border-gray-400 p-1 grid grid-rows-[auto_auto] gap-2">
                 <button
                     onClick={openModal}
                     className="w-full h-full border dark:bg-gray-900 border-gray-400 cursor-zoom-in"
@@ -33,6 +33,8 @@ export default function ImageCodepedia({ title, description, imageSrc, id }: Ima
                 </button>
                 <p className="text-md text-center line-clamp-3 @md:line-clamp-1 break-words dark:text-white">{title}</p>
             </div>
+
+        </div>
             {openImage && (
                 <div
                     ref={visorRef}

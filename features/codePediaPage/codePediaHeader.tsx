@@ -7,7 +7,7 @@ import { TfiMoreAlt } from "react-icons/tfi"
 import Link from 'next/link'
 import { AiOutlineFileSearch } from 'react-icons/ai'
 import CodePediaSection from './codePediaSection'
-import { useCodePediaHeader } from '../hooks/useCodePediaHeader'
+import { useCodePediaHeader } from './hooks/useCodePediaHeader'
 
 export default function CodePediaHeader() {
   const {
@@ -23,7 +23,8 @@ export default function CodePediaHeader() {
   const dropDownOptionClass = "w-full text-left px-3 py-2 text-sm text-blue-600 dark:text-blue-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-sm"
 
   return (
-    <header className="h-17 px-4 lg:pl-9 lg:pr-12 bg-white dark:bg-[#101418] border-b border-gray-100 dark:border-gray-800 transition-colors duration-300">
+    <header className=" h-17 px-4 lg:pl-9 lg:pr-12 bg-white dark:bg-[#101418] border-gray-100 dark:border-gray-800 transition-colors duration-300">
+      <div className="max-w-[1440px] mx-auto h-full w-full">
       <div className={`h-full max-w-screen-2xl w-full 
        ${openSearchInput ? 'grid-cols-[auto_50_50] md:grid-cols-[auto_50_260]' : 'grid-cols-[50_auto_50_50_50] md:grid-cols-[50_auto_50_50_260]'}
       grid lg:grid-cols-[50_220_auto_260] items-center`}>
@@ -76,11 +77,11 @@ export default function CodePediaHeader() {
                       onClick={() => { setOpenSearchInput(false); setShowSuggestions(false); }}
                       className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-left"
                     >
-                      <div className="border border-gray-400">
-                        <img src="/perfil.jpeg" alt="Sugerencia" width={35} height={35} />
+                      <div className="border border-gray-400 min-w-9 min-h-9 w-9 h-9">
+                        <img src="/perfil.jpeg" alt="Sugerencia" width={35} height={35} className='w-full h-full'/>
                       </div>
                       <div className="flex flex-col">
-                        <span className="font-semibold dark:text-white">{item.label}</span>
+                        <span className="font-semibold dark:text-white line-clamp-1">{item.label}</span>
                         <span className="truncate text-xs line-clamp-1">{item.label}</span>
                       </div>
                     </Link>
@@ -91,8 +92,8 @@ export default function CodePediaHeader() {
                   onClick={() => { setOpenSearchInput(false); setShowSuggestions(false); }}
                   className="flex items-center gap-2 px-3 py-3 border-t border-gray-300 dark:border-gray-600 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-left"
                 >
-                  <AiOutlineFileSearch size={20} />
-                  <p className="text-sm">Busca el proyecto que estás buscando...</p>
+                  <AiOutlineFileSearch size={20} className="min-w-9 min-h-5" />
+                  <p className="text-sm line-clamp-1">Busca el proyecto que estás buscando...</p>
                 </Link>
               </div>
             )}
@@ -142,6 +143,7 @@ export default function CodePediaHeader() {
             <li>Acceder</li>
           </ul>
         </div>
+      </div>
       </div>
     </header>
   )

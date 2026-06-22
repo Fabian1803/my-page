@@ -7,7 +7,6 @@ export function useCodePediaHeader() {
   const [openSearchInput, setOpenSearchInput] = useState(false)
   const [openAppearance, setOpenAppearance] = useState(false)
   const [openUserMenu, setOpenUserMenu] = useState(false)
-
   const searchContainerRef = useRef<HTMLDivElement>(null)
   const appearanceRef = useRef<HTMLDivElement>(null)
   const userMenuRef = useRef<HTMLDivElement>(null)

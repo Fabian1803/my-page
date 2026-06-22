@@ -3,13 +3,15 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import { BiChevronDown, BiChevronUp } from "react-icons/bi";
+import { useCodePedia } from './context/CodePediaContext'
 
 export default function CodePediaNavbar() {
+  const { changeForm, setChangeForm } = useCodePedia()
   const [showMenu, setShowMenu] = useState(false)
-  const navLinkClassName = 'flex h-full items-center hover:border-b-2 hover:border-black dark:hover:border-white dark:hover:text-white py-1 sm:py-0'
+  const navLinkClassName = 'flex h-full items-center hover:border-b-2 hover:border-black hover:text-black dark:hover:border-white dark:hover:text-white py-1 sm:py-0'
   const mainLinks = [
-    { href: '/', label: 'Portada' },
-    { href: '/acerca-de', label: 'Discusión' },
+    {  label: 'Portada', onClick: () => setChangeForm(false) },
+    {  label: 'Discusión', onClick: () => setChangeForm(true) },
   ]
 
   const toolLinks = [
@@ -20,13 +22,12 @@ export default function CodePediaNavbar() {
   ]
 
   return (
-    // relative es clave para que el menú flotante de móvil no se mueva de su sitio
     <nav className="relative mt-5 flex h-8 items-center justify-between border-y border-gray-400 text-sm font-medium text-blue-700 dark:text-blue-300 select-none">
       <div className="flex h-full items-center gap-3">
         {mainLinks.map((item) => (
-          <Link key={item.href} href={item.href} className={navLinkClassName}>
+          <button key={item.label} className={navLinkClassName} onClick={item.onClick}>
             {item.label}
-          </Link>
+          </button>
         ))}
       </div>
 

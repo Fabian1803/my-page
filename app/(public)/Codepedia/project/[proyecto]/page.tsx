@@ -1,11 +1,10 @@
-import { CodePediaMain, CodePediaNavbar } from '@/features/codePediaPage/components'
-import React from 'react'
-
+import { CodePediaNavbar } from '@/features/codePediaPage'
+import CodePediaProject from '@/features/codePediaPage/pages/codePediaProject'
 export default function page() {
     return (
         <>
             <CodePediaNavbar />
-            <CodePediaMain />
+            <CodePediaProject />
         </>
     )
 }

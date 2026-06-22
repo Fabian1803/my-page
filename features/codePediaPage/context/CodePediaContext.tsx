@@ -9,25 +9,43 @@ interface CodePediaContextProps {
     color: ColorTheme;
     setTextSize: (size: TextSize) => void;
     setColor: (color: ColorTheme) => void;
+    changeForm: boolean;
+    setChangeForm: (change: boolean) => void;
 }
 
 const CodePediaContext = createContext<CodePediaContextProps | undefined>(undefined)
+
 export function CodePediaProvider({ children }: { children: React.ReactNode }) {
     const [textSize, setTextSize] = useState<TextSize>('medium')
     const [color, setColor] = useState<ColorTheme>('auto')
+    const [changeForm, setChangeForm] = useState(false)
+
+    // 1. Sincronizamos el estado inicial con el localStorage solo al montar en el cliente
+    useEffect(() => {
+        const savedColor = localStorage.getItem('codepedia-theme') as ColorTheme
+        if (savedColor) {
+            setColor(savedColor)
+        }
+    }, [])
+
+    // 2. Tu useEffect original modificado únicamente para persistir la elección en localStorage
     useEffect(() => {
         const root = document.documentElement
+        
         if (color === 'dark') {
             root.classList.add('dark')
+            localStorage.setItem('codepedia-theme', 'dark')
             return
         }
 
         if (color === 'light') {
             root.classList.remove('dark')
+            localStorage.setItem('codepedia-theme', 'light')
             return
         }
 
         if (color === 'auto') {
+            localStorage.removeItem('codepedia-theme') // Si vuelve a auto, limpiamos el storage
             const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
             const handleSystemChange = (e: MediaQueryListEvent) => {
                 root.classList.toggle('dark', e.matches)
@@ -37,8 +55,9 @@ export function CodePediaProvider({ children }: { children: React.ReactNode }) {
             return () => mediaQuery.removeEventListener('change', handleSystemChange)
         }
     }, [color])
+
     return (
-        <CodePediaContext.Provider value={{ textSize, setTextSize, color, setColor }}>
+        <CodePediaContext.Provider value={{ textSize, setTextSize, color, setColor, changeForm, setChangeForm }}>
             {children}
         </CodePediaContext.Provider>
     )

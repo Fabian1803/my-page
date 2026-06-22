@@ -1,6 +1,5 @@
 'use client'
-import React from 'react'
-import { useCodePedia } from '../context/CodePediaContext' // Ajusta tu ruta
+import { useCodePedia } from './context/CodePediaContext'
 
 const textSizes = [
     { label: 'Pequeño', value: 'small' },
