@@ -1,5 +1,2 @@
-export default function Codepedia() {
-  return (
-    <h1>pagina proximamente</h1>
-  )
-}
+import HomeCodepedia from "@/features/codePediaPage/pages/homeCodepedia";
+export default function Codepedia() { return <HomeCodepedia /> }

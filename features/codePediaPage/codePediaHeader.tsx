@@ -137,7 +137,7 @@ export default function CodePediaHeader() {
           )}
         </div>
         <div className="md:flex items-center justify-end hidden">
-          <ul className="flex gap-2 text-sm text-blue-600 dark:text-blue-300 ">
+          <ul className="flex gap-2 text-sm highlight">
             <li>Donaciones</li>
             <li>Crear una cuenta</li>
             <li>Acceder</li>

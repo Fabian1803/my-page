@@ -1,7 +1,2 @@
-import React from 'react'
-
-export default function page() {
-  return (
-    <div>lo que va a buscar</div>
-  )
-}
+import SearchQueryProject from '@/features/codePediaPage/pages/searchQueryProject'
+export default function page() { return <SearchQueryProject /> }

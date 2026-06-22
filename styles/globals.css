@@ -41,7 +41,7 @@ body {
 }
 
 .tiptap h3 {
-  font-size: 1.25rem !important; 
+  font-size: 1.25rem !important;
   font-weight: 700 !important;
   margin-bottom: 0.25rem;
 }
@@ -62,11 +62,17 @@ body {
   display: list-item !important;
 }
 
+.highlight {
+  @apply text-[#3566cb] dark:text-[#88a2e6];
+}
+
+
 @keyframes entryRight {
   from {
     transform: translateX(100%);
     opacity: 0;
   }
+
   to {
     transform: translateX(0);
     opacity: 1;
@@ -76,4 +82,3 @@ body {
 .animate-entry {
   animation: entryRight 0.2s ease-out forwards;
 }
-

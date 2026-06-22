@@ -36,7 +36,7 @@ export default function AboutFabian() {
           </div>
           <div className="clear-both md:hidden" />
         </section>
-        <section className="space-y-6">
+        <section className="py-5">
           <h2 className="text-xl font-bold text-gray-900 tracking-tight flex items-center gap-2">
             Experiencia Profesional
           </h2>
@@ -74,7 +74,7 @@ export default function AboutFabian() {
           </div>
         </section>
 
-        <section className="space-y-6">
+        <section className="">
           <h2 className="text-xl font-bold text-gray-900 tracking-tight">
             Educación y Certificaciones
           </h2>

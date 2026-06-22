@@ -41,15 +41,14 @@ function SectionProject({ children, changeForm, setChangeForm, keytap }: CodePed
 
 
 export default function CodePediaProject() {
-    const { changeForm, setChangeForm } = useCodePedia()
-    const { textSize } = useCodePedia()
+    const { changeForm, setChangeForm, textSize } = useCodePedia()
     const fontSizes = {
         small: '14px',
         medium: '18px',
         large: '20px'
     }
     const restmock = {
-        nombre: 'proyecto de ejemplo de java en tal empresa',
+        nombre: 'proyecto de ejemplo de java en tal empresa con tal objetivo',
         descripcion: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis neque veniam fugiat, totam voluptates.',
         urls: [
             { github1: 'https://github.com/user/repo1', tag: 'Github' },
@@ -74,12 +73,12 @@ export default function CodePediaProject() {
                 <div className="absolute inset-0 z-10 bg-gray-100 dark:bg-gray-950 opacity-70 hidden md:block" />
 
                 <div className="relative md:absolute md:inset-0 z-20 w-full h-full py-6 px-4 md:py-0 md:pl-4 md:pr-8 flex flex-col md:flex-row justify-center md:justify-between md:items-center">
-                    <div className='flex flex-col gap-2 md:gap-0'>
-                        <h1 className="text-2xl md:text-3xl font-semibold">{restmock.nombre}</h1>
+                    <div className='flex flex-col gap-2'>
+                        <h1 className="text-3xl text-justify md:text-4xl font-semibold font-['Roboto'] leading-none">{restmock.nombre}</h1>
                         <p className="text-md line-clamp-2 md:line-clamp-3 lg:line-clamp-3 max-w-full md:max-w-100 lg:max-w-125 xl:max-w-150">{restmock.descripcion}</p>
                     </div>
                     <div className="flex flex-col justify-center md:items-end gap-2 md:gap-4 md:w-150">
-                        <p className="text-[14px]"><Link href="#" className="text-blue-600 dark:text-blue-300 font-bold">100</Link> articulos <span className="text-blue-600 dark:text-blue-300">en español</span></p>
+                        <p className="text-[14px]"><Link href="#" className="highlight font-bold">100</Link> articulos <span className="text-blue-600 dark:text-blue-300">en español</span></p>
                         <ul className="flex gap-2 text-md font-bold flex-wrap justify-around">
                             {restmock.urls.map((item, index) => (
                                 <li key={index}>

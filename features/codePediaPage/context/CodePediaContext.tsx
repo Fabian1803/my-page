@@ -3,12 +3,15 @@ import React, { createContext, useContext, useState, useEffect } from 'react'
 
 type TextSize = 'small' | 'medium' | 'large'
 type ColorTheme = 'auto' | 'light' | 'dark'
+type width = 'standard' | 'full'
 
 interface CodePediaContextProps {
     textSize: TextSize;
     color: ColorTheme;
+    width: width;
     setTextSize: (size: TextSize) => void;
     setColor: (color: ColorTheme) => void;
+    setWidth: (width: width) => void;
     changeForm: boolean;
     setChangeForm: (change: boolean) => void;
 }
@@ -18,9 +21,9 @@ const CodePediaContext = createContext<CodePediaContextProps | undefined>(undefi
 export function CodePediaProvider({ children }: { children: React.ReactNode }) {
     const [textSize, setTextSize] = useState<TextSize>('medium')
     const [color, setColor] = useState<ColorTheme>('auto')
+    const [width, setWidth] = useState<width>('standard')
     const [changeForm, setChangeForm] = useState(false)
 
-    // 1. Sincronizamos el estado inicial con el localStorage solo al montar en el cliente
     useEffect(() => {
         const savedColor = localStorage.getItem('codepedia-theme') as ColorTheme
         if (savedColor) {
@@ -28,7 +31,6 @@ export function CodePediaProvider({ children }: { children: React.ReactNode }) {
         }
     }, [])
 
-    // 2. Tu useEffect original modificado únicamente para persistir la elección en localStorage
     useEffect(() => {
         const root = document.documentElement
         
@@ -57,7 +59,7 @@ export function CodePediaProvider({ children }: { children: React.ReactNode }) {
     }, [color])
 
     return (
-        <CodePediaContext.Provider value={{ textSize, setTextSize, color, setColor, changeForm, setChangeForm }}>
+        <CodePediaContext.Provider value={{ textSize, setTextSize, color, setColor, width, setWidth, changeForm, setChangeForm }}>
             {children}
         </CodePediaContext.Provider>
     )
