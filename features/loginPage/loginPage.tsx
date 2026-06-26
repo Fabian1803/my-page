@@ -1,13 +1,27 @@
 'use client'
 import Image from 'next/image'
 import Link from 'next/link'
-import React, { useState } from 'react'
+import React from 'react'
+import { useLogin } from './hooks/useLogin'
 
 export default function LoginPage() {
-    const [step, setStep] = useState<'email' | 'password'>('email')
+    const {
+        step,
+        setStep,
+        email,
+        setEmail,
+        password,
+        setPassword,
+        showPassword,
+        setShowPassword,
+        error,
+        loading,
+        setError,
+        handleNextClick
+    } = useLogin()
 
     return (
-        <div className="min-h-screen flex flex-col justify-between bg-[#f0f4f9] p-6 sm:p-10 md:p-16 lg:p-4 lg:items-center lg:justify-center">
+        <div className="min-h-screen text-black flex flex-col justify-between bg-[#f0f4f9] p-6 sm:p-10 md:p-16 lg:p-4 lg:items-center lg:justify-center">
             <div className="hidden max-md:block h-4" />
             <div className="w-full lg:max-w-[1050px] bg-transparent lg:bg-white border-none lg:border lg:border-[#dadce0] lg:rounded-3xl lg:p-12 flex flex-col md:flex-row justify-between items-start gap-8 md:gap-16 lg:gap-16">
                 <div className="w-full md:w-[45%] lg:w-1/2">
@@ -22,7 +36,10 @@ export default function LoginPage() {
                             Utiliza tu cuenta de Google
                         </p>
                     ) : (
-                        <div className="rounded-full flex gap-2.5 border border-[#dadce0] pl-1 pr-3 py-1 w-max h-8 justify-center items-center bg-white hover:bg-gray-50 cursor-pointer transition-colors duration-200">
+                        <div
+                            onClick={() => { setStep('email'); setError(null); }}
+                            className="rounded-full flex gap-2.5 border border-[#dadce0] pl-1 pr-3 py-1 w-max h-8 justify-center items-center bg-white hover:bg-gray-50 cursor-pointer transition-colors duration-200"
+                        >
                             <div className="rounded-full overflow-hidden w-6 h-6 flex items-center justify-center shrink-0">
                                 <Image
                                     src="/perfil.jpeg"
@@ -52,6 +69,8 @@ export default function LoginPage() {
                                 <input
                                     type="email"
                                     id="email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
                                     className="peer w-full px-3 py-4 border border-[#747775] rounded-[4px] focus:outline-none focus:border-2 focus:border-[#0b57d0] transition-all placeholder-transparent bg-transparent"
                                     placeholder="Correo electrónico o teléfono"
                                 />
@@ -64,6 +83,10 @@ export default function LoginPage() {
                                     Correo electrónico o teléfono
                                 </label>
                             </div>
+
+                            {error && (
+                                <p className="text-[#b3261e] text-[12px] -mt-4 mb-4">{error}</p>
+                            )}
 
                             <p className="text-[#0b57d0] font-medium text-[14px] mb-8 cursor-pointer hover:underline">
                                 ¿Has olvidado tu correo electrónico?
@@ -86,8 +109,10 @@ export default function LoginPage() {
                         >
                             <div className="relative mb-6 w-full">
                                 <input
-                                    type="password"
+                                    type={showPassword ? 'text' : 'password'}
                                     id="password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
                                     className="peer w-full px-3 py-4 border border-[#747775] rounded-[4px] focus:outline-none focus:border-2 focus:border-[#0b57d0] transition-all placeholder-transparent bg-transparent"
                                     placeholder="Introduce tu contraseña"
                                 />
@@ -101,10 +126,16 @@ export default function LoginPage() {
                                 </label>
                             </div>
 
+                            {error && (
+                                <p className="text-[#b3261e] text-[12px] -mt-4 mb-4">{error}</p>
+                            )}
+
                             <div className="flex items-center gap-3 mb-8">
                                 <input
                                     type="checkbox"
                                     id="show-password"
+                                    checked={showPassword}
+                                    onChange={() => setShowPassword(!showPassword)}
                                     className="w-4 h-4 accent-[#0b57d0] rounded cursor-pointer"
                                 />
                                 <label htmlFor="show-password" className="text-[14px] text-[#202124] cursor-pointer select-none">
@@ -122,7 +153,7 @@ export default function LoginPage() {
                                     Crear cuenta
                                 </span>
                                 <button
-                                    onClick={() => setStep('password')}
+                                    onClick={handleNextClick}
                                     className="bg-[#0b57d0] text-white px-6 py-2.5 rounded-full font-medium text-[14px] hover:bg-[#155bd3]"
                                 >
                                     Siguiente
@@ -131,14 +162,18 @@ export default function LoginPage() {
                         ) : (
                             <>
                                 <span
-                                    onClick={() => setStep('email')}
+                                    onClick={() => { setStep('email'); setError(null); }}
                                     className="text-[#0b57d0] font-medium text-[14px] cursor-pointer hover:underline py-2"
                                 >
-                                    ¿Has olvidado la contraseña?
+                                    Atrás
                                 </span>
-                                <Link href="/dashboard" className="bg-[#0b57d0] text-white px-6 py-2.5 rounded-full font-medium text-[14px] hover:bg-[#155bd3]">
-                                    Siguiente
-                                </Link>
+                                <button
+                                    onClick={handleNextClick}
+                                    disabled={loading} // <-- Para evitar múltiples clicks si la red va lenta
+                                    className="bg-[#0b57d0] text-white px-6 py-2.5 rounded-full font-medium text-[14px] hover:bg-[#155bd3]"
+                                >
+                                    {loading ? 'Cargando...' : 'Siguiente'}
+                                </button>
                             </>
                         )}
                     </div>

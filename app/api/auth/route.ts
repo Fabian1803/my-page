@@ -1,4 +1,4 @@
 import { loginWithPasswordUseCase } from "@/server/auth/infrastructure/dependencies";
-import { makeRoute } from "@/server/shared/infrastructure/makeRoute";
+import { makeRouteAuth } from "@/server/auth/infrastructure/makeRouteAuth";
 
-export const POST = makeRoute(loginWithPasswordUseCase);
+export const POST = makeRouteAuth(loginWithPasswordUseCase);

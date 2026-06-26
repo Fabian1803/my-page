@@ -2,7 +2,7 @@
 import { AuthRepository } from "../../domain/ports/AuthRepository";
 import { Usuario } from "../../domain/models/Usuario";
 import { Dispositivo } from "../../domain/models/Dispositivo";
-import { prisma } from "@/lib/prisma";
+import { prisma } from "@/server/shared/infrastructure/prisma";
 
 export class PrismaAuthRepository implements AuthRepository {
   
