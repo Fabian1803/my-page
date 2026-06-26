@@ -1,15 +1,13 @@
 'use client'
 import React, { useState, useEffect } from 'react'
 import { MdAdd, MdEdit } from 'react-icons/md'
-import ProjectModal from './components/projectModal'
-import { useCreateProject } from './hooks/useCreateProject' // Consumimos el hook que ya tenías armado
+import ProjectModal from '../../components/projectModal'
 
 export default function ProjectsPage() {
     const [isLoading, setIsLoading] = useState(true)
+    const [isProjectModalOpen, setIsProjectModalOpen] = useState(false)
     const [isModalOpen, setIsModalOpen] = useState(false)
 
-    // Desestructuramos todo tu hook operativo
-    const projectControls = useCreateProject()
 
     useEffect(() => {
         const timer = setTimeout(() => setIsLoading(false), 1000)
@@ -47,29 +45,7 @@ export default function ProjectsPage() {
         }
     ]
 
-    // Handler intermedio para inyectar los datos en el hook y abrir el modal flotante
-    const handleEditClick = (proyecto: any) => {
-        // Asumiendo que agregaste el handler "loadProjectData" o lo haces manual mapeando los setters:
-        if (projectControls.setEditingId) projectControls.setEditingId(proyecto.id)
-        projectControls.setNombre(proyecto.nombre)
-        projectControls.setDescripcion(proyecto.descripcion)
-        if (projectControls.setDynamicLinks) projectControls.setDynamicLinks(proyecto.links || [])
-        if (projectControls.setContentBlocks) projectControls.setContentBlocks(proyecto.blocks || [])
-        projectControls.setTags(proyecto.tags || [])
-
-        setIsModalOpen(true)
-    }
-
-    const handleCreateClick = () => {
-        if (projectControls.setEditingId) projectControls.setEditingId(null)
-        projectControls.setNombre('')
-        projectControls.setDescripcion('')
-        if (projectControls.setDynamicLinks) projectControls.setDynamicLinks([])
-        if (projectControls.setContentBlocks) projectControls.setContentBlocks([])
-        projectControls.setTags([])
-
-        setIsModalOpen(true)
-    }
+    // Handler interm
 
     const skeletons = [1, 2, 3, 4]
 
@@ -87,7 +63,7 @@ export default function ProjectsPage() {
 
                 <button
                     type="button"
-                    onClick={handleCreateClick}
+                    onClick={() => setIsProjectModalOpen(true)} 
                     className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-[#0b57d0] hover:bg-[#155bd3] text-white text-sm font-semibold rounded-full shadow-sm transition-all"
                 >
                     <MdAdd size={20} />
@@ -139,7 +115,7 @@ export default function ProjectsPage() {
                         {/* El botón ahora dice Actualizar/Ver Detalle y abre el modal flotante */}
                         <div className="px-3 pb-3 pt-1">
                             <button
-                                onClick={() => handleEditClick(proyecto)}
+                                onClick={() => setIsProjectModalOpen(true)  }
                                 className="w-full bg-[#0b57d0] hover:bg-[#0a48b3] text-white text-sm font-semibold py-2.5 px-4 transition-colors shadow-sm inline-flex items-center justify-center gap-1.5"
                             >
                                 Actualizar
@@ -149,13 +125,8 @@ export default function ProjectsPage() {
                 ))}
             </div>
             <ProjectModal
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
-                {...projectControls} // Inyecta de forma masiva TODO, incluyendo editingId, nombre, setNombre, etc.
-                handleSubmit={(e) => {
-                    projectControls.handleSubmit(e);
-                    setIsModalOpen(false); // Cierra al guardar
-                }}
+                isOpen={isProjectModalOpen}
+                onClose={() => setIsProjectModalOpen(false)}
             />
         </>
     )

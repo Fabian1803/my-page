@@ -9,11 +9,16 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@prisma/client": "^7.8.0",
+    "@simplewebauthn/browser": "^13.3.0",
+    "@simplewebauthn/server": "^13.3.2",
     "@tailwindcss/typography": "^0.5.20",
-    "@tiptap/extension-image": "^3.26.1",
+    "@tiptap/extension-image": "^3.27.1",
     "@tiptap/pm": "^3.26.1",
-    "@tiptap/react": "^3.26.1",
-    "@tiptap/starter-kit": "^3.26.1",
+    "@tiptap/react": "^3.27.1",
+    "@tiptap/starter-kit": "^3.27.1",
+    "@vercel/blob": "^2.5.0",
+    "bcrypt": "^6.0.0",
     "next": "16.2.6",
     "react": "19.2.4",
     "react-dom": "19.2.4",
@@ -21,11 +26,13 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/bcrypt": "^6.0.0",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
+    "prisma": "^7.8.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

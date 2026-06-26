@@ -1,38 +1,60 @@
 'use client'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { MdAdd, MdEdit } from 'react-icons/md'
-import { useCertificates } from './hooks/useCertificates'
-import CertificateModal from './components/certificateModal'
+import DetailedImageModal, { DetailedImageData } from '../../components/detailedImageModal'
+export interface Certificate {
+    id: string;
+    nombre: string;
+    institucion: string;
+    descripcion: string;
+    imageBase64: string;
+    bullets: string[];
+    tags: string[];
+}
 
 export default function CertificatesPage() {
-    // CORREGIDO: Traemos "tags" y "setTags" directo de la lógica unificada de tu hook
-    const {
-        isLoading,
-        isModalOpen,
-        setIsModalOpen,
-        editingId,
-        nombre,
-        setNombre,
-        institucion,
-        setInstitucion,
-        descripcion,
-        setDescripcion,
-        imageBase64,
-        bullets,
-        currentBullet,
-        setCurrentBullet,
-        tags,
-        setTags,
-        certificados,
-        fileInputRef,
-        handleFileChange,
-        handleAddBullet,
-        handleRemoveBullet,
-        handleCreateClick,
-        handleEditClick,
-        handleSaveCertificate
-    } = useCertificates()
+    const [isDetailedImageModalOpen, setIsDetailedImageModalOpen] = useState(false)
+    const [datosImagenEstructurada, setDatosImagenEstructurada] = useState<DetailedImageData | null>(null)
+    const [isLoading, setIsLoading] = useState(true)
 
+    const handleSaveDetailedImage = (data: DetailedImageData) => {
+        setDatosImagenEstructurada(data)
+        console.log('Bloque de imagen estructurado guardado con éxito:', data)
+    }
+
+    const [certificados, setCertificados] = useState<Certificate[]>([
+        {
+            id: '1',
+            nombre: 'Corelia IA - Specialist',
+            institucion: 'Universidad Tecnológica del Perú',
+            descripcion: 'Sistema de inventarios basado en microservicios con Spring Boot, NestJS, Kong y Gemini API.',
+            imageBase64: '/Flog.webp',
+            bullets: ['Arquitectura dirigida por eventos', 'Pasarela de autenticación con Kong Gateway'],
+            tags: ['Spring Boot', 'NestJS', 'Cloud']
+        },
+        {
+            id: '2',
+            nombre: 'Foro Hub API Rest',
+            institucion: 'Universidad Tecnológica del Perú',
+            descripcion: 'REST API construida con Spring Boot, Spring Security para autenticación JWT y Flyway.',
+            imageBase64: '/Flog.webp',
+            bullets: ['Migraciones controladas con base de datos', 'Seguridad por tokens JWT asíncronos'],
+            tags: ['Java', 'Spring Boot']
+        },
+        {
+            id: '3',
+            nombre: 'Vision Transformer Deforestation',
+            institucion: 'Universidad Tecnológica del Perú',
+            descripcion: 'Modelo de Deep Learning basado en Vision Transformers (ViT) diseñado para la detección temprana de la deforestación mediante análisis de imágenes satelitales.',
+            imageBase64: '/Flog.webp',
+            bullets: [],
+            tags: ['Python']
+        }
+    ])
+    useEffect(() => {
+        const timer = setTimeout(() => setIsLoading(false), 600)
+        return () => clearTimeout(timer)
+    }, [])
     const skeletons = [1, 2, 3, 4]
 
     return (
@@ -47,10 +69,10 @@ export default function CertificatesPage() {
                         {isLoading ? 'Cargando...' : `${certificados.length} en total`}
                     </span>
                 </div>
-                
+
                 <button
                     type="button"
-                    onClick={handleCreateClick}
+                    onClick={() => setIsDetailedImageModalOpen(true)}
                     className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-[#0b57d0] hover:bg-[#155bd3] text-white text-sm font-semibold rounded-full shadow-sm transition-all shrink-0"
                 >
                     <MdAdd size={20} />
@@ -107,9 +129,9 @@ export default function CertificatesPage() {
                             </div>
                         </div>
                         <div className="px-3 pb-3 pt-1">
-                            <button 
+                            <button
                                 type="button"
-                                onClick={() => handleEditClick(cert)}
+                                onClick={() => setIsDetailedImageModalOpen(true)}
                                 className="w-full bg-[#0b57d0] hover:bg-[#0a48b3] text-white text-sm font-semibold py-2.5 px-4 transition-colors shadow-sm inline-flex items-center justify-center gap-1.5"
                             >
                                 <MdEdit size={16} />
@@ -120,28 +142,10 @@ export default function CertificatesPage() {
                 ))}
             </div>
 
-            {/* Modal flotante completamente mapeado */}
-            <CertificateModal 
-                tags={tags}
-                setTags={setTags}
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
-                editingId={editingId}
-                nombre={nombre}
-                setNombre={setNombre}
-                institucion={institucion}
-                setInstitucion={setInstitucion}
-                descripcion={descripcion}
-                setDescripcion={setDescripcion}
-                imageBase64={imageBase64}
-                bullets={bullets}
-                currentBullet={currentBullet}
-                setCurrentBullet={setCurrentBullet}
-                fileInputRef={fileInputRef}
-                handleFileChange={handleFileChange}
-                handleAddBullet={handleAddBullet}
-                handleRemoveBullet={handleRemoveBullet}
-                handleSaveCertificate={handleSaveCertificate}
+            <DetailedImageModal
+                isOpen={isDetailedImageModalOpen}
+                onClose={() => setIsDetailedImageModalOpen(false)}
+                onSave={handleSaveDetailedImage}
             />
         </div>
     )
