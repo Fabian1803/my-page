@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const token = request.cookies.get("auth_token")?.value;
   const { pathname } = request.nextUrl;
   if (token && pathname === "/login") {
@@ -14,7 +14,6 @@ export function middleware(request: NextRequest) {
   return NextResponse.next();
 }
 
-// 3. Configura qué rutas debe escuchar este middleware
 export const config = {
   matcher: ["/login", "/dashboard/:path*", "/perfil/:path*"],
 };
