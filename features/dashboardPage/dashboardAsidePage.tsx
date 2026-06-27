@@ -3,6 +3,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { MdExitToApp, MdOutlineAlternateEmail, MdOutlineAssignmentInd, MdOutlineDashboard } from 'react-icons/md'
+import { useLogout } from './hooks/useLogout'
 
 interface HeaderProps {
     isMenuOpen: boolean
@@ -10,6 +11,8 @@ interface HeaderProps {
 
 export default function DashboardAsidePage({ isMenuOpen }: HeaderProps) {
     const pathname = usePathname()
+    const { logout, isLoading } = useLogout()
+
     const links = [
         { href: '/dashboard', label: 'Proyectos', icon: <MdOutlineDashboard size={20} /> },
         { href: '/dashboard/certificados', label: 'Certificados', icon: <MdOutlineAssignmentInd size={20} /> },
@@ -49,10 +52,15 @@ export default function DashboardAsidePage({ isMenuOpen }: HeaderProps) {
                     })}
                 </nav>
             </div>
+            
             <div className="pt-2 border-t border-gray-100 flex items-center px-3">
-                <button className="w-full flex justify-center gap-3 items-center py-3 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200 font-medium text-[15px]">
+                <button 
+                    onClick={logout}
+                    disabled={isLoading}
+                    className="w-full flex justify-center gap-3 items-center py-3 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200 font-medium text-[15px] disabled:opacity-50"
+                >
                     <MdExitToApp size={20} />
-                    <p>Salir</p>
+                    <p>{isLoading ? 'Saliendo...' : 'Salir'}</p>
                 </button>
             </div>
         </aside>

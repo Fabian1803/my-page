@@ -17,7 +17,8 @@ export default function LoginPage() {
         error,
         loading,
         setError,
-        handleNextClick
+        handleNextClick,
+        handleBiometricLogin
     } = useLogin()
 
     return (
@@ -149,8 +150,13 @@ export default function LoginPage() {
                     <div className="flex justify-between items-center md:justify-end md:gap-4 w-full pt-4 bg-transparent z-10">
                         {step === 'email' ? (
                             <>
-                                <span className="text-[#0b57d0] font-medium text-[14px] cursor-pointer hover:underline py-2">
-                                    Crear cuenta
+                                <span 
+                                    onClick={loading ? undefined : handleBiometricLogin}
+                                    className={`text-[#0b57d0] font-medium text-[14px] cursor-pointer hover:underline py-2
+                                        ${loading ? 'opacity-50 cursor-not-allowed' : ''}
+                                    `}
+                                >
+                                    {loading ? 'Escaneando...' : 'Usar IFace'}
                                 </span>
                                 <button
                                     onClick={handleNextClick}
