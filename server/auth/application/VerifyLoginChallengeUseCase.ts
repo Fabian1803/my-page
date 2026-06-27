@@ -8,10 +8,8 @@ export class VerifyLoginChallengeUseCase {
   async execute(request: Request) {
     const { body, expectedChallenge, email } = await request.json();
     if (!body || !expectedChallenge || !email) throw new Error("Faltan datos criptográficos obligatorios.");
-    
     const usuario = await this.authRepository.findByEmail(email);
     if (!usuario) throw new Error("Usuario no encontrado.");
-    
     const dispositivo = await this.authRepository.findDeviceById(body.id);
     if (!dispositivo) throw new Error("Este dispositivo no está vinculado a tu cuenta.");
     const urlObj = new URL(request.url);

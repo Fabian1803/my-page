@@ -25,9 +25,9 @@ export class GenerateLoginChallengeUseCase {
       allowCredentials: dispositivos.map((dev) => ({
         id: dev.credentialId,
         type: "public-key",
-        transports: ["internal"], 
+        transports: ["hybrid"], 
       })),
-      userVerification: "preferred", 
+      userVerification: "required", 
     });
 
     return {
