@@ -2,7 +2,7 @@
 import { AuthRepository } from "../domain/ports/AuthRepository";
 import { verifyAuthenticationResponse } from "@simplewebauthn/server";
 export class VerifyLoginChallengeUseCase {
-  constructor(private authRepository: AuthRepository) {}
+  constructor(private authRepository: AuthRepository) { }
   async execute(request: Request) {
     const { body, expectedChallenge, email } = await request.json();
     if (!body || !expectedChallenge || !email) throw new Error("Faltan datos criptográficos obligatorios.");
@@ -27,8 +27,9 @@ export class VerifyLoginChallengeUseCase {
     await this.authRepository.updateDeviceCounter(dispositivo.credentialId, verification.authenticationInfo.newCounter);
 
     return {
+      id: usuario.id,
+      email: usuario.email,
       success: true,
-      usuario: { id: usuario.id, email: usuario.email },
       message: "¡Acceso concedido mediante Touch ID!"
     };
   }

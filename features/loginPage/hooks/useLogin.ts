@@ -1,7 +1,7 @@
 // hooks/useLogin.ts
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { startAuthentication } from "@simplewebauthn/browser" // 🚀 Importación necesaria
+import { startAuthentication } from "@simplewebauthn/browser"
 
 export function useLogin() {
     const router = useRouter()
@@ -69,22 +69,16 @@ export function useLogin() {
             handleLoginSubmit()
         }
     }
-
-    // Dentro de hooks/useLogin.ts -> Reemplaza solo la función handleBiometricLogin:
-
 const handleBiometricLogin = async () => {
     setError(null);
     setLoading(true);
 
     try {
-        // 1. Pedimos el desafío global al backend (Ya no enviamos email en el body)
         const challengeRes = await fetch("/api/auth/challenge", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({}), // 🚀 Vacío, el dispositivo se identificará solo
+            body: JSON.stringify({}),
         });
-
-        // Verificamos si el endpoint respondió HTML u otro error antes de parsear JSON
         if (!challengeRes.ok) {
             throw new Error(`Error en el servidor: ${challengeRes.status}`);
         }
@@ -95,19 +89,15 @@ const handleBiometricLogin = async () => {
         }
 
         const { options } = challengeData.data;
-
-        // 2. Disparar el Face ID / Touch ID nativo del dispositivo de Apple
-        // El navegador leerá el chip y te pedirá tu rostro/huella de inmediato
         const authResponse = await startAuthentication(options);
 
-        // 3. Mandamos la firma criptográfica resultante de vuelta a verificar
         const verifyRes = await fetch("/api/auth/verify-challenge", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 body: authResponse,
                 expectedChallenge: options.challenge,
-                email: ADMIN_EMAIL, // Aquí asociamos tu cuenta administradora al verificar la firma
+                email: ADMIN_EMAIL,
             }),
         });
 
@@ -145,6 +135,6 @@ const handleBiometricLogin = async () => {
         setError,
         loading,
         handleNextClick,
-        handleBiometricLogin // 🚀 Ahora sí lo exportamos integrado de forma segura
+        handleBiometricLogin
     }
 }
