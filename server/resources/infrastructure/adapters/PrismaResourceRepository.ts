@@ -1,8 +1,7 @@
 // server/resources/infrastructure/adapters/PrismaResourceRepository.ts
 import { ResourceRepository } from "../../domain/ports/ResourceRepository";
 import { Resource } from "../../domain/models/Resource";
-import { PrismaClient } from "@prisma/client/scripts/default-index.js";
-const prisma = new PrismaClient();
+import { prisma } from "@/server/shared/infrastructure/prisma"; 
 export class PrismaResourceRepository implements ResourceRepository {
   async save(resource: Resource): Promise<any> {
     const data = resource.toObject();
