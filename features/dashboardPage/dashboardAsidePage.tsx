@@ -2,7 +2,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { MdExitToApp, MdOutlineAlternateEmail, MdOutlineAssignmentInd, MdOutlineDashboard } from 'react-icons/md'
+import { MdExitToApp, MdOutlineAlternateEmail, MdOutlineAssignmentInd, MdOutlineDashboard, MdOutlinePermIdentity } from 'react-icons/md'
 import { useLogout } from './hooks/useLogout'
 
 interface HeaderProps {
@@ -17,7 +17,8 @@ export default function DashboardAsidePage({ isMenuOpen }: HeaderProps) {
         { href: '/dashboard', label: 'Proyectos', icon: <MdOutlineDashboard size={20} /> },
         { href: '/dashboard/certificados', label: 'Certificados', icon: <MdOutlineAssignmentInd size={20} /> },
         { href: '/dashboard/redes-sociales', label: 'Redes Sociales', icon: <MdOutlineAlternateEmail size={20} /> },
-        { href: '/dashboard/cv', label: 'CV', icon: <MdOutlineAssignmentInd size={20} /> }
+        { href: '/dashboard/cv', label: 'CV', icon: <MdOutlineAssignmentInd size={20} /> },
+        { href: '/dashboard/about-me', label: 'Sobre mí', icon: <MdOutlinePermIdentity size={20} /> }
     ]
 
     return (

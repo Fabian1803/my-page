@@ -11,7 +11,7 @@ export function useLogin() {
     const [showPassword, setShowPassword] = useState(false)
     const [error, setError] = useState<string | null>(null)
     const [loading, setLoading] = useState(false)
-    
+
     const ADMIN_EMAIL = "fabianriveraabian3@gmail.com"
 
     const handleEmailNext = () => {
@@ -42,9 +42,9 @@ export function useLogin() {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ 
-                    email: email.trim(), 
-                    password 
+                body: JSON.stringify({
+                    email: email.trim(),
+                    password
                 })
             })
             const result = await response.json()
@@ -69,58 +69,58 @@ export function useLogin() {
             handleLoginSubmit()
         }
     }
-const handleBiometricLogin = async () => {
-    setError(null);
-    setLoading(true);
+    const handleBiometricLogin = async () => {
+        setError(null);
+        setLoading(true);
 
-    try {
-        const challengeRes = await fetch("/api/auth/challenge", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({}),
-        });
-        if (!challengeRes.ok) {
-            throw new Error(`Error en el servidor: ${challengeRes.status}`);
+        try {
+            const challengeRes = await fetch("/api/auth/challenge", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({}),
+            });
+            if (!challengeRes.ok) {
+                throw new Error(`Error en el servidor: ${challengeRes.status}`);
+            }
+
+            const challengeData = await challengeRes.json();
+            if (!challengeData.success) {
+                throw new Error(challengeData.error || "No se pudo generar el desafío.");
+            }
+
+            const { options } = challengeData.data;
+            const authResponse = await startAuthentication(options);
+
+            const verifyRes = await fetch("/api/auth/verify-challenge", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    body: authResponse,
+                    expectedChallenge: options.challenge,
+                    email: ADMIN_EMAIL,
+                }),
+            });
+
+            if (!verifyRes.ok) {
+                throw new Error(`Error en la verificación: ${verifyRes.status}`);
+            }
+
+            const verifyData = await verifyRes.json();
+            if (!verifyData.success) {
+                throw new Error(verifyData.error || "Verificación biométrica fallida.");
+            }
+
+            // 4. Éxito rotundo. Entramos al panel
+            router.refresh();
+            router.push("/dashboard");
+
+        } catch (err: any) {
+            console.error("Error en WebAuthn:", err);
+            setError(err.message || "Autenticación biométrica fallida.");
+        } finally {
+            setLoading(false);
         }
-
-        const challengeData = await challengeRes.json();
-        if (!challengeData.success) {
-            throw new Error(challengeData.error || "No se pudo generar el desafío.");
-        }
-
-        const { options } = challengeData.data;
-        const authResponse = await startAuthentication(options);
-
-        const verifyRes = await fetch("/api/auth/verify-challenge", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                body: authResponse,
-                expectedChallenge: options.challenge,
-                email: ADMIN_EMAIL,
-            }),
-        });
-
-        if (!verifyRes.ok) {
-            throw new Error(`Error en la verificación: ${verifyRes.status}`);
-        }
-
-        const verifyData = await verifyRes.json();
-        if (!verifyData.success) {
-            throw new Error(verifyData.error || "Verificación biométrica fallida.");
-        }
-
-        // 4. Éxito rotundo. Entramos al panel
-        router.refresh();
-        router.push("/dashboard");
-
-    } catch (err: any) {
-        console.error("Error en WebAuthn:", err);
-        setError(err.message || "Autenticación biométrica fallida.");
-    } finally {
-        setLoading(false);
-    }
-};
+    };
 
     return {
         step,

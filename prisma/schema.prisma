@@ -11,16 +11,16 @@ generator client {
 model Usuario {
   id           String        @id @default(uuid())
   email        String        @unique
-  passwordHash String        // Contraseña encriptada (respaldo)
+  passwordHash String
   createdAt    DateTime      @default(now())
   dispositivos Dispositivo[]
 }
 
 model Dispositivo {
   id           String   @id @default(uuid())
-  credentialId String   @unique // ID único que genera el chip de seguridad en Mac
-  publicKey    String   // Llave pública para validar tu huella
-  counter      Int      // Contador de firmas (evita ataques de clonación)
+  credentialId String   @unique
+  publicKey    String
+  counter      Int
   usuarioId    String
   usuario      Usuario  @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
 }
@@ -59,4 +59,9 @@ model Vineta {
   comentario      String
   mediaResourceId String
   mediaResource   MediaResource @relation(fields: [mediaResourceId], references: [id], onDelete: Cascade)
+}
+
+model MetaDataResource {
+  id          String   @id @default(uuid())
+  metadatos   Json?    
 }
