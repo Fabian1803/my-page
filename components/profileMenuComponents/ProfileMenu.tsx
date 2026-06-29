@@ -16,17 +16,17 @@ const QUICK_SECTIONS = [
     {
         title: "Ecosistema Técnico",
         items: [
-            { href: "#tech-stack", label: "Tech Stack", icon: <FaLayerGroup />, rounded: "rounded-t-3xl" },
-            { href: "#backend", label: "BackEnd (Java/Spring)", icon: <FaServer />, rounded: "rounded-md" },
-            { href: "#frontend", label: "FrontEnd (React/Next)", icon: <FaCode />, rounded: "rounded-b-3xl" },
+            { href: "/Codepedia/fullstack", label: "Tech Stack", icon: <FaLayerGroup />, rounded: "rounded-t-3xl" },
+            { href: "/Codepedia/backend", label: "BackEnd", icon: <FaServer />, rounded: "rounded-md" },
+            { href: "/Codepedia/frontend", label: "FrontEnd", icon: <FaCode />, rounded: "rounded-b-3xl" },
         ]
     },
     {
         title: "Trayectoria",
         items: [
-            { href: "#experiencia", label: "Experiencia laboral", icon: <FaBriefcase />, rounded: "rounded-t-3xl" },
-            { href: "#codigo-destacado", label: "Código destacado", icon: <FaCode />, rounded: "rounded-md" },
-            { href: "#proyectos-personales", label: "Proyectos Personales", icon: <FaFolderOpen />, rounded: "rounded-b-3xl" },
+            { href: "/Codepedia/all", label: "Experiencia laboral", icon: <FaBriefcase />, rounded: "rounded-t-3xl" },
+            { href: "/Codepedia/destacado", label: "Código destacado", icon: <FaCode />, rounded: "rounded-md" },
+            { href: "/Codepedia/personales", label: "Proyectos Personales", icon: <FaFolderOpen />, rounded: "rounded-b-3xl" },
         ]
     }
 ];
@@ -53,7 +53,6 @@ export default function ProfileMenu({ left, imageSrc }: ProfileMenuProps) {
 
     return (
         <div ref={menuRef} className="relative inline-block select-none">
-            {/* CÍRCULO DISPARADOR */}
             <button
                 onClick={toggleMenu}
                 className="relative flex h-10 w-10 items-center justify-center rounded-full text-white font-medium text-base cursor-pointer focus:outline-none"

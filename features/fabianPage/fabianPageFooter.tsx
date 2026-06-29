@@ -23,13 +23,13 @@ export default function FabianPageFooter() {
         { name: "LinkedIn", href: "https://linkedin.com", icon: "Gmail" },
     ]
     return (
-        <footer className="bg-gray-200 h-37 max-[1461]:justify-center min-[1461]:pl-40 flex">
+        <footer className="bg-gray-200 h-37 max-[1461]:justify-center min-[1461]:pl-34 flex">
             <div className="grid grid-rows-[30%_70%] p-5 w-[1160px] 
             max-[1461px]:w-[1160px]
         max-[1164px]:w-[860px]
         max-[940px]:w-full">
                 <div className="">
-                    <P>Desarrollado con Next.js</P>
+                    <P>Desarrollado con Next.js, Next api, desplegado en Vercel, utilizando Tailwind CSS, PostgreSQL, Blob y Prisma.</P>
                 </div>
                 <div className="grid grid-cols-[40px_auto] items-center">
                     <P>Peru</P>

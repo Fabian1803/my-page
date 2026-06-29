@@ -1,7 +1,12 @@
 'use client'
 import SearchMapComponent from "../components/searchMapComponent"
-export default function CvFabian() {
-    const pdfUrl = '/prueba.pdf'
+interface CvFabianProps {
+    metadata: {
+        url_cv_pdf?: string;
+    };
+}
+export default function CvFabian({ metadata }: CvFabianProps) {
+    const pdfUrl = metadata.url_cv_pdf || '/prueba.pdf'
     return (
         <SearchMapComponent>
             <div className="max-w-6xl py-8 px-3 sm:px-0 flex flex-col gap-4">

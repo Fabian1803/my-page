@@ -46,6 +46,7 @@ export default function AboutMePage() {
                             agregarVineta={agregarVinetaEdu}
                             eliminarVineta={eliminarVinetaEdu}
                             actualizarVineta={actualizarVinetaEdu}
+                            ocultarLinks={true}
                         />
                     </div>
 

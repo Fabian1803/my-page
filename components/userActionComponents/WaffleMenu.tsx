@@ -7,23 +7,33 @@ import { FaGitlab } from 'react-icons/fa6';
 import { BiLogoGmail } from 'react-icons/bi';
 import { PiReadCvLogoBold } from 'react-icons/pi';
 
+
 interface WaffleMenuProps {
-    left?: boolean
+    left?: boolean;
+    links?: {
+        telefono?: string;
+        discord?: string;
+        gmail?: string;
+        whatsapp?: string;
+        url_cv_pdf?: string;
+        github?: string;
+        linkedin?: string;
+        gitlab?: string;
+    };
 }
 
-const APPS_DATA = [
-    { href: "tel:+1234567890", label: "Llamar", icon: <FaPhoneAlt className="text-3xl" /> },
-    { href: "https://discord.com", label: "Discord", icon: <FaDiscord className="text-3xl text-blue-900" />, target: "_blank" },
-    { href: "https://mail.google.com", label: "Gmail", icon: <BiLogoGmail className="text-4xl text-red-600" />, target: "_blank" },
-    { href: "https://wa.me/1234567890", label: "WhatsApp", icon: <FaWhatsapp className="text-3xl text-green-500" />, target: "_blank" },
-    { href: "/cv.pdf", label: "CV", icon: <PiReadCvLogoBold className="text-3xl" />, target: "_blank" },
-    { href: "https://github.com", label: "GitHub", icon: <FaGithub className="text-3xl" />, target: "_blank" },
-    { href: "https://linkedin.com", label: "LinkedIn", icon: <FaLinkedin className="text-3xl text-blue-800" />, target: "_blank" },
-    { href: "https://gitlab.com", label: "GitLab", icon: <FaGitlab className="text-3xl text-orange-600" />, target: "_blank" },
-];
-
-export default function WaffleMenu({ left }: WaffleMenuProps) {
+export default function WaffleMenu({ left, links }: WaffleMenuProps) {
     const { isOpen, menuRef, toggleMenu } = useWaffleMenu();
+    const appsData = [
+        { href: links?.telefono ? `tel:${links.telefono}` : '#', label: "Llamar", icon: <FaPhoneAlt className="text-2xl text-gray-700" /> },
+        { href: links?.discord || '#', label: "Discord", icon: <FaDiscord className="text-3xl text-[#5865F2]" />, target: "_blank" },
+        { href: links?.gmail ? `mailto:${links.gmail}` : '#', label: "Gmail", icon: <BiLogoGmail className="text-3xl text-red-600" />, target: "_blank" },
+        { href: links?.whatsapp || '#', label: "WhatsApp", icon: <FaWhatsapp className="text-3xl text-green-500" />, target: "_blank" },
+        { href: links?.url_cv_pdf || '#', label: "CV", icon: <PiReadCvLogoBold className="text-2xl text-gray-800" />, target: "_blank" },
+        { href: links?.github || '#', label: "GitHub", icon: <FaGithub className="text-3xl text-black" />, target: "_blank" },
+        { href: links?.linkedin || '#', label: "LinkedIn", icon: <FaLinkedin className="text-3xl text-[#0A66C2]" />, target: "_blank" },
+        { href: links?.gitlab || '#', label: "GitLab", icon: <FaGitlab className="text-3xl text-orange-600" />, target: "_blank" },
+    ];
     return (
         <div ref={menuRef} className="relative inline-block select-none">
             <button
@@ -53,7 +63,7 @@ export default function WaffleMenu({ left }: WaffleMenuProps) {
                     </div>
 
                     <div className="grid grid-cols-3 gap-x-2 gap-y-4 justify-items-center">
-                        {APPS_DATA.map((app, index) => (
+                        {appsData.map((app, index) => (
                             <a
                                 key={index}
                                 href={app.href}

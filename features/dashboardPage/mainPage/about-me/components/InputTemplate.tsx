@@ -16,10 +16,11 @@ interface InputTemplateProps {
     }[]
     agregarExperiencia: () => void
     eliminarExperiencia: (id: string) => void
-    actualizarExperiencia: (id: string, campo: 'empresa' | 'cargo' | 'fechaInicio' | 'fechaFin' | 'urlWeb' | 'urlMasInfo', valor: string) => void    
+    actualizarExperiencia: (id: string, campo: 'empresa' | 'cargo' | 'fechaInicio' | 'fechaFin' | 'urlWeb' | 'urlMasInfo', valor: string) => void
     agregarVineta: (id: string) => void
     eliminarVineta: (id: string, vinetaIndex: number) => void
     actualizarVineta: (id: string, vinetaIndex: number, valor: string) => void
+    ocultarLinks?: boolean
 }
 
 const MESES = [
@@ -29,7 +30,7 @@ const MESES = [
 
 const ANIOS = Array.from({ length: 30 }, (_, i) => (2026 - i).toString());
 
-export default function InputTemplate({ titulo, placeholderUno, placeholderDos, experiencias, agregarExperiencia, eliminarExperiencia, actualizarExperiencia, agregarVineta, eliminarVineta, actualizarVineta }: InputTemplateProps) {
+export default function InputTemplate({ titulo, placeholderUno, placeholderDos, experiencias, agregarExperiencia, eliminarExperiencia, actualizarExperiencia, agregarVineta, eliminarVineta, actualizarVineta, ocultarLinks = false }: InputTemplateProps) {
 
     const desestructurarFecha = (fechaStr: string) => {
         if (!fechaStr || fechaStr === "Presente") return { mes: "", anio: "" };
@@ -151,32 +152,36 @@ export default function InputTemplate({ titulo, placeholderUno, placeholderDos, 
                                         </select>
                                     </div>
                                 </div>
-                                <div className="flex flex-col gap-1 col-span-1">
-                                    <label className="text-xs text-[#5f6368] pl-1 flex items-center gap-1">
-                                        <MdOutlineLanguage className="h-3.5 w-3.5 text-[#747775]" />
-                                        Enlace del sitio web
-                                    </label>
-                                    <input
-                                        type="url"
-                                        placeholder="https://mi-despliegue.com"
-                                        value={exp.urlWeb || ""}
-                                        onChange={(e) => actualizarExperiencia(exp.id, 'urlWeb', e.target.value)}
-                                        className="w-full px-4 py-2 border border-[#747775] rounded-xl text-sm focus:outline-none focus:border-2 focus:border-[#0b57d0]"
-                                    />
-                                </div>
-                                <div className="flex flex-col gap-1 col-span-1">
-                                    <label className="text-xs text-[#5f6368] pl-1 flex items-center gap-1">
-                                        <MdOutlineInfo className="h-3.5 w-3.5 text-[#747775]" />
-                                        Más información
-                                    </label>
-                                    <input
-                                        type="url"
-                                        placeholder="https://github.com/usuario/repo"
-                                        value={exp.urlMasInfo || ""}
-                                        onChange={(e) => actualizarExperiencia(exp.id, 'urlMasInfo', e.target.value)}
-                                        className="w-full px-4 py-2 border border-[#747775] rounded-xl text-sm focus:outline-none focus:border-2 focus:border-[#0b57d0]"
-                                    />
-                                </div>
+                                {!ocultarLinks && (
+                                    <>
+                                        <div className="flex flex-col gap-1 col-span-1">
+                                            <label className="text-xs text-[#5f6368] pl-1 flex items-center gap-1">
+                                                <MdOutlineLanguage className="h-3.5 w-3.5 text-[#747775]" />
+                                                Enlace del sitio web
+                                            </label>
+                                            <input
+                                                type="url"
+                                                placeholder="https://mi-despliegue.com"
+                                                value={exp.urlWeb || ""}
+                                                onChange={(e) => actualizarExperiencia(exp.id, 'urlWeb', e.target.value)}
+                                                className="w-full px-4 py-2 border border-[#747775] rounded-xl text-sm focus:outline-none focus:border-2 focus:border-[#0b57d0]"
+                                            />
+                                        </div>
+                                        <div className="flex flex-col gap-1 col-span-1">
+                                            <label className="text-xs text-[#5f6368] pl-1 flex items-center gap-1">
+                                                <MdOutlineInfo className="h-3.5 w-3.5 text-[#747775]" />
+                                                Más información
+                                            </label>
+                                            <input
+                                                type="url"
+                                                placeholder="https://github.com/usuario/repo"
+                                                value={exp.urlMasInfo || ""}
+                                                onChange={(e) => actualizarExperiencia(exp.id, 'urlMasInfo', e.target.value)}
+                                                className="w-full px-4 py-2 border border-[#747775] rounded-xl text-sm focus:outline-none focus:border-2 focus:border-[#0b57d0]"
+                                            />
+                                        </div>
+                                    </>
+                                )}
                             </div>
                             <div className="space-y-3 pl-2">
                                 <div className="flex items-center justify-between">

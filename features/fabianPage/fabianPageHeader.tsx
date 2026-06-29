@@ -4,6 +4,11 @@ import Image from 'next/image'
 import InputSearch from '@/components/InputSearch'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
+import { ReactNode } from 'react'
+
+interface FabianPageHeaderProps {
+    userActionsSlot: ReactNode
+}
 interface TabItem {
     href: string;
     label: string;
@@ -14,18 +19,18 @@ interface TabsProps {
     currentPath: string;
 }
 
-function Tabs({ tabs, currentPath }: TabsProps) {
-    return (
+function Tabs({ tabs, currentPath }: { tabs: any[], currentPath: string }) {
+        return (
         <ul className="flex h-full items-center flex-nowrap list-none m-0 p-0 text-sm whitespace-nowrap">
             {tabs.map((tab) => {
                 const isActive = currentPath === tab.href
                 return (
                     <li key={tab.href} className="h-full">
-                        <Link 
+                        <Link
                             href={tab.href}
                             className={`flex items-center h-full px-4 text-[14px] font-semibold transition-all duration-200 border-b-2 
-                                ${isActive 
-                                    ? 'border-black text-black' 
+                                ${isActive
+                                    ? 'border-black text-black'
                                     : 'border-transparent text-gray-500 hover:text-black hover:border-gray-300'
                                 }`}
                         >
@@ -38,7 +43,7 @@ function Tabs({ tabs, currentPath }: TabsProps) {
     )
 }
 
-export default function FabianPageHeader() {
+export default function FabianPageHeader({ userActionsSlot }: FabianPageHeaderProps) {
     const pathname = usePathname()
     const linksTaps = [
         { href: '/fabianrivera', label: 'Todo' },
@@ -58,7 +63,7 @@ export default function FabianPageHeader() {
                 max-[940px]:max-w-[760px]"
             >
                 <div className="items-center flex col-span-3 min-[500px]:hidden">
-                    <UserActionsHeader className='px-3 justify-between w-full' mobileoption={true} left={true} />
+                    {userActionsSlot}               
                 </div>
                 <div className="flex justify-center items-center max-[940px]:hidden">
                     <Image src="/log.webp" alt="GoogleIcon" width={90} height={30} priority />
@@ -67,12 +72,9 @@ export default function FabianPageHeader() {
                     <InputSearch type="FabianPageInputType" placeholder="" />
                 </div>
                 <div className="flex justify-end max-[500px]:hidden">
-                    <UserActionsHeader className='justify-end' />
+                    {userActionsSlot}
                 </div>
-                
-                {/* Zona inferior de navegación scrollable */}
                 <div className="h-full max-[500px]:pt-2 min-[1461px]:col-start-2 col-span-3 min-w-0 overflow-x-auto overflow-y-hidden scrollbar-none [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-                    {/* CORREGIDO: Inyectamos las propiedades dinámicas */}
                     <Tabs tabs={linksTaps} currentPath={pathname} />
                 </div>
             </div>

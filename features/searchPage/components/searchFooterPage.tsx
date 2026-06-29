@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import React from 'react'
 
 export default function SearchFooterPage() {
@@ -8,13 +9,23 @@ export default function SearchFooterPage() {
       </div>
       <div className="flex items-center px-[30px] justify-between max-[1200px]:justify-around max-[600px]:justify-center max-[600px]:grid max-[600px]:gap-4">
         <div className="flex gap-5 max-[600px]:justify-center">
-          <p className="flex items-center">Quien soy</p>
-          <p className="flex items-center">Experiencia</p>
-          <p className="flex items-center">Estudio</p>
+          <Link href="/fabianrivera/sobre-mi" className="flex items-center">
+            Quien soy
+          </Link>
+          <Link href="/fabianrivera/proyectos" className="flex items-center">
+            Experiencia
+          </Link>
+          <Link href="/Codepedia" className="flex items-center">
+            Corelia
+          </Link>
         </div>
         <div className="flex gap-5 max-[600px]:justify-center">
-          <p className="flex items-center">Conocimientos</p>
-          <p className="flex items-center">Curriculum</p>
+          <Link href="/fabianrivera/skills" className="flex items-center">
+            Conocimientos
+          </Link>
+          <Link href="/fabianrivera/cv" className="flex items-center">
+            Curriculum
+          </Link>
         </div>
       </div>
     </footer>
