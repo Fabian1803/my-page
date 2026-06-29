@@ -1,14 +1,22 @@
 'use client'
-import React from 'react'
 import Image from "next/image"
 import SearchMapComponent from "../components/searchMapComponent"
 import Link from "next/link"
-
-export default function AboutFabian() {
+interface AboutFabianProps {
+  metadata: {
+    nombre?: string;
+    descripcion?: string;
+    url_imagen?: string;
+    url_cv_pdf?: string;
+    experiencias?: any[];
+    educacion?: any[];
+  };
+}
+export default function AboutFabian({ metadata }: AboutFabianProps) {
   const abouttext = {
-    name: "Fabián Mauro Rivera Morales",
-    description: "Bachiller en Ingeniería de Software por la Universidad Tecnológica del Perú. Enfocado en el desarrollo de aplicaciones full-stack robustas y escalables, con sólida experiencia implementando arquitecturas limpias, principios SOLID y automatización de procesos.",
-    image: "/perfil.jpeg"
+    name: metadata?.nombre || "",
+    description: metadata?.descripcion || "",
+    image: metadata?.url_imagen || "/",
   }
 
   return (

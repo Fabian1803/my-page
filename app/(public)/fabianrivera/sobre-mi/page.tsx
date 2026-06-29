@@ -1,2 +1,7 @@
 import AboutFabian from '@/features/fabianPage/pages/aboutFabian'
-export default function page() { return <AboutFabian /> }
+import { getMetadataUseCase } from '@/server/metadata/infrastructure/dependencies';
+export default async function page() {
+    const config = await getMetadataUseCase.execute();
+    const metadataValida = config || {};
+    return <AboutFabian metadata={metadataValida} />
+}
