@@ -43,4 +43,3 @@ next-env.d.ts
 prisma/generated/
 /lib/generated/prisma
 /prisma/generated/prisma-client
-certificates
