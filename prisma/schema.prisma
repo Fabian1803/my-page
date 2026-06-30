@@ -27,6 +27,7 @@ model Dispositivo {
 
 model MediaResource {
   id                 String       @id @default(uuid())
+  tipo               String       @default("PROYECTO")
   imagenPrincipalUrl String
   nombre             String
   descripcion        String       @db.VarChar(150)
@@ -34,16 +35,17 @@ model MediaResource {
   miniaturaUrl       String?
   createdAt          DateTime     @default(now())
   updatedAt          DateTime     @updatedAt
-  categorias         Categoria[]
+  categorias         Categoria[]  @relation("MediaResourceToCategoria")
   enlaces            Enlace[]
   vinetas            Vineta[]
 }
 
 model Categoria {
   id              String        @id @default(uuid())
-  nombre          String
-  mediaResourceId String
-  mediaResource   MediaResource @relation(fields: [mediaResourceId], references: [id], onDelete: Cascade)
+  nombre          String        @unique
+  imagenUrl       String
+  destacado       Boolean       @default(false)
+  mediaResource   MediaResource[] @relation("MediaResourceToCategoria")
 }
 
 model Enlace {

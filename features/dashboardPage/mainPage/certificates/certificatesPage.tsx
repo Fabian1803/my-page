@@ -1,151 +1,97 @@
 'use client'
-import React, { useEffect, useState } from 'react'
-import { MdAdd, MdEdit } from 'react-icons/md'
-import DetailedImageModal, { DetailedImageData } from '../../components/detailedImageModal'
-export interface Certificate {
-    id: string;
-    nombre: string;
-    institucion: string;
-    descripcion: string;
-    imageBase64: string;
-    bullets: string[];
-    tags: string[];
-}
-
+import { MdAdd, MdEdit, MdDelete } from 'react-icons/md'
+import DetailedImageModal from '../../components/detailedImageModal'
+import { useCertificatePage } from './hooks/useCertificatePage'
 export default function CertificatesPage() {
-    const [isDetailedImageModalOpen, setIsDetailedImageModalOpen] = useState(false)
-    const [datosImagenEstructurada, setDatosImagenEstructurada] = useState<DetailedImageData | null>(null)
-    const [isLoading, setIsLoading] = useState(true)
-
-    const handleSaveDetailedImage = (data: DetailedImageData) => {
-        setDatosImagenEstructurada(data)
-        console.log('Bloque de imagen estructurado guardado con éxito:', data)
-    }
-
-    const [certificados, setCertificados] = useState<Certificate[]>([
-        {
-            id: '1',
-            nombre: 'Corelia IA - Specialist',
-            institucion: 'Universidad Tecnológica del Perú',
-            descripcion: 'Sistema de inventarios basado en microservicios con Spring Boot, NestJS, Kong y Gemini API.',
-            imageBase64: '/Flog.webp',
-            bullets: ['Arquitectura dirigida por eventos', 'Pasarela de autenticación con Kong Gateway'],
-            tags: ['Spring Boot', 'NestJS', 'Cloud']
-        },
-        {
-            id: '2',
-            nombre: 'Foro Hub API Rest',
-            institucion: 'Universidad Tecnológica del Perú',
-            descripcion: 'REST API construida con Spring Boot, Spring Security para autenticación JWT y Flyway.',
-            imageBase64: '/Flog.webp',
-            bullets: ['Migraciones controladas con base de datos', 'Seguridad por tokens JWT asíncronos'],
-            tags: ['Java', 'Spring Boot']
-        },
-        {
-            id: '3',
-            nombre: 'Vision Transformer Deforestation',
-            institucion: 'Universidad Tecnológica del Perú',
-            descripcion: 'Modelo de Deep Learning basado en Vision Transformers (ViT) diseñado para la detección temprana de la deforestación mediante análisis de imágenes satelitales.',
-            imageBase64: '/Flog.webp',
-            bullets: [],
-            tags: ['Python']
-        }
-    ])
-    useEffect(() => {
-        const timer = setTimeout(() => setIsLoading(false), 600)
-        return () => clearTimeout(timer)
-    }, [])
-    const skeletons = [1, 2, 3, 4]
+    const {
+        certificados, isLoading, skeletons, isDetailedImageModalOpen, setSelectedCertificate, selectedCertificate,
+        setIsDetailedImageModalOpen, handleSaveDetailedImage, handleDeleteCertificate, handleOpenEditModal,
+    } = useCertificatePage()
 
     return (
-        <div className="max-w-6xl mx-auto">
-            {/* Cabecera Principal */}
+        <div className="max-w-6xl mx-auto text-black">
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
                 <div>
                     <h1 className="text-[24px] font-normal tracking-tight text-[#202124]">
                         Certificaciones
                     </h1>
                     <span className="text-xs font-semibold px-3 py-1 bg-[#70a4f1]/20 text-[#0b57d0] rounded-full mt-1 inline-block sm:mt-0">
-                        {isLoading ? 'Cargando...' : `${certificados.length} en total`}
+                        {isLoading ? 'Sincronizando...' : `${certificados.length} en total`}
                     </span>
                 </div>
 
                 <button
                     type="button"
                     onClick={() => setIsDetailedImageModalOpen(true)}
-                    className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-[#0b57d0] hover:bg-[#155bd3] text-white text-sm font-semibold rounded-full shadow-sm transition-all shrink-0"
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-[#0b57d0] hover:bg-[#155bd3] text-white text-sm font-semibold rounded-full shadow-sm transition-all shrink-0 animate-fade-in"
                 >
                     <MdAdd size={20} />
                     Crear certificación
                 </button>
             </div>
 
-            {/* GRILLA DE CARTAS RESPONSIVAS */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {/* SKELETONS EN CARGA */}
-                {isLoading && skeletons.map((id) => (
-                    <div key={id} className="bg-white border border-gray-200 overflow-hidden shadow-sm flex flex-col justify-between animate-pulse">
-                        <div>
-                            <div className="w-full h-40 bg-gray-200 border-b border-gray-100 flex items-center justify-center">
-                                <svg className="w-10 h-10 text-gray-300" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-5.04-6.71l-2.75 3.54-1.96-2.36L6.5 17h11l-3.54-4.71z" />
-                                </svg>
-                            </div>
-                            <div className="px-3 py-4 space-y-3">
-                                <div className="h-5 bg-gray-200 rounded-md w-1/3" />
-                                <div className="space-y-2">
-                                    <div className="h-4 bg-gray-200 rounded-md w-full"></div>
-                                    <div className="h-4 bg-gray-200 rounded-md w-5/6"></div>
-                                </div>
-                            </div>
+                {isLoading && certificados.length === 0 && skeletons.map((id) => (
+                    <div key={id} className="bg-white border border-gray-200 overflow-hidden shadow-sm flex flex-col justify-between animate-pulse rounded-2xl">
+                        <div className="w-full h-40 bg-gray-200" />
+                        <div className="p-3 space-y-2">
+                            <div className="h-5 bg-gray-200 rounded w-1/2" />
+                            <div className="h-4 bg-gray-200 rounded w-full" />
                         </div>
-                        <div className="px-3 pb-3 pt-1">
-                            <div className="w-full bg-gray-200 h-10" />
-                        </div>
+                        <div className="p-3"><div className="bg-gray-200 h-9 rounded-xl" /></div>
                     </div>
                 ))}
 
-                {/* LISTADO DE CERTIFICADOS */}
                 {!isLoading && certificados.map((cert) => (
                     <div
                         key={cert.id}
-                        className="bg-white border border-gray-200 overflow-hidden shadow-sm flex flex-col justify-between hover:shadow-md transition-all duration-200"
+                        className="bg-white border border-gray-200 overflow-hidden shadow-sm flex flex-col justify-between hover:shadow-md transition-all duration-200 rounded-2xl group"
                     >
                         <div>
-                            <div className="w-full h-40 bg-gray-100 relative flex items-center justify-center border-b border-gray-100">
+                            <div className="w-full h-40 bg-gray-50 relative flex items-center justify-center border-b border-gray-100 p-4 overflow-hidden">
                                 <img
-                                    src={cert.imageBase64}
+                                    src={cert.imagenPrincipalUrl}
                                     alt={cert.nombre}
-                                    className="h-16 w-auto object-contain opacity-80"
+                                    className="max-h-full max-w-full object-contain transition-transform duration-300 group-hover:scale-105"
                                 />
                             </div>
-                            <div className="p-3">
-                                <h2 className="text-lg font-bold text-gray-900 mb-1 truncate">
+                            <div className="p-4">
+                                <h2 className="text-sm font-bold text-gray-900 mb-1 truncate" title={cert.nombre}>
                                     {cert.nombre}
                                 </h2>
-                                <p className="text-sm text-gray-500 leading-relaxed line-clamp-2">
+                                <p className="text-xs text-gray-500 leading-relaxed line-clamp-2">
                                     {cert.descripcion}
                                 </p>
                             </div>
                         </div>
-                        <div className="px-3 pb-3 pt-1">
+                        <div className="px-4 pb-4 pt-1 flex gap-2">
                             <button
                                 type="button"
-                                onClick={() => setIsDetailedImageModalOpen(true)}
-                                className="w-full bg-[#0b57d0] hover:bg-[#0a48b3] text-white text-sm font-semibold py-2.5 px-4 transition-colors shadow-sm inline-flex items-center justify-center gap-1.5"
+                                onClick={() => handleOpenEditModal(cert)}
+                                className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold py-2 px-3 transition-colors inline-flex items-center justify-center gap-1 rounded-full"
                             >
-                                <MdEdit size={16} />
-                                Actualizar
+                                <MdEdit size={14} /> Update
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => handleDeleteCertificate(cert.id, cert.nombre)}
+                                className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors rounded-full"
+                                title="Eliminar definitivamente"
+                            >
+                                <MdDelete size={18} />
                             </button>
                         </div>
                     </div>
                 ))}
             </div>
-
             <DetailedImageModal
                 isOpen={isDetailedImageModalOpen}
-                onClose={() => setIsDetailedImageModalOpen(false)}
+                onClose={() => {
+                    setIsDetailedImageModalOpen(false);
+                    setSelectedCertificate(null);
+                }}
                 onSave={handleSaveDetailedImage}
+                defaultData={selectedCertificate}
             />
         </div>
     )

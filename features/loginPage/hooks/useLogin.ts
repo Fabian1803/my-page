@@ -1,5 +1,5 @@
 // hooks/useLogin.ts
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { startAuthentication } from "@simplewebauthn/browser"
 
@@ -11,8 +11,15 @@ export function useLogin() {
     const [showPassword, setShowPassword] = useState(false)
     const [error, setError] = useState<string | null>(null)
     const [loading, setLoading] = useState(false)
-
+    const [showFace, setShowFace] = useState(true)
     const ADMIN_EMAIL = "fabianriveraabian3@gmail.com"
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setShowFace((prev) => !prev)
+        }, 1000)
+        return () => clearInterval(interval)
+    }, [])
 
     const handleEmailNext = () => {
         setError(null)
@@ -135,6 +142,7 @@ export function useLogin() {
         setError,
         loading,
         handleNextClick,
-        handleBiometricLogin
+        handleBiometricLogin,
+        showFace
     }
 }

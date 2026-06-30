@@ -1,14 +1,15 @@
 // server/resources/domain/models/Resource.ts
 export interface ResourceProps {
   id?: string;
+  tipo: string;
   nombre: string;
   descripcion: string;
   instituto?: string | null;
   imagenPrincipalUrl: string;
   miniaturaUrl?: string | null;
-  categorias: { nombre: string }[];
+  categorias: string[];
   enlaces: { tipo: string; url: string }[];
-  vinetas: { comentario: string }[];
+  vinetas: string[];
 }
 
 export class Resource {

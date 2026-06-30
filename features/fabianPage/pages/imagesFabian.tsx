@@ -1,6 +1,6 @@
 import ImagesMap from '../components/imageMap/components/imagesMap'
-export default function ImagesFabian() {
+export default function ImagesFabian({ datosCertificados }: { datosCertificados: any[] }) {
   return (
-      <ImagesMap />
+      <ImagesMap datosCertificados={datosCertificados} />
   )
 }

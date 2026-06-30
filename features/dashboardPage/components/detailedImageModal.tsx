@@ -1,15 +1,16 @@
 'use client'
-import React, { useState, useRef } from 'react'
 import { MdImage, MdInsertDriveFile, MdDelete } from 'react-icons/md'
 import BaseModal from './baseModal'
 import TagSelector from './tagSelector'
 import VignetteInput from './vignetteInput'
+import { useDetailedImageModal } from './hooks/useDetailImageModal'
 
 interface DetailedImageModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSave: (data: DetailedImageData) => void;
     id?: string;
+    defaultData?: any | null;
 }
 
 export interface DetailedImageData {
@@ -24,59 +25,12 @@ export interface DetailedImageData {
     };
 }
 
-export default function DetailedImageModal({ isOpen, onClose, onSave, id = "modal-main-file" }: DetailedImageModalProps) {
-    const [preview, setPreview] = useState<string | null>(null)
-    const [iconPreview, setIconPreview] = useState<string | null>(null)
-
-    // Estados del formulario
-    const [compImgFile, setCompImgFile] = useState<File | null>(null)
-    const [compNombre, setCompNombre] = useState('')
-    const [compDescripcion, setCompDescripcion] = useState('')
-    const [compTags, setCompTags] = useState<string[]>([])
-    const [compBullets, setCompBullets] = useState<string[]>([])
-    const [compIconFile, setCompIconFile] = useState<File | null>(null)
-    const [compIconNombre, setCompIconNombre] = useState('')
-
-    const internalFileInputRef = useRef<HTMLInputElement>(null)
-
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0] || null
-        if (file) {
-            setPreview(URL.createObjectURL(file))
-            setCompImgFile(file)
-        }
-    }
-
-    const handleIconChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0] || null
-        if (file) {
-            setIconPreview(URL.createObjectURL(file))
-            setCompIconFile(file)
-        }
-    }
-
-    const handleRemoveIcon = (e: React.MouseEvent) => {
-        e.preventDefault()
-        setIconPreview(null)
-        setCompIconFile(null)
-    }
-
-    const handleFormSubmit = (e: React.FormEvent) => {
-        e.preventDefault()
-        onSave({
-            imagen: compImgFile,
-            nombre: compNombre,
-            descripcion: compDescripcion,
-            tags: compTags,
-            detalles: compBullets,
-            entidadIcono: {
-                archivo: compIconFile,
-                nombre: compIconNombre
-            }
-        })
-        onClose()
-    }
-
+export default function DetailedImageModal({ isOpen, onClose, onSave, id = "modal-main-file", defaultData }: DetailedImageModalProps) {
+    const {
+        preview, iconPreview, compNombre, setCompNombre, compDescripcion, setCompDescripcion,
+        compTags, setCompTags, compBullets, setCompBullets, compIconNombre, setCompIconNombre,
+        compIconFile, internalFileInputRef, handleFileChange, handleIconChange, handleRemoveIcon, handleFormSubmit
+    } = useDetailedImageModal({ onSave, onClose, defaultData })
     return (
         <BaseModal
             isOpen={isOpen}
@@ -85,7 +39,6 @@ export default function DetailedImageModal({ isOpen, onClose, onSave, id = "moda
             onSave={handleFormSubmit}
         >
             <div className="space-y-4">
-                {/* Cargar Imagen Principal */}
                 <div className="flex flex-col gap-1.5">
                     <label className="text-xs font-semibold text-[#3c4043]">Archivo de la Imagen Principal *</label>
                     <input type="file" id={id} ref={internalFileInputRef} accept="image/*" className="sr-only" onChange={handleFileChange} />
@@ -113,8 +66,6 @@ export default function DetailedImageModal({ isOpen, onClose, onSave, id = "moda
                             </>
                         )}
                     </div>
-
-                    {/* Campos de texto */}
                     <div className="flex flex-col gap-1.5">
                         <label className="text-xs font-semibold text-[#3c4043]">Nombre de la Imagen *</label>
                         <input type="text" required value={compNombre} onChange={(e) => setCompNombre(e.target.value)} placeholder="Ej. Estructura de Microservicios" className="w-full px-3 py-2 border border-[#747775] rounded-xl text-sm focus:outline-none focus:border-2 focus:border-[#0b57d0]" />
@@ -124,8 +75,6 @@ export default function DetailedImageModal({ isOpen, onClose, onSave, id = "moda
                         <label className="text-xs font-semibold text-[#3c4043]">Pequeña Descripción *</label>
                         <textarea rows={2} required value={compDescripcion} onChange={(e) => setCompDescripcion(e.target.value)} placeholder="Escribe un breve resumen..." className="w-full px-3 py-2 border border-[#747775] rounded-xl text-sm focus:outline-none focus:border-2 focus:border-[#0b57d0] resize-none" />
                     </div>
-
-                    {/* Institución Opcional */}
                     <div className="p-4 bg-[#f8f9fa] border border-[#dadce0] rounded-2xl space-y-3">
                         <span className="text-xs font-bold text-gray-400 uppercase tracking-wider block">Institución / Icono Relacionado (Opcional)</span>
                         <div className="flex flex-col gap-1.5">

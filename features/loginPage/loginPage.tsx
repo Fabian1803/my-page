@@ -1,9 +1,8 @@
 'use client'
 import Image from 'next/image'
-import Link from 'next/link'
-import React from 'react'
 import { useLogin } from './hooks/useLogin'
-
+import { TbFingerprintScan } from "react-icons/tb";
+import { LuScanFace } from "react-icons/lu";
 export default function LoginPage() {
     const {
         step,
@@ -18,7 +17,8 @@ export default function LoginPage() {
         loading,
         setError,
         handleNextClick,
-        handleBiometricLogin
+        handleBiometricLogin,
+        showFace
     } = useLogin()
 
     return (
@@ -86,7 +86,7 @@ export default function LoginPage() {
                             </div>
 
                             {error && (
-                                <p className="text-[#b3261e] text-[12px] -mt-4 mb-4">{error}</p>
+                                <p className="text-[#b3261e] text-[12px] -mt-4 mb-2 line-clamp-1">{error}</p>
                             )}
 
                             <p className="text-[#0b57d0] font-medium text-[14px] mb-8 cursor-pointer hover:underline">
@@ -150,13 +150,17 @@ export default function LoginPage() {
                     <div className="flex justify-between items-center md:justify-end md:gap-4 w-full pt-4 bg-transparent z-10">
                         {step === 'email' ? (
                             <>
-                                <span 
+                                <span
                                     onClick={loading ? undefined : handleBiometricLogin}
-                                    className={`text-[#0b57d0] font-medium text-[14px] cursor-pointer hover:underline py-2
+                                    className={`text-[#0b57d0] font-medium text-[14px] cursor-pointer hover:underline py-2 flex gap-1 items-center
                                         ${loading ? 'opacity-50 cursor-not-allowed' : ''}
                                     `}
                                 >
-                                    {loading ? 'Escaneando...' : 'Usar IFace'}
+                                    {showFace ? (
+                                        <LuScanFace className="animate-pulse px-[1.1px]" size={26} />
+                                    ) : (
+                                        <TbFingerprintScan className="animate-pulse" size={26} />
+                                    )} {loading ? 'Escaneando...' : 'Usar IFace'} 
                                 </span>
                                 <button
                                     onClick={handleNextClick}
@@ -175,7 +179,7 @@ export default function LoginPage() {
                                 </span>
                                 <button
                                     onClick={handleNextClick}
-                                    disabled={loading} // <-- Para evitar múltiples clicks si la red va lenta
+                                    disabled={loading}
                                     className="bg-[#0b57d0] text-white px-6 py-2.5 rounded-full font-medium text-[14px] hover:bg-[#155bd3]"
                                 >
                                     {loading ? 'Cargando...' : 'Siguiente'}

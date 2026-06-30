@@ -8,7 +8,7 @@ interface BaseModalProps {
     title: string;
     onSave: (e: React.FormEvent) => void;
     children: React.ReactNode;
-    maxWidth?: string; // Prop opcional para controlar el ancho máximo desde afuera
+    maxWidth?: string;
 }
 
 export default function BaseModal({
@@ -17,17 +17,13 @@ export default function BaseModal({
     title,
     onSave,
     children,
-    maxWidth = 'sm:max-w-xl' // Valor por defecto si no pasas nada
+    maxWidth = 'sm:max-w-xl'
 }: BaseModalProps) {
     if (!isOpen) return null
-
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm sm:p-4">
-            {/* Aquí se inyecta la prop maxWidth dinámicamente */}
             <div className={`bg-white border border-[#dadce0] w-full h-full rounded-none max-h-screen ${maxWidth} sm:max-h-[90vh] overflow-y-auto p-5 md:p-6 shadow-2xl flex flex-col justify-between`}>
-                
                 <div>
-                    {/* Cabecera común fija */}
                     <div className="flex justify-between items-center pb-3 border-b border-[#dadce0] mb-4">
                         <h2 className="text-lg font-medium text-[#202124]">
                             {title}
@@ -36,14 +32,10 @@ export default function BaseModal({
                             <MdClose size={22} />
                         </button>
                     </div>
-                    
-                    {/* El formulario ejecuta el submit de afuera y aloja los inputs via children */}
                     <form id="modal-form" onSubmit={onSave} className="space-y-4">
                         {children}
                     </form>
                 </div>
-
-                {/* Botonera común fija */}
                 <div className="flex justify-end gap-2 pt-3 border-t border-gray-100 mt-4">
                     <button type="button" onClick={onClose} className="px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-100 rounded-full transition-colors">
                         Cancelar
