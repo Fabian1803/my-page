@@ -1,4 +1,5 @@
 'use client'
+import Image from 'next/image';
 import React from 'react'
 import { MdClose } from 'react-icons/md'
 
@@ -13,7 +14,6 @@ export interface Certificate {
     universidad?: string;
     imagenCertificado?: string;
     imagenLogo?: string;
-    // 🔥 Agregamos las propiedades de relaciones directas de tu Prisma Client
     categorias?: { id: string; nombre: string }[];
     vinetas?: { id: string; comentario: string }[];
 }
@@ -30,7 +30,6 @@ export default function ImageVisor({ selectedCert, onClose, visorRef }: Certific
             ref={visorRef}
             className="fixed top-0 bottom-0 left-0 right-0 z-50 h-full w-full lg:fixed lg:right-5 lg:left-auto lg:z-10 lg:w-[39%] xl:w-[35%] lg:h-auto bg-white border border-[#dadce0] lg:rounded-3xl shadow-2xl lg:shadow-xl lg:overflow-hidden select-none shrink-0 flex flex-col animate-entry"
         >
-            {/* Encabezado */}
             <div className="flex justify-between items-center px-4 py-4 lg:py-3 border-b border-gray-100 bg-gray-50/50 shrink-0">
                 <div className="flex gap-1.5 items-center">
                     <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-md overflow-hidden shrink-0 border border-gray-100 p-0.5 bg-white">
@@ -46,20 +45,18 @@ export default function ImageVisor({ selectedCert, onClose, visorRef }: Certific
                     <MdClose size={22} />
                 </button>
             </div>
-
-            {/* Cuerpo con Scroll Interno */}
             <div className="flex-1 min-h-0 overflow-y-auto scrollbar-none flex flex-col bg-white">
-                {/* Imagen del Certificado */}
                 <div className="bg-gray-100 flex items-center justify-center border-b border-gray-100 min-h-[280px] lg:max-h-[350px] shrink-0">
-                    <img
-                        src={selectedCert.imagenCertificado}
-                        alt={selectedCert.titulo}
-                        className="max-w-full max-h-[50vh] lg:max-h-[280px] object-contain"
+                    <Image
+                        src={selectedCert.imagenCertificado || selectedCert.imagenPrincipalUrl}
+                        alt={selectedCert.titulo || selectedCert.nombre}
+                        width={500}
+                        height={300}
+                        className="w-full max-h-[50vh] lg:max-h-[280px] object-contain"
                     />
                 </div>
 
                 <div className="p-5 lg:p-4 space-y-5 bg-white flex-1 flex flex-col justify-start">
-                    {/* Título Principal */}
                     <h3 className="text-base sm:text-lg lg:text-base font-bold text-gray-900 leading-snug">
                         {selectedCert.titulo}
                     </h3>

@@ -1,6 +1,4 @@
 import Link from "next/link"
-
-
 interface PropsP {
     blod?: boolean
     children?: React.ReactNode
@@ -29,7 +27,7 @@ export default function FabianPageFooter() {
         max-[1164px]:w-[860px]
         max-[940px]:w-full">
                 <div className="">
-                    <P>Desarrollado con Next.js, Next api, desplegado en Vercel, utilizando Tailwind CSS, PostgreSQL, Blob y Prisma.</P>
+                    <P className="line-clamp-2 md:line-clamp-3">Desarrollado con Next.js, Next api, desplegado en Vercel, utilizando Tailwind CSS, PostgreSQL, Blob y Prisma.</P>
                 </div>
                 <div className="grid grid-cols-[40px_auto] items-center">
                     <P>Peru</P>

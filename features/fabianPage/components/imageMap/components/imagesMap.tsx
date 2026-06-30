@@ -1,4 +1,5 @@
 'use client'
+import Image from 'next/image'
 import { useCertificates } from '../hooks/useCertificates'
 import CertificateVisor from './imageVisor'
 export default function ImagesMap({ datosCertificados }: { datosCertificados: any[] }) {
@@ -16,8 +17,14 @@ export default function ImagesMap({ datosCertificados }: { datosCertificados: an
                                 className="inline-block w-full break-inside-avoid mb-4 cursor-pointer group"
                             >
                                 <div className={`rounded-2xl bg-white border overflow-hidden shadow-sm transition-all duration-200 group-hover:shadow-md ${isCurrent ? 'border-2 border-[#0b57d0] ring-4 ring-blue-50' : 'border-[#dadce0]'}`}>
-                                    <img src={item.imagenCertificado} alt={item.titulo} className="w-full h-auto object-contain block" />
-                                </div>
+<Image 
+  src={item.imagenCertificado} 
+  alt={item.titulo} 
+  className="w-full h-auto object-contain block" 
+  width={500} 
+  height={500}
+  loading="lazy"
+/>                                </div>
                                 <div className="px-1 space-y-0.5">
                                     <p className="font-semibold text-[13px] sm:text-[14px] text-[#202124] line-clamp-1">{item.titulo}</p>
                                     <div className="-mt-1.5 flex gap-1.5 items-center">
