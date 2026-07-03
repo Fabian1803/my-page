@@ -5,9 +5,12 @@ interface UseDetailedImageModalProps {
     onSave: (data: DetailedImageData) => void;
     onClose: () => void;
     defaultData?: any | null;
+    sugerenciaNombre?: string;
+    sugerenciaDescripcion?: string;
+    sugerenciaTags?: string[];
 }
 
-export function useDetailedImageModal({ onSave, onClose, defaultData }: UseDetailedImageModalProps) {
+export function useDetailedImageModal({ onSave, onClose, defaultData, sugerenciaNombre, sugerenciaDescripcion, sugerenciaTags }: UseDetailedImageModalProps) {
     const [preview, setPreview] = useState<string | null>(null)
     const [iconPreview, setIconPreview] = useState<string | null>(null)
     const [compImgFile, setCompImgFile] = useState<File | null>(null)
@@ -31,14 +34,14 @@ export function useDetailedImageModal({ onSave, onClose, defaultData }: UseDetai
             setPreview(null)
             setIconPreview(null)
             setCompImgFile(null)
-            setCompNombre('')
-            setCompDescripcion('')
-            setCompTags([])
+            setCompNombre(sugerenciaNombre || '')
+            setCompDescripcion(sugerenciaDescripcion || '')
+            setCompTags(sugerenciaTags || [])
             setCompBullets([])
             setCompFileIcon(null)
             setCompIconNombre('')
         }
-    }, [defaultData])
+    }, [defaultData, sugerenciaNombre])
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0] || null

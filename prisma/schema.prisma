@@ -28,6 +28,7 @@ model Dispositivo {
 model MediaResource {
   id                 String       @id @default(uuid())
   tipo               String       @default("PROYECTO")
+  destacado          Boolean      @default(false)
   imagenPrincipalUrl String
   nombre             String
   descripcion        String       @db.VarChar(150)
@@ -38,6 +39,15 @@ model MediaResource {
   categorias         Categoria[]  @relation("MediaResourceToCategoria")
   enlaces            Enlace[]
   vinetas            Vineta[]
+  seccionesDoc       SeccionDoc[]
+}
+
+model SeccionDoc {
+  id              String        @id @default(uuid())
+  orden           Int           @default(0)
+  contenidoJson   String        @db.Text
+  mediaResourceId String
+  mediaResource   MediaResource @relation(fields: [mediaResourceId], references: [id], onDelete: Cascade)
 }
 
 model Categoria {

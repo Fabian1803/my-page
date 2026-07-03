@@ -4,11 +4,14 @@ import { MdCloudUpload, MdDelete } from 'react-icons/md'
 import DetailedImageModal, { DetailedImageData } from './detailedImageModal'
 
 interface ImageInputProps {
-    name?: string; 
+    name?: string;
     onSaveBlock?: (data: DetailedImageData) => void;
+    proyectoNombre: string;
+    proyectoDescripcion: string;
+    proyectoTags: string[];
 }
 
-export default function ImageInput({ name = "Bloque de Imagen Detallado", onSaveBlock }: ImageInputProps) {
+export default function ImageInput({ name = "Bloque de Imagen Detallado", onSaveBlock, proyectoNombre, proyectoDescripcion, proyectoTags }: ImageInputProps) {
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [preview, setPreview] = useState<string | null>(null)
 
@@ -17,7 +20,7 @@ export default function ImageInput({ name = "Bloque de Imagen Detallado", onSave
             setPreview(URL.createObjectURL(data.imagen))
         }
         if (onSaveBlock) {
-            onSaveBlock(data) // Enviamos el JSON estructurado al handler externo del dashboard
+            onSaveBlock(data)
         }
     }
 
@@ -32,8 +35,8 @@ export default function ImageInput({ name = "Bloque de Imagen Detallado", onSave
             <label className="block text-sm font-medium text-[#3c4043] mb-2">
                 {name}
             </label>
-            
-            <div 
+
+            <div
                 onClick={() => setIsModalOpen(true)}
                 className="border border-[#747775] rounded-xl p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-[#f8f9fa] hover:bg-gray-50 transition-colors w-full overflow-hidden cursor-pointer"
             >
@@ -47,7 +50,7 @@ export default function ImageInput({ name = "Bloque de Imagen Detallado", onSave
                             <MdCloudUpload size={24} />
                         </div>
                     )}
-                    
+
                     <div className="text-left min-w-0 flex-1">
                         <p className="text-sm font-medium text-[#202124] truncate">
                             {preview ? 'Imagen cargada correctamente' : 'Configurar bloque de imagen'}
@@ -57,7 +60,7 @@ export default function ImageInput({ name = "Bloque de Imagen Detallado", onSave
                         </p>
                     </div>
                 </div>
-                
+
                 <div className="flex items-center justify-end gap-2 shrink-0 sm:ml-auto">
                     {preview ? (
                         <div className="flex gap-2 w-full sm:w-auto">
@@ -83,12 +86,17 @@ export default function ImageInput({ name = "Bloque de Imagen Detallado", onSave
                     )}
                 </div>
             </div>
-
-            <DetailedImageModal 
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
-                onSave={handleSaveData}
-            />
+            {isModalOpen && (
+                <DetailedImageModal
+                    isOpen={isModalOpen}
+                    onClose={() => setIsModalOpen(false)}
+                    onSave={handleSaveData}
+                    sugerenciaNombre={proyectoNombre ? `${proyectoNombre} portada` : ''}
+                    sugerenciaDescripcion={proyectoDescripcion}
+                    sugerenciaTags={proyectoTags}
+                    bloquearIcono={true}
+                />
+            )}
         </div>
     )
 }

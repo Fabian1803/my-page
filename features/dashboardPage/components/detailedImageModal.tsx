@@ -11,6 +11,10 @@ interface DetailedImageModalProps {
     onSave: (data: DetailedImageData) => void;
     id?: string;
     defaultData?: any | null;
+    sugerenciaNombre?: string;
+    sugerenciaDescripcion?: string;
+    sugerenciaTags?: string[];
+    bloquearIcono?: boolean;
 }
 
 export interface DetailedImageData {
@@ -25,18 +29,19 @@ export interface DetailedImageData {
     };
 }
 
-export default function DetailedImageModal({ isOpen, onClose, onSave, id = "modal-main-file", defaultData }: DetailedImageModalProps) {
+export default function DetailedImageModal({ isOpen, onClose, onSave, id = "modal-main-file", defaultData, sugerenciaNombre, sugerenciaDescripcion, sugerenciaTags, bloquearIcono }: DetailedImageModalProps) {
     const {
         preview, iconPreview, compNombre, setCompNombre, compDescripcion, setCompDescripcion,
         compTags, setCompTags, compBullets, setCompBullets, compIconNombre, setCompIconNombre,
         compIconFile, internalFileInputRef, handleFileChange, handleIconChange, handleRemoveIcon, handleFormSubmit
-    } = useDetailedImageModal({ onSave, onClose, defaultData })
+    } = useDetailedImageModal({ onSave, onClose, defaultData, sugerenciaNombre, sugerenciaDescripcion, sugerenciaTags })
     return (
         <BaseModal
             isOpen={isOpen}
             onClose={onClose}
             title="Registrar nuevo certificado"
             onSave={handleFormSubmit}
+            isSubModal={true}
         >
             <div className="space-y-4">
                 <div className="flex flex-col gap-1.5">
@@ -75,8 +80,10 @@ export default function DetailedImageModal({ isOpen, onClose, onSave, id = "moda
                         <label className="text-xs font-semibold text-[#3c4043]">Pequeña Descripción *</label>
                         <textarea rows={2} required value={compDescripcion} onChange={(e) => setCompDescripcion(e.target.value)} placeholder="Escribe un breve resumen..." className="w-full px-3 py-2 border border-[#747775] rounded-xl text-sm focus:outline-none focus:border-2 focus:border-[#0b57d0] resize-none" />
                     </div>
+                    {!bloquearIcono && (
                     <div className="p-4 bg-[#f8f9fa] border border-[#dadce0] rounded-2xl space-y-3">
                         <span className="text-xs font-bold text-gray-400 uppercase tracking-wider block">Institución / Icono Relacionado (Opcional)</span>
+                        
                         <div className="flex flex-col gap-1.5">
                             <label className="text-xs font-semibold text-[#3c4043]">Nombre de la Institución</label>
                             <input type="text" value={compIconNombre} onChange={(e) => setCompIconNombre(e.target.value)} placeholder="Ej. Universidad Tecnológica del Perú" className="w-full px-3 py-2 border border-gray-300 rounded-xl text-xs focus:outline-none bg-white" />
@@ -108,6 +115,7 @@ export default function DetailedImageModal({ isOpen, onClose, onSave, id = "moda
                             </div>
                         </div>
                     </div>
+                )}
 
                     <TagSelector selectedTags={compTags} onTagsChange={setCompTags} />
                     <VignetteInput bullets={compBullets} onBulletsChange={setCompBullets} />

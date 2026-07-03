@@ -6,15 +6,10 @@ import ProjectModal from '../../components/projectModal'
 export default function ProjectsPage() {
     const [isLoading, setIsLoading] = useState(true)
     const [isProjectModalOpen, setIsProjectModalOpen] = useState(false)
-    const [isModalOpen, setIsModalOpen] = useState(false)
-
-
     useEffect(() => {
         const timer = setTimeout(() => setIsLoading(false), 1000)
         return () => clearTimeout(timer)
     }, [])
-
-    // Lista de tus proyectos con sus mock data estructurales para que el formulario se llene al editar
     const proyectos = [
         {
             id: 1,
@@ -44,9 +39,6 @@ export default function ProjectsPage() {
             tags: ['Python', 'Deep Learning', 'Vision Transformer']
         }
     ]
-
-    // Handler interm
-
     const skeletons = [1, 2, 3, 4]
 
     return (
@@ -63,7 +55,7 @@ export default function ProjectsPage() {
 
                 <button
                     type="button"
-                    onClick={() => setIsProjectModalOpen(true)} 
+                    onClick={() => setIsProjectModalOpen(true)}
                     className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-[#0b57d0] hover:bg-[#155bd3] text-white text-sm font-semibold rounded-full shadow-sm transition-all"
                 >
                     <MdAdd size={20} />
@@ -72,7 +64,6 @@ export default function ProjectsPage() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {/* SKELETONS */}
                 {isLoading && skeletons.map((id) => (
                     <div
                         key={id}
@@ -112,10 +103,9 @@ export default function ProjectsPage() {
                                 <p className="text-sm text-gray-500 leading-relaxed line-clamp-2">{proyecto.descripcion}</p>
                             </div>
                         </div>
-                        {/* El botón ahora dice Actualizar/Ver Detalle y abre el modal flotante */}
                         <div className="px-3 pb-3 pt-1">
                             <button
-                                onClick={() => setIsProjectModalOpen(true)  }
+                                onClick={() => setIsProjectModalOpen(true)}
                                 className="w-full bg-[#0b57d0] hover:bg-[#0a48b3] text-white text-sm font-semibold py-2.5 px-4 transition-colors shadow-sm inline-flex items-center justify-center gap-1.5"
                             >
                                 Actualizar
@@ -124,10 +114,12 @@ export default function ProjectsPage() {
                     </div>
                 ))}
             </div>
-            <ProjectModal
-                isOpen={isProjectModalOpen}
-                onClose={() => setIsProjectModalOpen(false)}
-            />
+            {isProjectModalOpen && (
+                <ProjectModal
+                    isOpen={isProjectModalOpen}
+                    onClose={() => setIsProjectModalOpen(false)}
+                />
+            )}
         </>
     )
 }

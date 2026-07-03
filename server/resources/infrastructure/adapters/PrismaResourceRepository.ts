@@ -9,19 +9,33 @@ export class PrismaResourceRepository implements ResourceRepository {
       data: {
         id: data.id,
         tipo: data.tipo,
+        destacado: data.destacado,
         nombre: data.nombre,
         descripcion: data.descripcion,
         instituto: data.instituto,
         imagenPrincipalUrl: data.imagenPrincipalUrl,
         miniaturaUrl: data.miniaturaUrl,
-        categorias: { connect: data.categorias.map(nombreTag => ({ nombre: nombreTag }))},
-        enlaces: { create: data.enlaces.map(e => ({ tipo: e.tipo, url: e.url }))},
-        vinetas: { create: data.vinetas.map(bullet => ({ comentario: bullet }))}
+        categorias: { 
+          connect: data.categorias.map(nombreTag => ({ nombre: nombreTag }))
+        },
+        enlaces: { 
+          create: data.enlaces.map(e => ({ tipo: e.tipo.toUpperCase(), url: e.url }))
+        },
+        vinetas: { 
+          create: data.vinetas.map(bullet => ({ comentario: bullet }))
+        },
+        seccionesDoc: {
+          create: data.seccionesDoc.map((jsonStr, index) => ({
+            orden: index,
+            contenidoJson: jsonStr
+          }))
+        }
       },
       include: {
         categorias: true,
         enlaces: true,
-        vinetas: true
+        vinetas: true,
+        seccionesDoc: { orderBy: { orden: 'asc' } }
       }
     });
   }
@@ -32,7 +46,8 @@ export class PrismaResourceRepository implements ResourceRepository {
       include: {
         categorias: true,
         enlaces: true,
-        vinetas: true
+        vinetas: true,
+        seccionesDoc: { orderBy: { orden: 'asc' } }
       },
       orderBy: { createdAt: 'desc' }
     });
@@ -44,7 +59,8 @@ export class PrismaResourceRepository implements ResourceRepository {
       include: {
         categorias: true,
         enlaces: true,
-        vinetas: true
+        vinetas: true,
+        seccionesDoc: { orderBy: { orden: 'asc' } }
       }
     });
   }
@@ -54,31 +70,44 @@ export class PrismaResourceRepository implements ResourceRepository {
   }
 
   async update(id: string, resource: Resource): Promise<any> {
-  const data = resource.toObject();
-  
-  return await prisma.mediaResource.update({
-    where: { id },
-    data: {
-      tipo: data.tipo,
-      nombre: data.nombre,
-      descripcion: data.descripcion,
-      instituto: data.instituto,
-      imagenPrincipalUrl: data.imagenPrincipalUrl,
-      miniaturaUrl: data.miniaturaUrl,
-      categorias: {
-        set: [],
-        connect: data.categorias.map(nombreTag => ({ nombre: nombreTag }))
+    const data = resource.toObject();
+    
+    return await prisma.mediaResource.update({
+      where: { id },
+      data: {
+        tipo: data.tipo,
+        destacado: data.destacado, // 🔥 NUEVO
+        nombre: data.nombre,
+        descripcion: data.descripcion,
+        instituto: data.instituto,
+        imagenPrincipalUrl: data.imagenPrincipalUrl,
+        miniaturaUrl: data.miniaturaUrl,
+        categorias: {
+          set: [],
+          connect: data.categorias.map(nombreTag => ({ nombre: nombreTag }))
+        },
+        vinetas: {
+          deleteMany: {}, 
+          create: data.vinetas.map(bullet => ({ comentario: bullet }))
+        },
+        enlaces: {
+          deleteMany: {},
+          create: data.enlaces.map(e => ({ tipo: e.tipo.toUpperCase(), url: e.url }))
+        },
+        seccionesDoc: {
+          deleteMany: {},
+          create: data.seccionesDoc.map((jsonStr, index) => ({
+            orden: index,
+            contenidoJson: jsonStr
+          }))
+        }
       },
-      vinetas: {
-        deleteMany: {}, 
-        create: data.vinetas.map(bullet => ({ comentario: bullet }))
+      include: {
+        categorias: true,
+        enlaces: true,
+        vinetas: true,
+        seccionesDoc: { orderBy: { orden: 'asc' } }
       }
-    },
-    include: {
-      categorias: true,
-      enlaces: true,
-      vinetas: true
-    }
-  });
-}
+    });
+  }
 }

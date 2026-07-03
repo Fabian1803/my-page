@@ -2,6 +2,7 @@
 export interface ResourceProps {
   id?: string;
   tipo: string;
+  destacado: boolean; // 🔥 NUEVO
   nombre: string;
   descripcion: string;
   instituto?: string | null;
@@ -10,8 +11,8 @@ export interface ResourceProps {
   categorias: string[];
   enlaces: { tipo: string; url: string }[];
   vinetas: string[];
+  seccionesDoc: string[];
 }
-
 export class Resource {
   private props: ResourceProps;
   constructor(props: ResourceProps) {
@@ -22,10 +23,15 @@ export class Resource {
     this.props = {
       ...props,
       id: props.id || crypto.randomUUID(),
+      destacado: props.destacado ?? false,
+      seccionesDoc: props.seccionesDoc || [],
     };
   }
-
   public toObject() {
     return { ...this.props };
   }
+  public get id() { return this.props.id; }
+  public get imagenPrincipalUrl() { return this.props.imagenPrincipalUrl; }
+  public get miniaturaUrl() { return this.props.miniaturaUrl; }
+  public get enlaces() { return this.props.enlaces; }
 }

@@ -9,6 +9,7 @@ interface BaseModalProps {
     onSave: (e: React.FormEvent) => void;
     children: React.ReactNode;
     maxWidth?: string;
+    isSubModal?: boolean;
 }
 
 export default function BaseModal({
@@ -17,34 +18,34 @@ export default function BaseModal({
     title,
     onSave,
     children,
-    maxWidth = 'sm:max-w-xl'
+    maxWidth = 'sm:max-w-xl',
+    isSubModal = false
 }: BaseModalProps) {
     if (!isOpen) return null
+    const ContainerTag = isSubModal ? "div" : "form";
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm sm:p-4">
-            <div className={`bg-white border border-[#dadce0] w-full h-full rounded-none max-h-screen ${maxWidth} sm:max-h-[90vh] overflow-y-auto p-5 md:p-6 shadow-2xl flex flex-col justify-between`}>
-                <div>
-                    <div className="flex justify-between items-center pb-3 border-b border-[#dadce0] mb-4">
-                        <h2 className="text-lg font-medium text-[#202124]">
-                            {title}
-                        </h2>
-                        <button type="button" onClick={onClose} className="text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-100 shrink-0">
-                            <MdClose size={22} />
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+            <div className={`bg-white rounded-3xl shadow-xl w-full ${maxWidth} flex flex-col max-h-[90vh] overflow-hidden`}>
+                <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
+                    <h3 className="text-lg font-bold text-gray-900">{title}</h3>
+                    <button type="button" onClick={onClose} className="text-gray-400 hover:text-gray-600">✕</button>
+                </div>
+                <ContainerTag onSubmit={isSubModal ? undefined : onSave} className="flex-1 overflow-y-auto p-6 space-y-4">
+                    {children}
+                    
+                    <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
+                        <button type="button" onClick={onClose} className="px-4 py-2 text-sm font-semibold text-gray-500 hover:bg-gray-50 rounded-xl">
+                            Cancelar
+                        </button>
+                        <button 
+                            type={isSubModal ? "button" : "submit"} 
+                            onClick={isSubModal ? onSave : undefined}
+                            className="px-5 py-2 text-sm font-semibold text-white bg-[#0b57d0] hover:bg-[#1352b3] rounded-xl shadow-sm"
+                        >
+                            Confirmar
                         </button>
                     </div>
-                    <form id="modal-form" onSubmit={onSave} className="space-y-4">
-                        {children}
-                    </form>
-                </div>
-                <div className="flex justify-end gap-2 pt-3 border-t border-gray-100 mt-4">
-                    <button type="button" onClick={onClose} className="px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-100 rounded-full transition-colors">
-                        Cancelar
-                    </button>
-                    <button type="submit" form="modal-form" className="inline-flex items-center gap-1.5 px-5 py-2 bg-[#0b57d0] hover:bg-[#155bd3] text-white text-sm font-semibold rounded-full shadow-sm transition-all">
-                        <MdSave size={16} /> Registrar
-                    </button>
-                </div>
-
+                </ContainerTag>
             </div>
         </div>
     )
