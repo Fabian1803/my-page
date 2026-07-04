@@ -79,7 +79,6 @@ export function useLogin() {
     const handleBiometricLogin = async () => {
         setError(null);
         setLoading(true);
-
         try {
             const challengeRes = await fetch("/api/auth/challenge", {
                 method: "POST",
