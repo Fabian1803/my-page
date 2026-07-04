@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { MdCloudUpload, MdDelete } from 'react-icons/md'
 import DetailedImageModal, { DetailedImageData } from './detailedImageModal'
 
@@ -9,11 +9,16 @@ interface ImageInputProps {
     proyectoNombre: string;
     proyectoDescripcion: string;
     proyectoTags: string[];
+    initialPreviewUrl?: string | null;
 }
 
-export default function ImageInput({ name = "Bloque de Imagen Detallado", onSaveBlock, proyectoNombre, proyectoDescripcion, proyectoTags }: ImageInputProps) {
+export default function ImageInput({ name = "Bloque de Imagen Detallado", onSaveBlock, proyectoNombre, proyectoDescripcion, proyectoTags, initialPreviewUrl = null }: ImageInputProps) {
     const [isModalOpen, setIsModalOpen] = useState(false)
-    const [preview, setPreview] = useState<string | null>(null)
+    const [preview, setPreview] = useState<string | null>(initialPreviewUrl)
+
+    useEffect(() => {
+        setPreview(initialPreviewUrl)
+    }, [initialPreviewUrl])
 
     const handleSaveData = (data: DetailedImageData) => {
         if (data.imagen) {

@@ -107,6 +107,8 @@ export function useProjectModal(onClose: () => void, onProjectSaved?: () => void
     // 🚀 PERSISTENCIA EVOLUCIONADA: POST (Guardar) o PUT (Actualizar) de un solo golpe
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault()
+
+        if (isSubmitting) return
         
         if (!nombre.trim() || !descripcion.trim()) {
             alert("Por favor rellena los campos requeridos obligatorios (*).")
@@ -175,11 +177,36 @@ export function useProjectModal(onClose: () => void, onProjectSaved?: () => void
         }
     }
 
+    const handleDelete = async () => {
+        if (!defaultData?.id || isSubmitting) return
+
+        const confirmed = window.confirm("¿Seguro que quieres eliminar este proyecto y sus archivos asociados?")
+        if (!confirmed) return
+
+        setIsSubmitting(true)
+        try {
+            const response = await fetch(`/api/resources?id=${defaultData.id}`, {
+                method: 'DELETE'
+            })
+            const result = await response.json()
+            if (!result.success) throw new Error(result.error || 'No se pudo eliminar el proyecto')
+
+            alert("Proyecto eliminado correctamente")
+            if (onProjectSaved) onProjectSaved()
+            onClose()
+        } catch (error: any) {
+            console.error("Error eliminando proyecto:", error)
+            alert("Error: " + error.message)
+        } finally {
+            setIsSubmitting(false)
+        }
+    }
+
     return {
         nombre, setNombre, descripcion, setDescripcion, datosImagenEstructurada,
         handleSaveDetailedImage, tags, setTags, dynamicLinks, handleAddLink,
         handleUrlChange, handleRemoveLink, destacado, setDestacado, contentBlocks,
         handleAddBlockInternal, handleBlockChangeInternal, handleRemoveBlockInternal,
-        handleSave, handleRegisterTiptapFile, isSubmitting
+        handleSave, handleDelete, handleRegisterTiptapFile, isSubmitting
     }
 }

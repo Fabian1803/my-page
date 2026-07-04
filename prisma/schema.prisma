@@ -34,6 +34,9 @@ model MediaResource {
   descripcion        String       @db.VarChar(150)
   instituto          String?
   miniaturaUrl       String?
+  proyectoPadreId    String?
+  proyectoPadre      MediaResource? @relation("ProyectoImagenesInternas", fields: [proyectoPadreId], references: [id], onDelete: Cascade)
+  imagenesInternas   MediaResource[] @relation("ProyectoImagenesInternas")
   createdAt          DateTime     @default(now())
   updatedAt          DateTime     @updatedAt
   categorias         Categoria[]  @relation("MediaResourceToCategoria")

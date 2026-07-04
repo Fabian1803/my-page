@@ -1,6 +1,6 @@
 'use client'
 import React, { useState, useEffect } from 'react'
-import { MdAdd, MdEdit } from 'react-icons/md'
+import { MdAdd, MdDelete, MdEdit } from 'react-icons/md'
 import ProjectModal from '../../components/projectModal'
 
 // 🔥 Interfaz del modelo real que viene de Prisma
@@ -55,6 +55,23 @@ export default function ProjectsPage() {
     const handleOpenEdit = (proyecto: ProyectoReal) => {
         setSelectedProject(proyecto) // Modo edición (con datos cargados)
         setIsProjectModalOpen(true)
+    }
+
+    const handleDeleteProject = async (proyecto: ProyectoReal) => {
+        const confirmed = window.confirm(`¿Seguro que quieres eliminar el proyecto "${proyecto.nombre}" y sus archivos asociados?`)
+        if (!confirmed) return
+
+        try {
+            const response = await fetch(`/api/resources?id=${proyecto.id}`, {
+                method: 'DELETE'
+            })
+            const result = await response.json()
+            if (!result.success) throw new Error(result.error || 'No se pudo eliminar el proyecto')
+            await loadProjects()
+        } catch (error: any) {
+            console.error('Error eliminando proyecto:', error)
+            alert('Error: ' + error.message)
+        }
     }
 
     const skeletons = [1, 2, 3, 4]
@@ -140,14 +157,22 @@ export default function ProjectsPage() {
                                 </div>
                             </div>
                         </div>
-                        <div className="px-3 pb-3 pt-1">
+                        <div className="px-3 pb-3 pt-1 flex gap-2">
                             <button
                                 type="button"
-                                onClick={() => handleOpenEdit(proyecto)} // 🔥 Dispara la inyección de datos para actualizar
-                                className="w-full bg-[#0b57d0] hover:bg-[#0a48b3] text-white text-xs font-semibold py-2.5 px-4 transition-colors shadow-sm inline-flex items-center justify-center gap-1.5 rounded-xl"
+                                onClick={() => handleOpenEdit(proyecto)}
+                                className="flex-1 bg-[#0b57d0] hover:bg-[#0a48b3] text-white text-xs font-semibold py-2.5 px-4 transition-colors shadow-sm inline-flex items-center justify-center gap-1.5 rounded-xl"
                             >
                                 <MdEdit size={14} />
                                 Actualizar
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => handleDeleteProject(proyecto)}
+                                className="p-2.5 text-red-600 hover:bg-red-50 border border-red-200 rounded-xl transition-colors"
+                                title="Eliminar proyecto"
+                            >
+                                <MdDelete size={16} />
                             </button>
                         </div>
                     </div>

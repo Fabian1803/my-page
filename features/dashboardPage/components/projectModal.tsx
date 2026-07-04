@@ -34,13 +34,27 @@ export default function ProjectModal({ isOpen, onClose, defaultData, onProjectSa
         handleBlockChangeInternal,
         handleRemoveBlockInternal,
         handleRegisterTiptapFile,
-        handleSave } = useProjectModal(onClose, onProjectSaved, defaultData);
+        handleSave,
+        handleDelete,
+        isSubmitting } = useProjectModal(onClose, onProjectSaved, defaultData);
     return (
         <BaseModal
             isOpen={isOpen}
             onClose={onClose}
             title={defaultData ? "Actualizar Proyecto" : "Crear un nuevo Proyecto"} onSave={handleSave}
             maxWidth="sm:max-w-3xl"
+            submitDisabled={isSubmitting}
+            submitLabel={isSubmitting ? (defaultData ? "Guardando..." : "Creando...") : (defaultData ? "Guardar cambios" : "Crear proyecto")}
+            footerActions={defaultData?.id ? (
+                <button
+                    type="button"
+                    onClick={handleDelete}
+                    disabled={isSubmitting}
+                    className="px-4 py-2 text-sm font-semibold text-red-600 hover:bg-red-50 rounded-xl border border-red-200 disabled:opacity-50"
+                >
+                    Eliminar
+                </button>
+            ) : null}
         >
             <div className="space-y-4">
                 <div className="flex flex-col gap-1.5">
@@ -62,6 +76,7 @@ export default function ProjectModal({ isOpen, onClose, defaultData, onProjectSa
                     proyectoNombre={nombre}
                     proyectoDescripcion={descripcion}
                     proyectoTags={tags}
+                    initialPreviewUrl={defaultData?.imagenPrincipalUrl || null}
                 />
 
                 <TagSelector selectedTags={tags} onTagsChange={setTags} />
