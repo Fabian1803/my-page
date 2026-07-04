@@ -25,6 +25,22 @@ model Dispositivo {
   usuario      Usuario  @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
 }
 
+model Proyecto {
+  id             String         @id @default(uuid())
+  tipo           String         @default("PROYECTO")
+  nombre         String
+  descripcion    String         @db.VarChar(150)
+  destacado      Boolean        @default(false)
+  categorias     String[]
+  enlaces        Json?
+  seccionesDoc   Json?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  portadaId      String?        @unique
+  portada        MediaResource? @relation("ProyectoPortada", fields: [portadaId], references: [id], onDelete: SetNull)
+  mediaResources MediaResource[] @relation("ProyectoMediaResources")
+}
+
 model MediaResource {
   id                 String       @id @default(uuid())
   tipo               String       @default("PROYECTO")
@@ -34,9 +50,9 @@ model MediaResource {
   descripcion        String       @db.VarChar(150)
   instituto          String?
   miniaturaUrl       String?
-  proyectoPadreId    String?
-  proyectoPadre      MediaResource? @relation("ProyectoImagenesInternas", fields: [proyectoPadreId], references: [id], onDelete: Cascade)
-  imagenesInternas   MediaResource[] @relation("ProyectoImagenesInternas")
+  proyectoId         String?
+  proyecto           Proyecto?    @relation("ProyectoMediaResources", fields: [proyectoId], references: [id], onDelete: Cascade)
+  portadaDe          Proyecto?    @relation("ProyectoPortada")
   createdAt          DateTime     @default(now())
   updatedAt          DateTime     @updatedAt
   categorias         Categoria[]  @relation("MediaResourceToCategoria")

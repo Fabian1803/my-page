@@ -106,6 +106,28 @@ export class CreateResourceUseCase {
     const proyectoCreado = await this.repository.save(resourceEntity);
     const proyectoId = proyectoCreado?.id || resourceEntity.id;
 
+    const portadaMedia = await prisma.mediaResource.create({
+      data: {
+        tipo: "PORTADA",
+        destacado: false,
+        nombre: `${nombre.trim()} - portada`,
+        descripcion: `Portada de ${nombre.trim()}`,
+        imagenPrincipalUrl,
+        proyecto: {
+          connect: { id: proyectoId }
+        }
+      }
+    });
+
+    await prisma.proyecto.update({
+      where: { id: proyectoId },
+      data: {
+        portada: {
+          connect: { id: portadaMedia.id }
+        }
+      }
+    });
+
     const replacements: Array<{ token: string; url: string }> = [];
     for (const [fieldName, value] of Array.from(formData.entries())) {
       if (fieldName.startsWith("tiptap_media_") && value instanceof File) {
@@ -128,7 +150,7 @@ export class CreateResourceUseCase {
             vinetas: {
               create: (metadata.detalles || []).map((detalle) => ({ comentario: detalle }))
             },
-            proyectoPadre: {
+            proyecto: {
               connect: { id: proyectoId }
             }
           }
@@ -141,16 +163,10 @@ export class CreateResourceUseCase {
     const seccionesDoc = this.replaceBlobUrlsInSections(seccionesDocRaw, replacements);
 
     if (replacements.length > 0) {
-      await prisma.mediaResource.update({
+      await prisma.proyecto.update({
         where: { id: proyectoId },
         data: {
-          seccionesDoc: {
-            deleteMany: {},
-            create: seccionesDoc.map((jsonStr, index) => ({
-              orden: index,
-              contenidoJson: jsonStr
-            }))
-          }
+          seccionesDoc
         }
       });
     }

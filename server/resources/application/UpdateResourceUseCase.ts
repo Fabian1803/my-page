@@ -116,6 +116,30 @@ export class UpdateResourceUseCase {
 
     const proyectoActualizado = await this.repository.update(id, resourceEntity);
 
+    if (nuevaImagenFile && nuevaImagenFile.size > 0) {
+      const portadaMedia = await prisma.mediaResource.create({
+        data: {
+          tipo: "PORTADA",
+          destacado: false,
+          nombre: `${nombre.trim()} - portada`,
+          descripcion: `Portada de ${nombre.trim()}`,
+          imagenPrincipalUrl,
+          proyecto: {
+            connect: { id }
+          }
+        }
+      });
+
+      await prisma.proyecto.update({
+        where: { id },
+        data: {
+          portada: {
+            connect: { id: portadaMedia.id }
+          }
+        }
+      });
+    }
+
     const replacements: Array<{ token: string; url: string }> = [];
     for (const [fieldName, value] of Array.from(formData.entries())) {
       if (fieldName.startsWith("tiptap_media_") && value instanceof File) {
@@ -138,7 +162,7 @@ export class UpdateResourceUseCase {
             vinetas: {
               create: (metadata.detalles || []).map((detalle) => ({ comentario: detalle }))
             },
-            proyectoPadre: {
+            proyecto: {
               connect: { id }
             }
           }
@@ -151,16 +175,10 @@ export class UpdateResourceUseCase {
     const seccionesDoc = this.replaceBlobUrlsInSections(seccionesDocRaw, replacements);
 
     if (replacements.length > 0) {
-      await prisma.mediaResource.update({
+      await prisma.proyecto.update({
         where: { id },
         data: {
-          seccionesDoc: {
-            deleteMany: {},
-            create: seccionesDoc.map((jsonStr, index) => ({
-              orden: index,
-              contenidoJson: jsonStr
-            }))
-          }
+          seccionesDoc
         }
       });
     }

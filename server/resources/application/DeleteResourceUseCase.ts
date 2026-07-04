@@ -34,6 +34,10 @@ export class DeleteResourceUseCase {
     if (resource.miniaturaUrl) await this.mediaStorage.deleteFile(resource.miniaturaUrl);
 
     const urlsToDelete = new Set<string>();
+    for (const media of resource.mediaResources || []) {
+      if (media?.imagenPrincipalUrl) urlsToDelete.add(media.imagenPrincipalUrl);
+    }
+
     for (const section of resource.seccionesDoc || []) {
       const content = typeof section === "string" ? section : section?.contenidoJson;
       if (typeof content === "string") {
