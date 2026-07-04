@@ -4,65 +4,86 @@ import { verifyRegistrationResponse } from "@simplewebauthn/server";
 import bcrypt from "bcrypt";
 
 export async function POST(request: Request) {
-    try {
-        const body = await request.json();
-        const { email, password, webauthnResponse, expectedChallenge } = body;
-        // `webauthnResponse` es el objeto directo que devuelve `navigator.credentials.create()` convertido a JSON
+  try {
+    const body = await request.json().catch(() => ({}));
+    const { email, password, webauthnResponse, expectedChallenge } = body;
 
-        if (!email) return NextResponse.json({ success: false, error: "Falta email" }, { status: 400 });
+    // 1. Validaciones iniciales
+    if (!email || typeof email !== "string") {
+      return NextResponse.json({ success: false, error: "El email es obligatorio" }, { status: 400 });
+    }
+    const cleanEmail = email.trim().toLowerCase();
 
-        // 1. Manejo del usuario
-        const passwordHash = password ? await bcrypt.hash(password, 10) : "";
-        const usuario = await prisma.usuario.upsert({
-            where: { email },
-            update: password ? { passwordHash } : {},
-            create: { email, passwordHash }
+    // 2. Gestión de Usuario (Upsert manual)
+    const passwordHash = password ? await bcrypt.hash(password, 10) : null;
+    const existingUser = await prisma.usuario.findUnique({ where: { email: cleanEmail } });
+
+    const usuario = existingUser
+      ? await prisma.usuario.update({
+          where: { id: existingUser.id },
+          data: passwordHash ? { passwordHash } : {},
+        })
+      : await prisma.usuario.create({
+          data: {
+            email: cleanEmail,
+            passwordHash: passwordHash || "",
+          },
         });
 
-        // 2. Si vienes a registrar el dispositivo usando SimpleWebAuthn
-        if (webauthnResponse) {
-            const urlObj = new URL(request.url);
+    // 3. Verificación e Inserción del Dispositivo WebAuthn
+    if (webauthnResponse) {
+      const urlObj = new URL(request.url);
+      
+      // Validar la respuesta del navegador usando SimpleWebAuthn
+      const verification = await verifyRegistrationResponse({
+        response: webauthnResponse,
+        expectedChallenge: expectedChallenge || "challenge_temporal_f12", // Debe coincidir con el del F12
+        expectedOrigin: urlObj.origin,
+        expectedRPID: urlObj.hostname,
+      });
 
-            const verification = await verifyRegistrationResponse({
-                response: webauthnResponse,
-                expectedChallenge: expectedChallenge || "el_challenge_que_usaste_en_f12",
-                expectedOrigin: urlObj.origin,
-                expectedRPID: urlObj.hostname,
-            });
+      if (!verification.verified || !verification.registrationInfo) {
+        return NextResponse.json({ success: false, error: "Verificación WebAuthn fallida" }, { status: 400 });
+      }
 
-            if (verification.verified && verification.registrationInfo) {
-                // 1. Accedemos al objeto 'credential' dentro de registrationInfo
-                const { credential } = verification.registrationInfo;
+      // Solución al tipado de las nuevas versiones de SimpleWebAuthn
+      const { credential } = verification.registrationInfo;
+      const { id, publicKey, counter } = credential;
 
-                const { id, publicKey, counter } = credential;
+      // Convertir datos binarios a los formatos string de tu DB
+      const publicKeyBase64 = Buffer.from(publicKey).toString("base64");
+      const credentialIdString = Buffer.from(id).toString("base64url");
 
-                // 2. Convertimos la llave pública binaria a Base64 para tu Base de Datos
-                const publicKeyBase64 = Buffer.from(publicKey).toString("base64");
-
-                // 3. Convertimos el ID binario a String (en formato Base64URL)
-                const credentialIdString = Buffer.from(id).toString("base64url");
-
-                await prisma.dispositivo.upsert({
-                    where: { credentialId: credentialIdString },
-                    update: {
-                        publicKey: publicKeyBase64,
-                        counter: counter
-                    },
-                    create: {
-                        credentialId: credentialIdString,
-                        publicKey: publicKeyBase64,
-                        counter: counter,
-                        usuarioId: usuario.id
-                    }
-                });
-            }
-        } else {
-            return NextResponse.json({ success: false, error: "Verificación WebAuthn fallida" }, { status: 400 });
+      // Guardar o actualizar el dispositivo asociado al usuario
+      await prisma.dispositivo.upsert({
+        where: { credentialId: credentialIdString },
+        update: { 
+          publicKey: publicKeyBase64, 
+          counter: counter 
+        },
+        create: {
+          credentialId: credentialIdString,
+          publicKey: publicKeyBase64,
+          counter: counter,
+          usuarioId: usuario.id
         }
+      });
     }
 
-    return NextResponse.json({ success: true });
-} catch (error: any) {
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
-}
+    return NextResponse.json({
+      success: true,
+      data: {
+        email: usuario.email,
+        passwordSaved: Boolean(passwordHash),
+        dispositivoGuardado: Boolean(webauthnResponse),
+      },
+    });
+
+  } catch (error: any) {
+    console.error("❌ Error en registro:", error);
+    return NextResponse.json({ 
+      success: false, 
+      error: error.message || "Error interno al procesar el registro" 
+    }, { status: 500 });
+  }
 }
