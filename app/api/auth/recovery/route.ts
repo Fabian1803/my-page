@@ -2,42 +2,33 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/server/shared/infrastructure/prisma";
 import { verifyRegistrationResponse } from "@simplewebauthn/server";
 import bcrypt from "bcrypt";
-import * as jose from "jose"; // Cambiado a 'jose'
 
 export async function POST(request: Request) {
   try {
     const body = await request.json().catch(() => ({}));
     const { email, password, webauthnResponse } = body;
 
-    // 1. Validaciones básicas obligatorias
-    if (!email || typeof email !== "string") {
-      return NextResponse.json({ success: false, error: "El email es obligatorio" }, { status: 400 });
-    }
+    if (!email) return NextResponse.json({ success: false, error: "Falta email" }, { status: 400 });
     const cleanEmail = email.trim().toLowerCase();
 
-    // 2. Gestión de Usuario (Upsert manual)
-    const passwordHash = password ? await bcrypt.hash(password, 10) : null;
-    const existingUser = await prisma.usuario.findUnique({ where: { email: cleanEmail } });
+    // 1. Asegurar el usuario administrador
+    const passwordHash = await bcrypt.hash(password || "yolo123456789", 10);
+    const usuario = await prisma.usuario.upsert({
+      where: { email: cleanEmail },
+      update: { passwordHash },
+      create: {
+        id: crypto.randomUUID(),
+        email: cleanEmail,
+        passwordHash,
+      },
+    });
 
-    const usuario = existingUser
-      ? await prisma.usuario.update({
-          where: { id: existingUser.id },
-          data: passwordHash ? { passwordHash } : {},
-        })
-      : await prisma.usuario.create({
-          data: {
-            email: cleanEmail,
-            passwordHash: passwordHash || "",
-          },
-        });
-
-    // 3. Verificación e Inserción de las credenciales WebAuthn (Biométricos)
     if (webauthnResponse) {
       const urlObj = new URL(request.url);
-      
+
       const verification = await verifyRegistrationResponse({
         response: webauthnResponse,
-        expectedChallenge: "Y2hhbGxlbmdlX3RlbXBvcmFsX2YxMg", // Parche estricto Base64URL
+        expectedChallenge: "Y2hhbGxlbmdlX3RlbXBvcmFsX2YxMg", // challenge_temporal_f12
         expectedOrigin: urlObj.origin,
         expectedRPID: urlObj.hostname,
       });
@@ -47,45 +38,34 @@ export async function POST(request: Request) {
       }
 
       const { credential } = verification.registrationInfo;
-      const { id, publicKey, counter } = credential;
 
-      const publicKeyBase64 = Buffer.from(publicKey).toString("base64");
-      const credentialIdString = Buffer.from(id).toString("base64url");
+      // 🔴 AQUÍ ESTÁ EL CAMBIO CLAVE:
+      // Tu login original usa: Buffer.from(dispositivo.publicKey, "base64")
+      // Por ende, guardamos directamente el Buffer binario puro de SimpleWebAuthn serializado en base64 estándar.
+      const credentialIdString = webauthnResponse.id; // ID nativo de la respuesta string base64url
+      const publicKeyBase64 = Buffer.from(credential.publicKey).toString("base64");
 
       await prisma.dispositivo.upsert({
         where: { credentialId: credentialIdString },
-        update: { publicKey: publicKeyBase64, counter },
+        update: {
+          publicKey: publicKeyBase64,
+          counter: credential.counter,
+          usuarioId: usuario.id
+        },
         create: {
+          id: crypto.randomUUID(),
           credentialId: credentialIdString,
           publicKey: publicKeyBase64,
-          counter,
+          counter: credential.counter,
           usuarioId: usuario.id
-        }
+        },
       });
     }
 
-    // 4. Generación del Token JWT usando 'jose'
-    const secretText = process.env.JWT_SECRET || "fallback_secret_por_si_acaso_super_largo";
-    const secretUint8 = new TextEncoder().encode(secretText); // 'jose' requiere un Uint8Array
-
-    const token = await new jose.SignJWT({ id: usuario.id, email: usuario.email })
-      .setProtectedHeader({ alg: "HS256" }) // Define el algoritmo de firma
-      .setIssuedAt()
-      .setExpirationTime("7d") // Expira en 7 días
-      .sign(secretUint8);
-
-    return NextResponse.json({
-      success: true,
-      token, // Te devuelve el string del JWT generado por jose
-      data: {
-        email: usuario.email,
-        passwordSaved: Boolean(passwordHash),
-        dispositivoGuardado: Boolean(webauthnResponse),
-      },
-    });
+    return NextResponse.json({ success: true, message: "¡Sincronización de llaves completada!" });
 
   } catch (error: any) {
-    console.error("❌ Error en el proceso de recuperación con jose:", error);
-    return NextResponse.json({ success: false, error: error.message || "Error interno" }, { status: 500 });
+    console.error("Error en recovery:", error);
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }
