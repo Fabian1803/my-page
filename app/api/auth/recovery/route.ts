@@ -2,13 +2,14 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/server/shared/infrastructure/prisma";
 import { verifyRegistrationResponse } from "@simplewebauthn/server";
 import bcrypt from "bcrypt";
+import * as jose from "jose"; // Cambiado a 'jose'
 
 export async function POST(request: Request) {
   try {
     const body = await request.json().catch(() => ({}));
-    const { email, password, webauthnResponse, expectedChallenge } = body;
+    const { email, password, webauthnResponse } = body;
 
-    // 1. Validaciones iniciales
+    // 1. Validaciones básicas obligatorias
     if (!email || typeof email !== "string") {
       return NextResponse.json({ success: false, error: "El email es obligatorio" }, { status: 400 });
     }
@@ -30,14 +31,13 @@ export async function POST(request: Request) {
           },
         });
 
-    // 3. Verificación e Inserción del Dispositivo WebAuthn
+    // 3. Verificación e Inserción de las credenciales WebAuthn (Biométricos)
     if (webauthnResponse) {
       const urlObj = new URL(request.url);
       
-      // Validar la respuesta del navegador usando SimpleWebAuthn
       const verification = await verifyRegistrationResponse({
         response: webauthnResponse,
-        expectedChallenge: expectedChallenge || "challenge_temporal_f12", // Debe coincidir con el del F12
+        expectedChallenge: "Y2hhbGxlbmdlX3RlbXBvcmFsX2YxMg", // Parche estricto Base64URL
         expectedOrigin: urlObj.origin,
         expectedRPID: urlObj.hostname,
       });
@@ -46,32 +46,37 @@ export async function POST(request: Request) {
         return NextResponse.json({ success: false, error: "Verificación WebAuthn fallida" }, { status: 400 });
       }
 
-      // Solución al tipado de las nuevas versiones de SimpleWebAuthn
       const { credential } = verification.registrationInfo;
       const { id, publicKey, counter } = credential;
 
-      // Convertir datos binarios a los formatos string de tu DB
       const publicKeyBase64 = Buffer.from(publicKey).toString("base64");
       const credentialIdString = Buffer.from(id).toString("base64url");
 
-      // Guardar o actualizar el dispositivo asociado al usuario
       await prisma.dispositivo.upsert({
         where: { credentialId: credentialIdString },
-        update: { 
-          publicKey: publicKeyBase64, 
-          counter: counter 
-        },
+        update: { publicKey: publicKeyBase64, counter },
         create: {
           credentialId: credentialIdString,
           publicKey: publicKeyBase64,
-          counter: counter,
+          counter,
           usuarioId: usuario.id
         }
       });
     }
 
+    // 4. Generación del Token JWT usando 'jose'
+    const secretText = process.env.JWT_SECRET || "fallback_secret_por_si_acaso_super_largo";
+    const secretUint8 = new TextEncoder().encode(secretText); // 'jose' requiere un Uint8Array
+
+    const token = await new jose.SignJWT({ id: usuario.id, email: usuario.email })
+      .setProtectedHeader({ alg: "HS256" }) // Define el algoritmo de firma
+      .setIssuedAt()
+      .setExpirationTime("7d") // Expira en 7 días
+      .sign(secretUint8);
+
     return NextResponse.json({
       success: true,
+      token, // Te devuelve el string del JWT generado por jose
       data: {
         email: usuario.email,
         passwordSaved: Boolean(passwordHash),
@@ -80,10 +85,7 @@ export async function POST(request: Request) {
     });
 
   } catch (error: any) {
-    console.error("❌ Error en registro:", error);
-    return NextResponse.json({ 
-      success: false, 
-      error: error.message || "Error interno al procesar el registro" 
-    }, { status: 500 });
+    console.error("❌ Error en el proceso de recuperación con jose:", error);
+    return NextResponse.json({ success: false, error: error.message || "Error interno" }, { status: 500 });
   }
 }
