@@ -6,13 +6,16 @@ import TagSelector from './tagSelector';
 import DashboardLinksForm from './dashboardLinksForm';
 import { MdAdd, MdDelete } from 'react-icons/md';
 import { useProjectModal } from './hooks/useProjectModal';
+import { ProyectoReal } from '../mainPage/projects/projectsPage';
 
 interface ProjectModalProps {
     isOpen: boolean;
     onClose: () => void;
+    defaultData?: ProyectoReal | null;
+    onProjectSaved?: () => void;
 }
 
-export default function ProjectModal({ isOpen, onClose }: ProjectModalProps) {
+export default function ProjectModal({ isOpen, onClose, defaultData, onProjectSaved }: ProjectModalProps) {
     const { nombre,
         setNombre,
         descripcion,
@@ -30,13 +33,13 @@ export default function ProjectModal({ isOpen, onClose }: ProjectModalProps) {
         handleAddBlockInternal,
         handleBlockChangeInternal,
         handleRemoveBlockInternal,
-        handleSave } = useProjectModal(onClose)
+        handleRegisterTiptapFile,
+        handleSave } = useProjectModal(onClose, onProjectSaved, defaultData);
     return (
         <BaseModal
             isOpen={isOpen}
             onClose={onClose}
-            title="Crear un nuevo "
-            onSave={handleSave}
+            title={defaultData ? "Actualizar Proyecto" : "Crear un nuevo Proyecto"} onSave={handleSave}
             maxWidth="sm:max-w-3xl"
         >
             <div className="space-y-4">
@@ -123,6 +126,7 @@ export default function ProjectModal({ isOpen, onClose }: ProjectModalProps) {
                                         proyectoDescripcion={descripcion}
                                         proyectoTags={tags}
                                         indexSeccion={index + 1}
+                                        onRegisterFile={handleRegisterTiptapFile}
                                     />
                                 </div>
                             ))}

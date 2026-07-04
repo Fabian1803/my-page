@@ -19,10 +19,11 @@ interface InfoSectionProps {
     proyectoDescripcion: string;
     proyectoTags: string[];
     indexSeccion: number;
+    onRegisterFile: (fileId: string, file: File) => void;
 }
 
-export default function InfoSection({ htmlContent, setHtmlContent, proyectoNombre, proyectoDescripcion, proyectoTags, indexSeccion }: InfoSectionProps) {
-    const { isImageModalOpen, setIsImageModalOpen, fileVideoRef, handleVideoUploadDirect, handleSaveMultimediaFromModal, editor } = useInfoSection(htmlContent, setHtmlContent)
+export default function InfoSection({ htmlContent, setHtmlContent, proyectoNombre, proyectoDescripcion, proyectoTags, indexSeccion, onRegisterFile }: InfoSectionProps) {
+    const { isImageModalOpen, setIsImageModalOpen, fileVideoRef, handleVideoUploadDirect, handleSaveMultimediaFromModal, editor } = useInfoSection(htmlContent, setHtmlContent, onRegisterFile)
     if (!editor) return null
     return (
         <div className="flex flex-col gap-1.5 border-t border-gray-100 pt-4">
@@ -127,7 +128,7 @@ export default function InfoSection({ htmlContent, setHtmlContent, proyectoNombr
                 isOpen={isImageModalOpen}
                 onClose={() => setIsImageModalOpen(false)}
                 onSave={handleSaveMultimediaFromModal}
-                id="modal-editor-multimedia"
+                id={`modal-editor-multimedia-sec-${indexSeccion}`}
                 sugerenciaNombre={proyectoNombre ? `${proyectoNombre} imagen ${indexSeccion}` : ''}
                 sugerenciaDescripcion={proyectoDescripcion}
                 sugerenciaTags={proyectoTags}

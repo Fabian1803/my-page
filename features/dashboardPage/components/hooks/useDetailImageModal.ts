@@ -21,6 +21,7 @@ export function useDetailedImageModal({ onSave, onClose, defaultData, sugerencia
     const [compIconFile, setCompFileIcon] = useState<File | null>(null)
     const [compIconNombre, setCompIconNombre] = useState('')
     const internalFileInputRef = useRef<HTMLInputElement>(null)
+
     useEffect(() => {
         if (defaultData) {
             setCompNombre(defaultData.nombre || '')
@@ -41,7 +42,7 @@ export function useDetailedImageModal({ onSave, onClose, defaultData, sugerencia
             setCompFileIcon(null)
             setCompIconNombre('')
         }
-    }, [defaultData, sugerenciaNombre])
+    }, [defaultData, sugerenciaNombre, sugerenciaDescripcion, sugerenciaTags]) 
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0] || null
@@ -89,24 +90,10 @@ export function useDetailedImageModal({ onSave, onClose, defaultData, sugerencia
 
         onClose()
     }
+
     return {
-        preview,
-        iconPreview,
-        compNombre,
-        setCompNombre,
-        compDescripcion,
-        setCompDescripcion,
-        compTags,
-        setCompTags,
-        compBullets,
-        setCompBullets,
-        compIconNombre,
-        setCompIconNombre,
-        compIconFile,
-        internalFileInputRef,
-        handleFileChange,
-        handleIconChange,
-        handleRemoveIcon,
-        handleFormSubmit
+        preview, iconPreview, compNombre, setCompNombre, compDescripcion, setCompDescripcion,
+        compTags, setCompTags, compBullets, setCompBullets, compIconNombre, setCompIconNombre,
+        compIconFile, internalFileInputRef, handleFileChange, handleIconChange, handleRemoveIcon, handleFormSubmit
     }
 }
