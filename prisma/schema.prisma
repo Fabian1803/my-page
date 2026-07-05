@@ -27,7 +27,6 @@ model Dispositivo {
 
 model Proyecto {
   id             String         @id @default(uuid())
-  tipo           String         @default("PROYECTO")
   nombre         String
   descripcion    String         @db.VarChar(150)
   destacado      Boolean        @default(false)

@@ -26,9 +26,8 @@ export class PrismaResourceRepository implements ResourceRepository {
     return this.toProjectView(proyecto);
   }
 
-  async findAll(tipo?: string): Promise<any[]> {
+  async findAll(): Promise<any[]> {
     const proyectos = await prisma.proyecto.findMany({
-      where: tipo ? { tipo } : {},
       include: {
         portada: true,
         mediaResources: { orderBy: { createdAt: 'desc' } }

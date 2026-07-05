@@ -46,7 +46,6 @@ export default function ProjectsPage() {
         loadProjects()
     }, [])
 
-    // 🚀 Acciones de apertura del Modal
     const handleOpenCreate = () => {
         setSelectedProject(null) // Modo creación (limpio)
         setIsProjectModalOpen(true)

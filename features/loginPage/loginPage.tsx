@@ -15,8 +15,8 @@ export default function LoginPage() {
         setShowPassword,
         error,
         loading,
+        handleSubmit,
         setError,
-        handleNextClick,
         handleBiometricLogin,
         showFace
     } = useLogin()
@@ -24,7 +24,7 @@ export default function LoginPage() {
     return (
         <div className="min-h-screen text-black flex flex-col justify-between bg-[#f0f4f9] p-6 sm:p-10 md:p-16 lg:p-4 lg:items-center lg:justify-center">
             <div className="hidden max-md:block h-4" />
-            <div className="w-full lg:max-w-[1050px] bg-transparent lg:bg-white border-none lg:border lg:border-[#dadce0] lg:rounded-3xl lg:p-12 flex flex-col md:flex-row justify-between items-start gap-8 md:gap-16 lg:gap-16">
+            <form onSubmit={handleSubmit} className="w-full lg:max-w-[1050px] bg-transparent lg:bg-white border-none lg:border lg:border-[#dadce0] lg:rounded-3xl lg:p-12 flex flex-col md:flex-row justify-between items-start gap-8 md:gap-16 lg:gap-16">
                 <div className="w-full md:w-[45%] lg:w-1/2">
                     <div className="mb-6 md:mb-4 -ml-4">
                         <Image src="/FLogo.webp" alt="Logo" width={60} height={60} />
@@ -66,7 +66,7 @@ export default function LoginPage() {
                                     : '-translate-x-full opacity-0 pointer-events-none'
                                 }`}
                         >
-                            <div className="relative mb-6 w-full">
+                            <div className="relative mb-3 w-full">
                                 <input
                                     type="email"
                                     id="email"
@@ -86,7 +86,7 @@ export default function LoginPage() {
                             </div>
 
                             {error && (
-                                <p className="text-[#b3261e] text-[12px] -mt-4 mb-2 line-clamp-1">{error}</p>
+                                <p className="text-[#b3261e] text-[12px] mt-[1px] mb-2 line-clamp-1">{error}</p>
                             )}
 
                             <p className="text-[#0b57d0] font-medium text-[14px] mb-8 cursor-pointer hover:underline">
@@ -163,7 +163,8 @@ export default function LoginPage() {
                                     )} {loading ? 'Escaneando...' : 'Usar IFace'} 
                                 </span>
                                 <button
-                                    onClick={handleNextClick}
+                                    type="button"
+                                    onClick={handleSubmit}
                                     className="bg-[#0b57d0] text-white px-6 py-2.5 rounded-full font-medium text-[14px] hover:bg-[#155bd3]"
                                 >
                                     Siguiente
@@ -178,7 +179,8 @@ export default function LoginPage() {
                                     Atrás
                                 </span>
                                 <button
-                                    onClick={handleNextClick}
+                                    type="button"
+                                    onClick={handleSubmit}
                                     disabled={loading}
                                     className="bg-[#0b57d0] text-white px-6 py-2.5 rounded-full font-medium text-[14px] hover:bg-[#155bd3]"
                                 >
@@ -189,7 +191,7 @@ export default function LoginPage() {
                     </div>
 
                 </div>
-            </div>
+            </form>
 
             <div className="w-full lg:max-w-[1050px] flex justify-between text-sm text-black p-4">
                 <span className="cursor-pointer hover:underline">Español (España) ▾</span>

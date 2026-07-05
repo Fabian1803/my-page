@@ -56,21 +56,74 @@ export function useCertificatePage() {
         setSelectedCertificate(cert);
         setIsDetailedImageModalOpen(true);
     };
+    // En tu archivo de hook: useCertificatePage.ts
+
     const handleSaveDetailedImage = async (data: DetailedImageData) => {
         try {
             setIsLoading(true);
+
+            // 📦 Creamos el contenedor FormData nativo
+            const formData = new FormData();
+
+            // 🛡️ Banderas críticas para indicarle al backend que es un certificado aislado
+            formData.append("tipo", "CERTIFICADO");
+            formData.append("nombre", data.nombre.trim());
+            formData.append("descripcion", data.descripcion.trim());
+
+            // Mapeamos 'entidadIcono.nombre' directamente hacia el campo 'instituto' en el backend
+            if (data.entidadIcono?.nombre) {
+                formData.append("instituto", data.entidadIcono.nombre.trim());
+            }
+
+            // 🖼️ Adjuntamos los binarios físicos (Imágenes) si existen
+            if (data.imagen) {
+                formData.append("imagenPrincipal", data.imagen);
+            } else if (!selectedCertificate) {
+                throw new Error("La imagen del certificado es completamente obligatoria.");
+            }
+
+            if (data.entidadIcono?.archivo) {
+                formData.append("miniaturaIcono", data.entidadIcono.archivo);
+            }
+
+            // 🏷️ Serializamos colecciones dinámicas como JSON stringificados
+            formData.append("categorias", JSON.stringify(data.tags || []));
+            formData.append("vinetas", JSON.stringify(data.detalles || []));
+
+            let response;
+
             if (selectedCertificate) {
-                const certActualizado = await certificateService.actualizarCertificado(selectedCertificate.id, data);
-                setCertificados(prev => prev.map(c => c.id === selectedCertificate.id ? certActualizado : c));
+                // 💡 MODO ACTUALIZACIÓN (PUT)
+                formData.append("id", selectedCertificate.id);
+                response = await fetch('/api/resources', {
+                    method: 'PUT',
+                    body: formData
+                });
+            } else {
+                // 💡 MODO CREACIÓN (POST)
+                response = await fetch('/api/resources', {
+                    method: 'POST',
+                    body: formData
+                });
+            }
+
+            const result = await response.json();
+            if (!result.success) throw new Error(result.error || "Error en el servidor");
+
+            // 🔄 Sincronización limpia del estado en memoria
+            if (selectedCertificate) {
+                setCertificados(prev => prev.map(c => c.id === selectedCertificate.id ? result.data : c));
                 alert("🏆 Certificación actualizada con éxito.");
             } else {
-                const nuevoCert = await certificateService.crearCertificado(data);
-                setCertificados(prev => [nuevoCert, ...prev]);
+                setCertificados(prev => [result.data, ...prev]);
                 alert("🏆 Certificación creada con éxito.");
             }
+
             setIsDetailedImageModalOpen(false);
             setSelectedCertificate(null);
+
         } catch (error: any) {
+            console.error("Error procesando el certificado:", error);
             alert("Error al procesar: " + error.message);
         } finally {
             setIsLoading(false);

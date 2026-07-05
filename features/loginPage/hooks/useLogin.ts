@@ -13,7 +13,6 @@ export function useLogin() {
     const [loading, setLoading] = useState(false)
     const [showFace, setShowFace] = useState(true)
     const ADMIN_EMAIL = "fabianriveraabian3@gmail.com"
-
     useEffect(() => {
         const interval = setInterval(() => {
             setShowFace((prev) => !prev)
@@ -50,98 +49,88 @@ export function useLogin() {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    email: email.trim(),
+                    email: ADMIN_EMAIL,
                     password
                 })
             })
             const result = await response.json()
             if (!response.ok || !result.success) {
-                setError(result.error || 'Contraseña incorrecta. Vuelve a intentarlo.')
+                setError('Contraseña incorrecta. Vuelve a intentarlo.')
                 return
             }
             router.push('/dashboard')
 
         } catch (err) {
-            setError('Hubo un error al intentar conectar con el servidor.')
+            console.error("Error de login:", err)
+            setError('No se pudo conectar. Error del sistema.')
         } finally {
             setLoading(false)
         }
     }
+    const handleSubmit = (e?: React.FormEvent) => {
+        if (e) e.preventDefault()
+        if (loading) return
 
-    const handleNextClick = (e: React.MouseEvent) => {
-        e.preventDefault()
         if (step === 'email') {
             handleEmailNext()
         } else {
             handleLoginSubmit()
         }
     }
+
     const handleBiometricLogin = async () => {
-        setError(null);
-        setLoading(true);
-        try {
-            const challengeRes = await fetch("/api/auth/challenge", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({}),
-            });
-            if (!challengeRes.ok) {
-                throw new Error(`Error en el servidor: ${challengeRes.status}`);
-            }
+    setError(null);
+    setLoading(true);
+    try {
+        const challengeRes = await fetch("/api/auth/challenge", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({}),
+        });
+        if (!challengeRes.ok) throw new Error("Error challenge");
 
-            const challengeData = await challengeRes.json();
-            if (!challengeData.success) {
-                throw new Error(challengeData.error || "No se pudo generar el desafío.");
-            }
+        const challengeData = await challengeRes.json();
+        if (!challengeData.success) throw new Error("Error challenge data");
 
-            const { options } = challengeData.data;
-            const authResponse = await startAuthentication(options);
+        const { options } = challengeData.data;
+        const authResponse = await startAuthentication(options);
 
-            const verifyRes = await fetch("/api/auth/verify-challenge", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    body: authResponse,
-                    expectedChallenge: options.challenge,
-                    email: ADMIN_EMAIL,
-                }),
-            });
+        const verifyRes = await fetch("/api/auth/verify-challenge", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                body: authResponse,
+                expectedChallenge: options.challenge,
+                email: ADMIN_EMAIL,
+            }),
+        });
 
-            if (!verifyRes.ok) {
-                throw new Error(`Error en la verificación: ${verifyRes.status}`);
-            }
+        if (!verifyRes.ok) throw new Error("Error verify");
 
-            const verifyData = await verifyRes.json();
-            if (!verifyData.success) {
-                throw new Error(verifyData.error || "Verificación biométrica fallida.");
-            }
+        const verifyData = await verifyRes.json();
+        if (!verifyData.success) throw new Error("Error verify data");
 
-            // 4. Éxito rotundo. Entramos al panel
-            router.refresh();
-            router.push("/dashboard");
+        router.refresh();
+        router.push("/dashboard");
 
-        } catch (err: any) {
-            console.error("Error en WebAuthn:", err);
-            setError(err.message || "Autenticación biométrica fallida.");
-        } finally {
-            setLoading(false);
+    } catch (err: any) {
+        console.error("Error detallado de WebAuthn:", err);
+        const mensajeError = err.message || "";
+        if (mensajeError.includes("The operation was aborted") || mensajeError.includes("cancelled")) {
+            setError("Autenticación biométrica cancelada.");
+        } else if (mensajeError.includes("not allowed") || mensajeError.includes("failed")) {
+            setError("Rostro o huella no reconocidos. Inténtalo de nuevo.");
+        } else {
+            setError("No se pudo verificar. Error del sistema.");
         }
-    };
+    } finally {
+        setLoading(false);
+    }
+};
 
     return {
-        step,
-        setStep,
-        email,
-        setEmail,
-        password,
-        setPassword,
-        showPassword,
-        setShowPassword,
-        error,
-        setError,
-        loading,
-        handleNextClick,
-        handleBiometricLogin,
-        showFace
+        step, setStep, email, setEmail, password, setPassword,
+        showPassword, setShowPassword, error, setError, loading,
+        handleSubmit, handleBiometricLogin, showFace
     }
 }

@@ -124,7 +124,6 @@ export function useProjectModal(onClose: () => void, onProjectSaved?: () => void
             formData.append("descripcion", descripcion.trim())
             formData.append("destacado", String(destacado))
 
-            // Portada binaria (Obligatoria en creación, opcional en actualización si no se cambia)
             if (datosImagenEstructurada?.imagen) {
                 const ext = datosImagenEstructurada.imagen.name.split('.').pop()
                 const archivoRenombrado = new File(
