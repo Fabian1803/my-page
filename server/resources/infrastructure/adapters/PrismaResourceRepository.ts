@@ -2,14 +2,12 @@
 import { ResourceRepository } from "../../domain/ports/ResourceRepository";
 import { Resource } from "../../domain/models/Resource";
 import { prisma } from "@/server/shared/infrastructure/prisma";
-
 export class PrismaResourceRepository implements ResourceRepository {
   async save(resource: Resource): Promise<any> {
     const data = resource.toObject();
     const proyecto = await prisma.proyecto.create({
       data: {
         id: data.id,
-        tipo: data.tipo,
         destacado: data.destacado,
         nombre: data.nombre,
         descripcion: data.descripcion,
@@ -59,7 +57,6 @@ export class PrismaResourceRepository implements ResourceRepository {
     const proyectoActualizado = await prisma.proyecto.update({
       where: { id },
       data: {
-        tipo: data.tipo,
         destacado: data.destacado,
         nombre: data.nombre,
         descripcion: data.descripcion,
