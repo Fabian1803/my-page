@@ -9,15 +9,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     return (
         <div className="min-h-screen bg-[#f0f4f9] text-[#202124] antialiased flex flex-col md:flex-row">
             <DashboardHeaderPage onOpenMenu={setIsMenuOpen} />
-            <DashboardAsidePage isMenuOpen={isMenuOpen} />
+            <DashboardAsidePage isMenuOpen={isMenuOpen} onOpenMenu={setIsMenuOpen} />
             {isMenuOpen && (
                 <div
                     onClick={() => setIsMenuOpen(false)}
-                    className="fixed inset-0 bg-black/20 z-40 md:hidden backdrop-blur-[1px]"
+                    className="fixed inset-0 bg-black/60 z-40"
                 />
             )}
 
-            <main className="flex-1 p-4 md:p-6 pt-24 md:pt-10">
+            <main className="flex-1 mt-14">
                 <div className="w-full max-w-6xl mx-auto">
                     {children}
                 </div>
