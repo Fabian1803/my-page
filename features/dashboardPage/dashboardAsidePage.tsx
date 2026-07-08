@@ -3,7 +3,6 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { MdExitToApp, MdLoyalty, MdOutlineAlternateEmail, MdOutlineAssignmentInd, MdOutlineDashboard, MdOutlinePermIdentity } from 'react-icons/md'
-import { useLogout } from './hooks/useLogout'
 import { HiOutlineXMark } from "react-icons/hi2";
 import { FaChevronRight } from 'react-icons/fa'
 interface HeaderProps {
@@ -13,10 +12,8 @@ interface HeaderProps {
 
 export default function DashboardAsidePage({ isMenuOpen, onOpenMenu }: HeaderProps) {
     const pathname = usePathname()
-    const { logout, isLoading } = useLogout()
-
     const links = { top:[
-        { href: '/dashboard', label: 'Proyectos', icon: <MdOutlineDashboard size={20} /> },
+        { href: '/dashboard/proyectos', label: 'Proyectos', icon: <MdOutlineDashboard size={20} /> },
         { href: '/dashboard/certificados', label: 'Certificados', icon: <MdOutlineAssignmentInd size={20} /> },
         { href: '/dashboard/etiquetas', label: 'Etiquetas', icon: <MdLoyalty size={20} /> },
         { href: '/dashboard/cv', label: 'CV', icon: <MdOutlineAssignmentInd size={20} /> },
@@ -82,17 +79,6 @@ export default function DashboardAsidePage({ isMenuOpen, onOpenMenu }: HeaderPro
                         )
                     })}
                 </nav>
-            </div>
-
-            <div className="pt-2 border-t border-gray-100 flex items-center px-3">
-                <button
-                    onClick={logout}
-                    disabled={isLoading}
-                    className="w-full flex justify-center gap-3 items-center py-3 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200 font-medium text-[15px] disabled:opacity-50"
-                >
-                    <MdExitToApp size={20} />
-                    <p>{isLoading ? 'Saliendo...' : 'Salir'}</p>
-                </button>
             </div>
         </aside>
     )

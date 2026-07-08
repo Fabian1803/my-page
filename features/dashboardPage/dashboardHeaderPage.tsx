@@ -4,6 +4,7 @@ import { IoMdMenu, IoMdMore, IoMdNotificationsOutline, IoMdSearch } from 'react-
 import { TbTerminal2 } from 'react-icons/tb'
 import { FaUser } from 'react-icons/fa';
 import { MdLockOutline } from 'react-icons/md';
+import { useLogout } from './hooks/useLogout';
 
 interface HeaderProps {
     onOpenMenu: (open: boolean) => void
@@ -11,6 +12,7 @@ interface HeaderProps {
 
 export default function DashboardHeaderPage({ onOpenMenu }: HeaderProps) {
     const [isProfileOpen, setIsProfileOpen] = useState(false);
+        const { logout, isLoading } = useLogout()
     return (
         <header className="w-full bg-[#f0f5fe]  px-4 flex justify-between items-center fixed top-0 left-0 z-30 h-12">
             <div className="flex gap-2 sm:gap-3 items-center min-w-0">
@@ -72,8 +74,6 @@ export default function DashboardHeaderPage({ onOpenMenu }: HeaderProps) {
                     {isProfileOpen && (
                         <>
                             <div className="fixed inset-0 z-40" onClick={() => setIsProfileOpen(false)} />
-                            
-                            {/* MODAL OPTIMIZADO RESPONSIVO */}
                             <div className="absolute right-[-8px] sm:right-0 mt-2 w-[calc(100vw-32px)] max-w-[360px] sm:w-90 bg-[#f0f5fe] border border-gray-200 rounded-xl shadow-xl pt-2 z-50 animate-in fade-in slide-in-from-top-1 duration-150">
                                 <div className="px-4 py-3 border-b border-[#b7c3e1] flex items-center gap-3">
                                     <div className="rounded-full w-23 h-23 shrink-0 overflow-hidden border border-gray-200">
@@ -106,7 +106,10 @@ export default function DashboardHeaderPage({ onOpenMenu }: HeaderProps) {
 
                                 <hr className="border-[#b7c3e1] mt-1" />
                                 <div className="w-full h-full bg-[#e9eef6] py-3 px-5 rounded-b-xl">
-                                    <button className="border px-4 py-[7px] rounded-md border-[#828993] hover:bg-[#e3e8f0] text-sm cursor-pointer">
+                                    <button
+                                        onClick={logout}
+                                        disabled={isLoading}
+                                        className="border px-4 py-[7px] rounded-md border-[#828993] hover:bg-[#e3e8f0] text-sm cursor-pointer">
                                         Salir
                                     </button>
                                 </div>
