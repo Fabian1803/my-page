@@ -1,8 +1,6 @@
 'use client'
-import TagSelector from '@/features/dashboardPage/mainPage/forms/components/tagSelector'
 import { useState } from 'react'
-import VignetteInput from '@/features/dashboardPage/mainPage/forms/components/vignetteInput'
-import { InputCloud, InputImageCloud, InstitutionInputCloud, TextAreaCloud } from './components';
+import { InputCloud, InputImageCloud, InstitutionInputCloud, TextAreaCloud, TagSelector, VignetteInput } from './components';
 import CloudResourceContainer from './layout/CloudResourceContainer';
 
 const COSTOS_POR_CAMPO: Record<string, { item: string; itemCost: string; total: string }> = {

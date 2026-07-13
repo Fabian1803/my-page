@@ -1,12 +1,12 @@
 'use client'
-import { MdAdd, MdEdit, MdDelete } from 'react-icons/md'
-import DetailedImageModal from '../../components/detailedImageModal'
+import { MdDelete } from 'react-icons/md'
 import { useCertificatePage } from './hooks/useCertificatePage'
 import { BsFillBookmarkPlusFill, BsThreeDotsVertical } from 'react-icons/bs'
 import { CiBookmarkRemove } from 'react-icons/ci'
 import { BiDislike, BiLike } from 'react-icons/bi'
 import { IoReload } from 'react-icons/io5'
 import { FaArrowRight } from 'react-icons/fa'
+import Link from 'next/link'
 
 export default function CertificatesPage() {
     const {
@@ -24,21 +24,17 @@ export default function CertificatesPage() {
     } = useCertificatePage()
 
     return (
-        <>
             <div className="max-w-[1600px] mx-auto flex flex-col h-full gap-1 bg-[#f9fafb] rounded-t-2xl">
                 <div className="flex justify-between border-b border-[#dbdce0] px-6 pt-3 pb-2 bg-white rounded-t-2xl">
                     <div className="flex gap-2 justify-between w-full sm:w-auto">
                         <h1 className='text-lg font-medium text-gray-800'>Mis Certificados</h1>
-                        <button
-                            type="button"
-                            onClick={() => {
-                                setSelectedCertificate(null);
-                                setIsDetailedImageModalOpen(true);
-                            }}
-                            className="flex items-center gap-2 bg-[#0c68e0] hover:bg-blue-900 transition px-2 py-1 text-white rounded-sm cursor-pointer">
+                        <Link
+                            href="/dashboard/certificados/crear"
+                            className="flex items-center gap-2 bg-[#0c68e0] hover:bg-blue-900 transition px-2 py-1 text-white rounded-sm cursor-pointer"
+                        >
                             <BsFillBookmarkPlusFill size={14} />
                             <span className="text-[14px] font-semibold">Crear Certificado</span>
-                        </button>
+                        </Link>
                         <div className="hidden sm:flex items-center gap-2 hover:bg-gray-200 transition px-2 py-1 text-[#0c68e0] hover:text-blue-700 rounded-sm cursor-pointer">
                             <CiBookmarkRemove size={16} />
                             <span className='text-[14px]'>Ver certificados</span>
@@ -146,17 +142,5 @@ export default function CertificatesPage() {
                     ))}
                 </div>
             </div>
-
-            {/* MODAL DE DETALLE COMPARTIDO */}
-            <DetailedImageModal
-                isOpen={isDetailedImageModalOpen}
-                onClose={() => {
-                    setIsDetailedImageModalOpen(false);
-                    setSelectedCertificate(null);
-                }}
-                onSave={handleSaveDetailedImage}
-                defaultData={selectedCertificate}
-            />
-        </>
     )
 }

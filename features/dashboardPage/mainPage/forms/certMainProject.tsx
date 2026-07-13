@@ -1,18 +1,20 @@
 'use client'
 import { InputCloud, InputImageCloud, TextAreaCloud } from './components';
-import TagSelector from './components/tagSelector';
-import VignetteInput from './components/vignetteInput';
+import TagSelector from './components/TagSelector';
+import VignetteInput from './components/VignetteInput';
 import { useState } from 'react';
 import DocumentationSectionsCloud from './components/DocumentationSectionsCloud';
 import CloudResourceContainer from './layout/CloudResourceContainer';
+import LinksProyect from './components/LinksProyect';
 const COSTOS_POR_CAMPO: Record<string, { item: string; itemCost: string; total: string }> = {
-    'Nombre del proyecto': { item: "Premium Namespace Routing", itemCost: "$12.50", total: "$36,726.17" },
-    'Descripción': { item: "Metadata Storage (Standard)", itemCost: "$0.45", total: "$36,714.12" },
-    'Categoría': { item: "Object Storage SSD (100 GB)", itemCost: "$5.20", total: "$36,718.87" },
-    'Viñetas': { item: "Verified IAM Authority Sync", itemCost: "$25.00", total: "$36,738.67" },
-    'Imagen': { item: "Global Tag Cluster Provision", itemCost: "$8.10", total: "$36,721.77" },
-    'Documentación': { item: "Audit Log Streaming Unit", itemCost: "$3.30", total: "$36,716.97" },
-    'default': { item: "416 vCPU + 5,888 GB memory", itemCost: "$36,712.67", total: "$36,713.67" }
+    'Nombre del proyecto': { item: "E2 Standard vCPU Provisioning", itemCost: "$25.40", total: "$36,738.90" },
+    'Descripción': { item: "Cloud Storage Bucket Metadata", itemCost: "$0.15", total: "$36,713.65" },
+    'Categoría': { item: "Global VPC Network Tag Routing", itemCost: "$7.30", total: "$36,720.80" },
+    'Viñetas': { item: "Artifact Registry Streaming Logs", itemCost: "$3.80", total: "$36,717.30" },
+    'Imagen': { item: "SSD Persistent Disk (Source Image)", itemCost: "$17.00", total: "$36,730.50" },
+    'Enlaces': { item: "External Load Balancer IP Frontend", itemCost: "$14.60", total: "$36,728.10" },
+    'Documentación': { item: "Cloud Run Instance Cache Layer", itemCost: "$5.20", total: "$36,718.70" },
+    'default': { item: "Compute Node base infrastructure", itemCost: "$36,713.50", total: "$36,713.50" }
 };
 export default function CertMainProject() {
     const [compTags, setCompTags] = useState<string[]>([])
@@ -82,6 +84,13 @@ export default function CertMainProject() {
                 onClick={() => setActiveField('Imagen')}
                 value={null}
                 onChange={() => { }}
+            />
+            <LinksProyect 
+                onClick={() => setActiveField('Enlaces')}
+                dynamicLinks={[]} 
+                onAddLink={() => {}} 
+                onUrlChange={() => {}} 
+                onRemoveLink={() => {}}
             />
             <DocumentationSectionsCloud
                 contentBlocks={contentBlocks}

@@ -1,8 +1,6 @@
 'use client'
-import InfoSection from '@/features/dashboardPage/mainPage/forms/components/infoSection';
-import React from 'react';
 import { MdDelete, MdAdd, MdInfo } from 'react-icons/md';
-
+import InfoSection from './InfoSection';
 interface ContentBlock {
     id: string;
     content: string;

@@ -1,4 +1,9 @@
+export { default as DocumentationSectionsCloud } from './DocumentationSectionsCloud';
 export { default as InputCloud } from './InputCloud';
 export { default as InputImageCloud } from './InputImageCloud';
 export { default as InstitutionInputCloud } from './InstitutionInputCloud';
+export { default as LinksProyect } from './LinksProyect';
 export { default as TextAreaCloud } from './TextAreaCloud';
+export { default as InfoSection } from './InfoSection';
+export { default as TagSelector } from './TagSelector';
+export { default as VignetteInput } from './VignetteInput';

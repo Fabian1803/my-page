@@ -1,6 +1,4 @@
 import { useEffect, useState } from "react";
-import { DetailedImageData } from "@/features/dashboardPage/components/detailedImageModal";
-import { certificateService } from "@/features/dashboardPage/services/certificateService";
 
 export interface Certificate {
     id: string;
@@ -56,79 +54,8 @@ export function useCertificatePage() {
         setSelectedCertificate(cert);
         setIsDetailedImageModalOpen(true);
     };
-    const handleSaveDetailedImage = async (data: DetailedImageData) => {
-        try {
-            setIsLoading(true);
-            const formData = new FormData();
-
-            // 1. Forzar el tipo correcto
-            formData.append("tipo", "CERTIFICADO");
-            formData.append("nombre", data.nombre.trim());
-
-            // 2. IMPORTANTE: El dominio Resource corta a 150 caracteres máximo. Evitamos que rompa el backend.
-            const descripcionSanitizada = data.descripcion.trim().slice(0, 150);
-            formData.append("descripcion", descripcionSanitizada);
-
-            if (data.entidadIcono?.nombre) formData.append("instituto", data.entidadIcono.nombre.trim());
-
-            if (data.imagen) {
-                formData.append("imagenPrincipal", data.imagen);
-            } else if (!selectedCertificate) {
-                throw new Error("La imagen del certificado es completamente obligatoria.");
-            }
-
-            if (data.entidadIcono?.archivo) formData.append("miniaturaIcono", data.entidadIcono.archivo);
-
-            // 3. Mapear tags limpiamente extrayendo solo el nombre string que espera el backend
-            // Cambia la línea de tagsFormateados por esta:
-            const tagsFormateados = ((data.tags || []) as Array<string | { id: string; nombre: string }>).map(t =>
-                typeof t === 'object' && t !== null ? t.nombre : t
-            );
-            formData.append("categorias", JSON.stringify(tagsFormateados));
-            formData.append("vinetas", JSON.stringify(data.detalles || []));
-
-            // Inicializar seccionesDoc vacías para cumplir los requerimientos del caso de uso
-            formData.append("seccionesDoc", JSON.stringify([]));
-
-            let response;
-
-            if (selectedCertificate) {
-                // Mandamos el ID completo y real (UUID) sin romperlo
-                const cleanId = selectedCertificate.id;
-
-                formData.append("id", cleanId);
-
-                response = await fetch('/api/resources', {
-                    method: 'PUT',
-                    body: formData
-                });
-            } else {
-                response = await fetch('/api/resources', {
-                    method: 'POST',
-                    body: formData
-                });
-            }
-
-            const result = await response.json();
-            if (!result.success) throw new Error(result.error || "Error en el servidor");
-
-            if (selectedCertificate) {
-                setCertificados(prev => prev.map(c => c.id === selectedCertificate.id ? result.data : c));
-                alert("🏆 Certificación actualizada con éxito.");
-            } else {
-                setCertificados(prev => [result.data, ...prev]);
-                alert("🏆 Certificación creada con éxito.");
-            }
-
-            setIsDetailedImageModalOpen(false);
-            setSelectedCertificate(null);
-
-        } catch (error: any) {
-            console.error("Error procesando el certificado:", error);
-            alert("Error al procesar: " + error.message);
-        } finally {
-            setIsLoading(false);
-        }
+    const handleSaveDetailedImage = async () => {
+        
     };
     const skeletons = [1, 2]
 

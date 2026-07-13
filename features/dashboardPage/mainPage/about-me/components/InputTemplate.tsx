@@ -89,8 +89,6 @@ export default function InputTemplate({ titulo, placeholderUno, placeholderDos, 
                                     onChange={(e) => actualizarExperiencia(exp.id, 'cargo', e.target.value)}
                                     className="w-full px-4 py-2 border border-[#747775] rounded-xl text-sm focus:outline-none focus:border-2 focus:border-[#0b57d0]"
                                 />
-
-                                {/* Control: Fecha de Inicio */}
                                 <div className="flex flex-col gap-1">
                                     <label className="text-xs text-[#5f6368] pl-1">Fecha de inicio</label>
                                     <div className="flex">

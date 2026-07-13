@@ -14,12 +14,13 @@ export default function DecorationLeft({ activeField, title }: DecorationLeftPro
     ];
 
     const listProyecto = [
-        { nombre: 'Nombre del proyecto', descripcion: "e1 medium, us-central1" },
-        { nombre: 'Descripción', descripcion: 'Debian GNU Linux 11 (bullseye)' },
-        { nombre: 'Categoría', descripcion: 'Instance template' },
-        { nombre: 'Viñetas', descripcion: 'Ops Agent' },
-        { nombre: 'Imagen', descripcion: 'Snapshot schedules' },
-        { nombre: 'Documentación', descripcion: '1 Network instance' },
+        { nombre: 'Nombre del proyecto', descripcion: 'e2-standard-2, us-central1-a' },
+        { nombre: 'Descripción', descripcion: 'Object Storage Bucket Metadata' },
+        { nombre: 'Categoría', descripcion: 'VPC Network Target Tags' },
+        { nombre: 'Viñetas', descripcion: 'Artifact Registry Repositories' },
+        { nombre: 'Imagen', descripcion: 'Boot Disk SSD Snapshot' },
+        { nombre: 'Enlaces', descripcion: 'External HTTP(S) Load Balancer' },
+        { nombre: 'Documentación', descripcion: 'Cloud Run Service Revision' },
     ];
     const currentList = title === 'proyecto' ? listProyecto : listCertificado;
     return (
@@ -29,11 +30,10 @@ export default function DecorationLeft({ activeField, title }: DecorationLeftPro
                 return (
                     <div key={index} className={`grid grid-cols-[30px_auto] items-center pl-4 py-4 ${isCurrentActive ? 'bg-blue-100 border-l-4 border-blue-500' : ''}`}>
                         <div className="flex items-start justify-start h-full pt-1.5">
-                            <FaCircle 
-                                size={10} 
-                                className={`transition-colors duration-200 ${
-                                    isCurrentActive ? 'text-[#3367d6]' : 'text-gray-300'
-                                }`} 
+                            <FaCircle
+                                size={10}
+                                className={`transition-colors duration-200 ${isCurrentActive ? 'text-[#3367d6]' : 'text-gray-300'
+                                    }`}
                             />
                         </div>
                         <div>
