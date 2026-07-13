@@ -56,51 +56,53 @@ export function useCertificatePage() {
         setSelectedCertificate(cert);
         setIsDetailedImageModalOpen(true);
     };
-    // En tu archivo de hook: useCertificatePage.ts
-
     const handleSaveDetailedImage = async (data: DetailedImageData) => {
         try {
             setIsLoading(true);
-
-            // 📦 Creamos el contenedor FormData nativo
             const formData = new FormData();
 
-            // 🛡️ Banderas críticas para indicarle al backend que es un certificado aislado
+            // 1. Forzar el tipo correcto
             formData.append("tipo", "CERTIFICADO");
             formData.append("nombre", data.nombre.trim());
-            formData.append("descripcion", data.descripcion.trim());
 
-            // Mapeamos 'entidadIcono.nombre' directamente hacia el campo 'instituto' en el backend
-            if (data.entidadIcono?.nombre) {
-                formData.append("instituto", data.entidadIcono.nombre.trim());
-            }
+            // 2. IMPORTANTE: El dominio Resource corta a 150 caracteres máximo. Evitamos que rompa el backend.
+            const descripcionSanitizada = data.descripcion.trim().slice(0, 150);
+            formData.append("descripcion", descripcionSanitizada);
 
-            // 🖼️ Adjuntamos los binarios físicos (Imágenes) si existen
+            if (data.entidadIcono?.nombre) formData.append("instituto", data.entidadIcono.nombre.trim());
+
             if (data.imagen) {
                 formData.append("imagenPrincipal", data.imagen);
             } else if (!selectedCertificate) {
                 throw new Error("La imagen del certificado es completamente obligatoria.");
             }
 
-            if (data.entidadIcono?.archivo) {
-                formData.append("miniaturaIcono", data.entidadIcono.archivo);
-            }
+            if (data.entidadIcono?.archivo) formData.append("miniaturaIcono", data.entidadIcono.archivo);
 
-            // 🏷️ Serializamos colecciones dinámicas como JSON stringificados
-            formData.append("categorias", JSON.stringify(data.tags || []));
+            // 3. Mapear tags limpiamente extrayendo solo el nombre string que espera el backend
+            // Cambia la línea de tagsFormateados por esta:
+            const tagsFormateados = ((data.tags || []) as Array<string | { id: string; nombre: string }>).map(t =>
+                typeof t === 'object' && t !== null ? t.nombre : t
+            );
+            formData.append("categorias", JSON.stringify(tagsFormateados));
             formData.append("vinetas", JSON.stringify(data.detalles || []));
+
+            // Inicializar seccionesDoc vacías para cumplir los requerimientos del caso de uso
+            formData.append("seccionesDoc", JSON.stringify([]));
 
             let response;
 
             if (selectedCertificate) {
-                // 💡 MODO ACTUALIZACIÓN (PUT)
-                formData.append("id", selectedCertificate.id);
+                // Mandamos el ID completo y real (UUID) sin romperlo
+                const cleanId = selectedCertificate.id;
+
+                formData.append("id", cleanId);
+
                 response = await fetch('/api/resources', {
                     method: 'PUT',
                     body: formData
                 });
             } else {
-                // 💡 MODO CREACIÓN (POST)
                 response = await fetch('/api/resources', {
                     method: 'POST',
                     body: formData
@@ -110,7 +112,6 @@ export function useCertificatePage() {
             const result = await response.json();
             if (!result.success) throw new Error(result.error || "Error en el servidor");
 
-            // 🔄 Sincronización limpia del estado en memoria
             if (selectedCertificate) {
                 setCertificados(prev => prev.map(c => c.id === selectedCertificate.id ? result.data : c));
                 alert("🏆 Certificación actualizada con éxito.");
@@ -129,13 +130,14 @@ export function useCertificatePage() {
             setIsLoading(false);
         }
     };
-    const skeletons = [1, 2, 3, 4]
+    const skeletons = [1, 2]
 
     return {
         certificados,
         isLoading,
         skeletons,
         isDetailedImageModalOpen,
+        cargarCertificados,
         setIsDetailedImageModalOpen,
         handleSaveDetailedImage,
         handleDeleteCertificate,

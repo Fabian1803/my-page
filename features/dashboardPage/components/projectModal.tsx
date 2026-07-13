@@ -1,8 +1,8 @@
 'use client'
 import BaseModal from '@/features/dashboardPage/components/baseModal'
-import InfoSection from './infoSection'
+import InfoSection from '../mainPage/forms/components/infoSection'
 import ImageInput from './imageInput';
-import TagSelector from './tagSelector';
+import TagSelector from '../mainPage/forms/components/tagSelector';
 import DashboardLinksForm from './dashboardLinksForm';
 import { MdAdd, MdDelete } from 'react-icons/md';
 import { useProjectModal } from './hooks/useProjectModal';

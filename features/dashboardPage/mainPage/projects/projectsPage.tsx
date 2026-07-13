@@ -1,5 +1,5 @@
 'use client'
-import { MdAdd, MdDelete, MdEdit } from 'react-icons/md'
+import { MdDelete } from 'react-icons/md'
 import ProjectModal from '../../components/projectModal'
 import { useProjectsPage } from './useProjectsPage';
 import { BsFillBookmarkPlusFill, BsThreeDotsVertical } from 'react-icons/bs';
@@ -23,12 +23,10 @@ export interface ProyectoReal {
 }
 
 export default function ProjectsPage() {
-    const { proyectos, isLoading, isProjectModalOpen, selectedProject, loadProjects, setIsProjectModalOpen, handleOpenEdit, handleDeleteProject, handleOpenCreate } = useProjectsPage();
-    const skeletons = [1, 2]
-    
+    const { proyectos, isLoading, isProjectModalOpen, selectedProject, skeletons, loadProjects, setIsProjectModalOpen, handleOpenEdit, handleDeleteProject, handleOpenCreate } = useProjectsPage();
     return (
         <>
-            <div className="max-w-[1600px] flex flex-col h-full gap-1 bg-[#f9fafb]">
+            <div className="max-w-[1600px] mx-auto flex flex-col h-full gap-1 bg-[#f9fafb] rounded-t-2xl">
                 <div className="flex justify-between border-b border-[#dbdce0] px-6 pt-3 pb-2 bg-white rounded-t-2xl">
                     <div className="flex gap-2 justify-between w-full sm:w-auto">
                         <h1 className='text-lg'>Mis Proyectos</h1>
@@ -125,8 +123,6 @@ export default function ProjectsPage() {
                                     />
                                 </div>
                             </div>
-
-                            {/* Botón de Acción Principal para Actualizar / Personalizar */}
                             <button 
                                 type="button"
                                 onClick={() => handleOpenEdit(proyecto)}

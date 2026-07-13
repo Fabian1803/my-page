@@ -2,7 +2,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { MdExitToApp, MdLoyalty, MdOutlineAlternateEmail, MdOutlineAssignmentInd, MdOutlineDashboard, MdOutlinePermIdentity } from 'react-icons/md'
+import { MdLoyalty, MdOutlineAlternateEmail, MdOutlineAssignmentInd, MdOutlineDashboard, MdOutlinePermIdentity } from 'react-icons/md'
 import { HiOutlineXMark } from "react-icons/hi2";
 import { FaChevronRight } from 'react-icons/fa'
 interface HeaderProps {
@@ -44,6 +44,7 @@ export default function DashboardAsidePage({ isMenuOpen, onOpenMenu }: HeaderPro
                             <Link
                                 key={index}
                                 href={link.href}
+                                onClick={() => onOpenMenu(false)}
                                 className="flex justify-between items-center pl-6 pr-10 py-[10px] text-[15px] font-medium  transition-all duration-200 text-gray-600 hover:bg-[#e9eef7] hover:text-gray-900"
                             >
                                 <span className='flex gap-3'>
@@ -68,6 +69,7 @@ export default function DashboardAsidePage({ isMenuOpen, onOpenMenu }: HeaderPro
                             <Link
                                 key={index}
                                 href={link.href}
+                                onClick={() => onOpenMenu(false)}
                                 className="flex justify-between items-center pl-6 pr-10 py-[10px] text-[15px] font-medium  transition-all duration-200 text-gray-600 hover:bg-[#e9eef7] hover:text-gray-900"
                             >
                                 <span className='flex gap-3'>

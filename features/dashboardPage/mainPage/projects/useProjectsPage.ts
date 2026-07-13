@@ -51,10 +51,11 @@ export function useProjectsPage() {
                 alert('Error: ' + error.message)
             }
         }
-    
+        const skeletons = [1, 2]
     return {
         proyectos,
         isLoading,
+        skeletons,
         isProjectModalOpen,
         selectedProject,
         loadProjects,

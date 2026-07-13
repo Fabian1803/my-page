@@ -46,7 +46,6 @@ export function useTagsSelector({ selectedTags, onTagsChange }: UseTagsSelectorP
         tag => tag.toLowerCase() === searchQuery.trim().toLowerCase()
     )
 
-    // Seleccionar o deseleccionar una etiqueta
     const handleToggleTag = (tag: string) => {
         if (selectedTags.includes(tag)) {
             onTagsChange(selectedTags.filter(t => t !== tag))
@@ -55,7 +54,6 @@ export function useTagsSelector({ selectedTags, onTagsChange }: UseTagsSelectorP
         }
     }
 
-    // 🚀 2. Crear una nueva etiqueta en caliente y persistirla en Postgres
     const handleCreateNewTag = async () => {
         const cleanTag = searchQuery.trim()
         if (!cleanTag || isExactMatch) return

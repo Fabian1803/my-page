@@ -34,7 +34,7 @@ export default function Initpage() {
             <line x1="40" y1="70" x2="70" y2="45" strokeDasharray="1" />
           </svg>
 
-          <div className="z-10 flex flex-col gap-4 py-10">
+          <div className="z-10 flex flex-col gap-1 md:gap-4 py-10">
             <div className="flex gap-4 items-center">
               <div className="justify-center items-center flex shrink-0">
                 <Image src="/iconCloud.webp" alt="Logo" width={36} height={36} priority />
@@ -46,7 +46,7 @@ export default function Initpage() {
             <div className="flex gap-1 items-center">
               <span className='text-[18px]'>Estás trabajando en </span><div className="text-[#0c68e0] hover:bg-blue-50 p-1 text-[18px]">Mi portafolio</div>
             </div>
-            <div className="flex flex-col sm:flex-row gap-4"> {/* flex-col en móvil para que no se amontone */}
+            <div className="flex flex-col sm:flex-row gap-1 md:gap-4">
               <div className="flex items-center gap-2"><span className='text-[14px]'>Número de proyecto: 432046297103 </span><div className="hover:bg-gray-200 rounded-full p-2"><MdContentCopy /></div></div>
               <div className="flex items-center gap-2"><span className='text-[14px]'>ID del proyecto: elite-bird-469429-m5  </span><div className="hover:bg-gray-200 rounded-full p-2"><MdContentCopy /></div></div>
             </div>

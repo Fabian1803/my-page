@@ -1,8 +1,8 @@
 'use client'
 import { MdImage, MdInsertDriveFile, MdDelete } from 'react-icons/md'
 import BaseModal from './baseModal'
-import TagSelector from './tagSelector'
-import VignetteInput from './vignetteInput'
+import TagSelector from '../mainPage/forms/components/tagSelector'
+import VignetteInput from '../mainPage/forms/components/vignetteInput'
 import { useDetailedImageModal } from './hooks/useDetailImageModal'
 
 interface DetailedImageModalProps {
