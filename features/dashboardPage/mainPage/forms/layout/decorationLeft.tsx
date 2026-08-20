@@ -22,7 +22,18 @@ export default function DecorationLeft({ activeField, title }: DecorationLeftPro
         { nombre: 'Enlaces', descripcion: 'External HTTP(S) Load Balancer' },
         { nombre: 'Documentación', descripcion: 'Cloud Run Service Revision' },
     ];
-    const currentList = title === 'proyecto' ? listProyecto : listCertificado;
+
+    const listEtiqueta = [
+        { nombre: 'Nombre de la tecnología', descripcion: 'Identificador global de recurso' },
+        { nombre: 'Logotipo Oficial', descripcion: 'Cloud Storage SVG/PNG Asset' },
+        { nombre: 'Visibilidad y Estado', descripcion: 'Destacado en cuadrícula principal' },
+    ];
+
+    const currentList = title === 'proyecto' 
+        ? listProyecto 
+        : (title === 'etiqueta' || title === 'tecnología') 
+            ? listEtiqueta 
+            : listCertificado;
     return (
         <div className="pt-4 space-y-1 hidden xl:block">
             {currentList.map((item, index) => {

@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState, useMemo } from "react"
 
-interface TagItem {
+export interface TagItem {
     id: string;
     nombre: string;
     imagenUrl: string;
@@ -9,15 +9,17 @@ interface TagItem {
 
 export function useTagsAdmin() {
     const [tags, setTags] = useState<TagItem[]>([])
-    const [nombre, setNombre] = useState('')
-    const [esDestacado, setEsDestacado] = useState(false)
-    const [fotoFile, setFotoFile] = useState<File | null>(null)
-    const [previewImage, setPreviewImage] = useState<string | null>(null)
-    const [loading, setLoading] = useState(false)
-    const fileInputRef = useRef<HTMLInputElement>(null)
+    const [isLoading, setIsLoading] = useState(true)
+    const [searchFilter, setSearchFilter] = useState('')
+    const [filterTab, setFilterTab] = useState<'all' | 'destacados' | 'estandar'>('all')
+    const [copiedId, setCopiedId] = useState<string | null>(null)
+    const [selectedIds, setSelectedIds] = useState<string[]>([])
+
+    const skeletons = [1, 2, 3, 4, 5, 6]
 
     // 🔄 1. CARGAR CATEGORÍAS (GET)
     const cargarCategorias = async () => {
+        setIsLoading(true)
         try {
             const response = await fetch('/api/categorias')
             const result = await response.json()
@@ -26,6 +28,8 @@ export function useTagsAdmin() {
             }
         } catch (error) {
             console.error("Error al obtener categorías de Postgres:", error)
+        } finally {
+            setIsLoading(false)
         }
     }
 
@@ -33,80 +37,78 @@ export function useTagsAdmin() {
         cargarCategorias()
     }, [])
 
-    const handleNombreChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setNombre(e.target.value)
-    }
-    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0]
-        if (file) {
-            setFotoFile(file) // Guardamos el binario para el envío
-            const reader = new FileReader()
-            reader.onloadend = () => {
-                setPreviewImage(reader.result as string)
-            }
-            reader.readAsDataURL(file)
-        }
-    }
-    const handleSaveTag = async (e: React.FormEvent) => {
-        e.preventDefault()
-        if (!nombre.trim() || !fotoFile) {
-            alert("Por favor, introduce un nombre y selecciona un logotipo.")
-            return
-        }
-        setLoading(true)
-        try {
-            const formData = new FormData()
-            formData.append("nombre", nombre.trim())
-            formData.append("destacado", String(esDestacado))
-            formData.append("imagen", fotoFile)
-
-            const response = await fetch('/api/categorias', {
-                method: 'POST',
-                body: formData
-            })
-            const result = await response.json()
-            if (!result.success) throw new Error(result.error)
-            setTags(prev => [result.data, ...prev])
-            setNombre('')
-            setEsDestacado(false)
-            setPreviewImage(null)
-            setFotoFile(null)
-            if (fileInputRef.current) fileInputRef.current.value = ''
-
-            alert(`🚀 ¡Brutal! "${result.data.nombre}" guardada con éxito.`)
-        } catch (error: any) {
-            alert("Error al guardar la tecnología: " + error.message)
-        } finally {
-            setLoading(false)
-        }
-    }
     const handleDeleteTag = async (id: string, nombreTag: string) => {
-        if (!confirm(`¿Estás seguro de que deseas eliminar "${nombreTag}"? Se borrará de Postgres y Vercel Blob.`)) return
+        if (!confirm(`¿Estás seguro de que deseas eliminar "${nombreTag}"? Se borrará de Postgres y Vercel Blob Storage.`)) return
         try {
             const response = await fetch(`/api/categorias?id=${id}`, { method: 'DELETE' })
             const result = await response.json()
             if (!result.success) throw new Error(result.error)
             setTags(prev => prev.filter(tag => tag.id !== id))
-            alert("🗑️ Tecnología eliminada correctamente.")
+            setSelectedIds(prev => prev.filter(item => item !== id))
         } catch (error: any) {
             alert("No se pudo eliminar: " + error.message)
         }
     }
+
     const handleToggleDestacado = (id: string) => {
         setTags(tags.map(tag => tag.id === id ? { ...tag, destacado: !tag.destacado } : tag))
     }
 
+    const handleCopyId = (id: string) => {
+        navigator.clipboard.writeText(id)
+        setCopiedId(id)
+        setTimeout(() => {
+            setCopiedId(null)
+        }, 2000)
+    }
+
+    const handleSelectRow = (id: string) => {
+        setSelectedIds(prev => 
+            prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
+        )
+    }
+
+    const handleSelectAll = () => {
+        if (selectedIds.length === filteredTags.length) {
+            setSelectedIds([])
+        } else {
+            setSelectedIds(filteredTags.map(tag => tag.id))
+        }
+    }
+
+    // Filtrado de etiquetas por búsqueda y pestaña
+    const filteredTags = useMemo(() => {
+        return tags.filter(tag => {
+            const matchesSearch = tag.nombre.toLowerCase().includes(searchFilter.toLowerCase()) ||
+                tag.id.toLowerCase().includes(searchFilter.toLowerCase())
+            if (!matchesSearch) return false
+
+            if (filterTab === 'destacados') return tag.destacado
+            if (filterTab === 'estandar') return !tag.destacado
+            return true
+        })
+    }, [tags, searchFilter, filterTab])
+
+    const destacadasCount = useMemo(() => {
+        return tags.filter(t => t.destacado).length
+    }, [tags])
+
     return {
         tags,
-        nombre,
-        setEsDestacado,
-        esDestacado,
-        previewImage,
-        fileInputRef,
-        loading,
-        handleNombreChange,
-        handleImageChange,
-        handleSaveTag,
+        filteredTags,
+        destacadasCount,
+        isLoading,
+        skeletons,
+        searchFilter,
+        setSearchFilter,
+        filterTab,
+        setFilterTab,
+        copiedId,
+        handleCopyId,
+        selectedIds,
+        handleSelectRow,
+        handleSelectAll,
+        cargarCategorias,
         handleDeleteTag,
         handleToggleDestacado
     }
