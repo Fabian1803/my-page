@@ -1,28 +1,32 @@
-// server/auth/domain/models/Usuario.ts
+import { Dispositivo } from "./Dispositivo";
 export interface UsuarioProps {
   id?: string;
   email: string;
   passwordHash: string;
   createdAt?: Date;
+  dispositivos?: Dispositivo[];
 }
-
 export class Usuario {
   private props: UsuarioProps;
   constructor(props: UsuarioProps) {
     if (!props.email || !props.email.includes("@")) throw new Error("El correo electrónico proporcionado no es válido.");
     if (!props.passwordHash || props.passwordHash.trim() === "") throw new Error("El hash de la contraseña es requerido.");
-
     this.props = {
       ...props,
       id: props.id || crypto.randomUUID(),
       createdAt: props.createdAt || new Date(),
+      dispositivos: props.dispositivos || [],
     };
   }
-
   public get id(): string { return this.props.id!; }
   public get email(): string { return this.props.email; }
   public get passwordHash(): string { return this.props.passwordHash; }
   public get createdAt(): Date { return this.props.createdAt!; }
-
-  public toObject() { return { ...this.props }; }
+  public get dispositivos(): Dispositivo[] { return this.props.dispositivos || []; }
+  public toObject() {
+    return {
+      ...this.props,
+      dispositivos: this.props.dispositivos?.map(d => d.toObject()) || []
+    };
+  }
 }

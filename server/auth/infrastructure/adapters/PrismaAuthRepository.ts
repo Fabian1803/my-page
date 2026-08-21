@@ -1,20 +1,27 @@
-// server/auth/infrastructure/adapters/PrismaAuthRepository.ts
 import { AuthRepository } from "../../domain/ports/AuthRepository";
 import { Usuario } from "../../domain/models/Usuario";
 import { Dispositivo } from "../../domain/models/Dispositivo";
 import { prisma } from "@/server/shared/infrastructure/prisma";
-
 export class PrismaAuthRepository implements AuthRepository {
-  
+
   async findByEmail(email: string): Promise<Usuario | null> {
-    const userModel = await prisma.usuario.findUnique({ where: { email } });
+    const userModel = await prisma.usuario.findUnique({
+      where: { email },
+      include: { dispositivos: true }
+    });
     if (!userModel) return null;
-    
     return new Usuario({
       id: userModel.id,
       email: userModel.email,
       passwordHash: userModel.passwordHash,
-      createdAt: userModel.createdAt
+      createdAt: userModel.createdAt,
+      dispositivos: userModel.dispositivos.map(d => new Dispositivo({
+        id: d.id,
+        credentialId: d.credentialId,
+        publicKey: d.publicKey,
+        counter: d.counter,
+        usuarioId: d.usuarioId
+      }))
     });
   }
 

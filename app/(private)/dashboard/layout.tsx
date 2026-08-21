@@ -2,10 +2,10 @@
 import React, { useState } from 'react'
 import DashboardHeaderPage from '@/features/dashboardPage/dashboardHeaderPage'
 import DashboardAsidePage from '@/features/dashboardPage/dashboardAsidePage'
-
+import { useSessionHeartbeat } from '@/features/dashboardPage/hooks/useSessionHeartbeat'
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+    useSessionHeartbeat()
     const [isMenuOpen, setIsMenuOpen] = useState(false)
-
     return (
         <div className="min-h-screen bg-[#f0f4f9] text-[#202124] antialiased flex flex-col md:flex-row">
             <DashboardHeaderPage onOpenMenu={setIsMenuOpen} />

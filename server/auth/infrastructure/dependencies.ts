@@ -1,9 +1,12 @@
-// server/auth/infrastructure/dependencies.ts
 import { PrismaAuthRepository } from "./adapters/PrismaAuthRepository";
+import { JoseTokenService } from "./adapters/JoseTokenService";
 import { LoginWithPasswordUseCase } from "../application/LoginWithPasswordUseCase";
 import { GenerateLoginChallengeUseCase } from "../application/GenerateLoginChallengeUseCase";
 import { VerifyLoginChallengeUseCase } from "../application/VerifyLoginChallengeUseCase";
-const authRepository = new PrismaAuthRepository();
+import { CheckSessionUseCase } from "../application/CheckSessionUseCase";
+export const authRepository = new PrismaAuthRepository();
+export const tokenService = new JoseTokenService();
 export const loginWithPasswordUseCase = new LoginWithPasswordUseCase(authRepository);
 export const generateLoginChallengeUseCase = new GenerateLoginChallengeUseCase(authRepository);
 export const verifyLoginChallengeUseCase = new VerifyLoginChallengeUseCase(authRepository);
+export const checkSessionUseCase = new CheckSessionUseCase(authRepository, tokenService);

@@ -1,17 +1,15 @@
 import { useRouter } from "next/navigation"
 import { useState } from "react"
+import { authService } from "@/features/loginPage/services/authService"
+
 export function useLogout() {
     const router = useRouter()
     const [isLoading, setIsLoading] = useState(false)
     const logout = async () => {
         setIsLoading(true)
         try {
-            const response = await fetch('/api/auth/logout', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' }
-            })
-
-            if (response.ok) {
+            const success = await authService.logout()
+            if (success) {
                 router.refresh()
                 router.push('/login')
             } else {
@@ -23,6 +21,5 @@ export function useLogout() {
             setIsLoading(false)
         }
     }
-
     return { logout, isLoading }
 }

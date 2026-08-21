@@ -1,4 +1,9 @@
-// server/auth/domain/ports/TokenService.ts
+export interface TokenPayload {
+  id: string;
+  email: string;
+  [key: string]: any;
+}
 export interface TokenService {
-  generateToken(payload: { id: string; email: string }): Promise<string>;
+  generateToken(payload: TokenPayload): Promise<string>;
+  verifyToken(token: string): Promise<TokenPayload | null>;
 }

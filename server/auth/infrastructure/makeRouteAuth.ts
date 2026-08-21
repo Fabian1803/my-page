@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { JoseTokenService } from "./adapters/JoseTokenService";
 const tokenService = new JoseTokenService();
-
 export function makeRouteAuth(useCase: { execute: (req: Request) => Promise<any> }) {
   return async (request: Request) => {
     try {
@@ -18,7 +17,7 @@ export function makeRouteAuth(useCase: { execute: (req: Request) => Promise<any>
           secure: process.env.NODE_ENV === "production",
           sameSite: "strict",
           path: "/",
-          maxAge: 60 * 120,
+          maxAge: 60 * 60,
         });
       }
       return response;

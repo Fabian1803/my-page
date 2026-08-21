@@ -1,11 +1,9 @@
-// server/auth/application/VerifyLoginChallengeUseCase.ts
 import { AuthRepository } from "../domain/ports/AuthRepository";
 import { verifyAuthenticationResponse } from "@simplewebauthn/server";
-
+import { VerifyChallengeResponseDTO } from "../domain/dtos";
 export class VerifyLoginChallengeUseCase {
-  constructor(private authRepository: AuthRepository) {}
-
-  async execute(request: Request) {
+  constructor(private authRepository: AuthRepository) { }
+  async execute(request: Request): Promise<VerifyChallengeResponseDTO> {
     const { body, expectedChallenge, email } = await request.json();
     if (!body || !expectedChallenge || !email) throw new Error("Faltan datos criptográficos obligatorios.");
     const usuario = await this.authRepository.findByEmail(email);
@@ -15,7 +13,6 @@ export class VerifyLoginChallengeUseCase {
     const urlObj = new URL(request.url);
     const expectedRPID = urlObj.hostname;
     const expectedOrigin = urlObj.origin;
-
     const verification = await verifyAuthenticationResponse({
       response: body,
       expectedChallenge: expectedChallenge,
@@ -27,10 +24,8 @@ export class VerifyLoginChallengeUseCase {
         counter: dispositivo.counter,
       },
     });
-
     if (!verification.verified) throw new Error("Autenticación biométrica fallida.");
     await this.authRepository.updateDeviceCounter(dispositivo.credentialId, verification.authenticationInfo.newCounter);
-
     return {
       id: usuario.id,
       email: usuario.email,
