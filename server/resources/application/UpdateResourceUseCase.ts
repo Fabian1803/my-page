@@ -4,35 +4,11 @@ import { ResourceRepository } from "../domain/ports/ResourceRepository";
 import { Resource } from "../domain/models/Resource";
 import { prisma } from "@/server/shared/infrastructure/prisma";
 
-interface ImagenInternaMetadata {
-  nombre?: string;
-  descripcion?: string;
-  tags?: string[];
-  detalles?: string[];
-}
-
 export class UpdateResourceUseCase {
   constructor(
     private mediaStorage: MediaStorage,
     private repository: ResourceRepository
   ) { }
-
-  private parseMetadata(formData: FormData, token: string): ImagenInternaMetadata {
-    const raw = formData.get(`tiptap_media_meta_${token}`) as string | null;
-    if (!raw) return {};
-
-    try {
-      const parsed = JSON.parse(raw);
-      return {
-        nombre: parsed?.nombre || "",
-        descripcion: parsed?.descripcion || "",
-        tags: Array.isArray(parsed?.tags) ? parsed.tags : [],
-        detalles: Array.isArray(parsed?.detalles) ? parsed.detalles : []
-      };
-    } catch {
-      return {};
-    }
-  }
 
   private replaceBlobUrlsInSections(seccionesDoc: string[], replacements: Array<{ token: string; url: string }>): string[] {
     if (replacements.length === 0) return seccionesDoc;
@@ -168,6 +144,16 @@ export class UpdateResourceUseCase {
     const recursoExistente = await this.repository.findById(id);
     if (!recursoExistente) throw new Error("El recurso a actualizar no existe.");
 
+    const destacado = formData.get("destacado") === "true";
+    const nombre = (formData.get("nombre") as string) || recursoExistente.nombre;
+    const descripcion = (formData.get("descripcion") as string) || recursoExistente.descripcion;
+    const instituto = formData.get("instituto") as string | null;
+
+    const categorias = JSON.parse((formData.get("categorias") as string) || "[]");
+    const enlaces = JSON.parse((formData.get("enlaces") as string) || "[]");
+    const vinetas = JSON.parse((formData.get("vinetas") as string) || "[]");
+    const seccionesDocRaw = JSON.parse((formData.get("seccionesDoc") as string) || "[]");
+
     let imagenPrincipalUrl = recursoExistente.imagenPrincipalUrl;
     if (nuevaImagenFile && nuevaImagenFile.size > 0) {
       if (imagenPrincipalUrl) {
@@ -175,7 +161,8 @@ export class UpdateResourceUseCase {
           await this.mediaStorage.deleteFile(imagenPrincipalUrl);
         } catch { }
       }
-      imagenPrincipalUrl = await this.mediaStorage.uploadImage(nuevaImagenFile, nuevaImagenFile.name);
+      const extensionPortada = (nuevaImagenFile.name?.split(".").pop() || "png").toLowerCase();
+      imagenPrincipalUrl = await this.mediaStorage.uploadImage(nuevaImagenFile, `${nombre.trim()}-portada.${extensionPortada}`);
     }
 
     let miniaturaUrl = recursoExistente.miniaturaUrl;
@@ -188,22 +175,12 @@ export class UpdateResourceUseCase {
       miniaturaUrl = await this.mediaStorage.uploadImage(nuevaMiniaturaFile, nuevaMiniaturaFile.name);
     }
 
-    const destacado = formData.get("destacado") === "true";
-    const nombre = formData.get("nombre") as string;
-    const descripcion = formData.get("descripcion") as string;
-    const instituto = formData.get("instituto") as string | null;
-
-    const categorias = JSON.parse((formData.get("categorias") as string) || "[]");
-    const enlaces = JSON.parse((formData.get("enlaces") as string) || "[]");
-    const vinetas = JSON.parse((formData.get("vinetas") as string) || "[]");
-    const seccionesDocRaw = JSON.parse((formData.get("seccionesDoc") as string) || "[]");
-
     const resourceEntity = new Resource({
       id,
       tipo,
       destacado,
-      nombre,
-      descripcion,
+      nombre: nombre.trim(),
+      descripcion: descripcion.trim(),
       instituto,
       imagenPrincipalUrl,
       miniaturaUrl,
@@ -215,14 +192,60 @@ export class UpdateResourceUseCase {
 
     const proyectoActualizado = await this.repository.update(id, resourceEntity);
 
-    if (nuevaImagenFile && nuevaImagenFile.size > 0) {
+    // Sincronizar MediaResource de la portada
+    const portadaExistente = await prisma.mediaResource.findFirst({
+      where: { proyectoId: id, tipo: "PORTADA" }
+    });
+
+    if (portadaExistente) {
+      await prisma.vineta.deleteMany({ where: { mediaResourceId: portadaExistente.id } });
+      await prisma.mediaResource.update({
+        where: { id: portadaExistente.id },
+        data: {
+          nombre: `${nombre.trim()}-portada`,
+          descripcion: descripcion.trim(),
+          imagenPrincipalUrl,
+          categorias: {
+            set: [],
+            connectOrCreate: categorias.map((cat: any) => {
+              const nombreCat = typeof cat === 'string' ? cat : cat.nombre;
+              return {
+                where: { nombre: nombreCat },
+                create: { nombre: nombreCat, imagenUrl: "" }
+              };
+            })
+          },
+          vinetas: {
+            create: vinetas.map((v: any) => {
+              const comentario = typeof v === 'string' ? v : v.comentario;
+              return { comentario };
+            })
+          }
+        }
+      });
+    } else if (imagenPrincipalUrl) {
       const portadaMedia = await prisma.mediaResource.create({
         data: {
           tipo: "PORTADA",
           destacado: false,
-          nombre: `${nombre.trim()} - portada`,
-          descripcion: `Portada de ${nombre.trim()}`,
+          nombre: `${nombre.trim()}-portada`,
+          descripcion: descripcion.trim(),
           imagenPrincipalUrl,
+          categorias: {
+            connectOrCreate: categorias.map((cat: any) => {
+              const nombreCat = typeof cat === 'string' ? cat : cat.nombre;
+              return {
+                where: { nombre: nombreCat },
+                create: { nombre: nombreCat, imagenUrl: "" }
+              };
+            })
+          },
+          vinetas: {
+            create: vinetas.map((v: any) => {
+              const comentario = typeof v === 'string' ? v : v.comentario;
+              return { comentario };
+            })
+          },
           proyecto: {
             connect: { id }
           }
@@ -232,34 +255,45 @@ export class UpdateResourceUseCase {
       await prisma.proyecto.update({
         where: { id },
         data: {
-          portada: {
-            connect: { id: portadaMedia.id }
-          }
+          portada: { connect: { id: portadaMedia.id } }
         }
       });
     }
 
     const replacements: Array<{ token: string; url: string }> = [];
+    const conteoExistentes = await prisma.mediaResource.count({
+      where: { proyectoId: id, tipo: "IMAGEN_INTERNA" }
+    });
+    let tiptapIndex = conteoExistentes + 1;
+
     for (const [fieldName, value] of Array.from(formData.entries())) {
       if (fieldName.startsWith("tiptap_media_") && value instanceof File) {
         const token = fieldName.replace(/^tiptap_media_/, "");
-        const metadata = this.parseMetadata(formData, token);
-        const extension = (value.name?.split(".").pop() || "bin").toLowerCase();
-        const fileName = value.name?.trim() ? value.name : `tiptap-${token}.${extension}`;
-        const uploadedUrl = await this.mediaStorage.uploadImage(value, fileName);
+        const extension = (value.name?.split(".").pop() || "png").toLowerCase();
+        const customFileName = `${nombre.trim()}-imagen${tiptapIndex}.${extension}`;
+        const uploadedUrl = await this.mediaStorage.uploadImage(value, customFileName);
 
         await prisma.mediaResource.create({
           data: {
             tipo: "IMAGEN_INTERNA",
             destacado: false,
-            nombre: metadata.nombre?.trim() || `Imagen interna ${token}`,
-            descripcion: metadata.descripcion?.trim() || "Imagen interna del proyecto",
+            nombre: `${nombre.trim()}-imagen${tiptapIndex}`,
+            descripcion: descripcion.trim(),
             imagenPrincipalUrl: uploadedUrl,
             categorias: {
-              connect: (metadata.tags || []).map((tagName) => ({ nombre: tagName }))
+              connectOrCreate: categorias.map((cat: any) => {
+                const nombreCat = typeof cat === 'string' ? cat : cat.nombre;
+                return {
+                  where: { nombre: nombreCat },
+                  create: { nombre: nombreCat, imagenUrl: "" }
+                };
+              })
             },
             vinetas: {
-              create: (metadata.detalles || []).map((detalle) => ({ comentario: detalle }))
+              create: vinetas.map((v: any) => {
+                const comentario = typeof v === 'string' ? v : v.comentario;
+                return { comentario };
+              })
             },
             proyecto: {
               connect: { id }
@@ -268,8 +302,10 @@ export class UpdateResourceUseCase {
         });
 
         replacements.push({ token, url: uploadedUrl });
+        tiptapIndex++;
       }
     }
+
     const seccionesDoc = this.replaceBlobUrlsInSections(seccionesDocRaw, replacements);
     if (replacements.length > 0) {
       await prisma.proyecto.update({

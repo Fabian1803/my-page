@@ -1,7 +1,7 @@
 'use client'
-import Image from 'next/image';
 import React from 'react'
 import { MdClose } from 'react-icons/md'
+import { FaGithub, FaDocker, FaGitlab, FaExternalLinkAlt } from 'react-icons/fa'
 
 export interface Certificate {
     id: string;
@@ -14,8 +14,10 @@ export interface Certificate {
     universidad?: string;
     imagenCertificado?: string;
     imagenLogo?: string;
+    tipo?: string;
     categorias?: { id: string; nombre: string }[];
     vinetas?: { id: string; comentario: string }[];
+    enlaces?: { id: string; type: string; url: string }[];
 }
 
 interface CertificateVisorProps {
@@ -25,49 +27,83 @@ interface CertificateVisorProps {
 }
 
 export default function ImageVisor({ selectedCert, onClose, visorRef }: CertificateVisorProps) {
+    const getLinkIcon = (type: string) => {
+        switch (type) {
+            case 'github': return <FaGithub size={14} />
+            case 'docker': return <FaDocker size={14} />
+            case 'gitlab': return <FaGitlab size={14} />
+            default: return <FaExternalLinkAlt size={12} />
+        }
+    }
+
     return (
         <div
             ref={visorRef}
             className="fixed top-0 bottom-0 left-0 right-0 z-50 h-full w-full lg:fixed lg:right-5 lg:left-auto lg:z-10 lg:w-[39%] xl:w-[35%] lg:h-auto bg-white border border-[#dadce0] lg:rounded-3xl shadow-2xl lg:shadow-xl lg:overflow-hidden select-none shrink-0 flex flex-col animate-entry"
         >
             <div className="flex justify-between items-center px-4 py-4 lg:py-3 border-b border-gray-100 bg-gray-50/50 shrink-0">
-                <div className="flex gap-1.5 items-center">
-                    <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-md overflow-hidden shrink-0 border border-gray-100 p-0.5 bg-white">
-                        <img src={selectedCert.imagenLogo} alt="Logo" className="w-full h-full object-contain" />
+                <div className="flex gap-1.5 items-center min-w-0">
+                    <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-md overflow-hidden shrink-0 border border-gray-100 p-0.5 bg-white flex items-center justify-center">
+                        <img src={selectedCert.imagenLogo || '/log.webp'} alt="Logo" className="w-full h-full object-contain" />
                     </div>
                     <p className="text-[14px] sm:text-[16px] truncate font-medium text-gray-900">{selectedCert.universidad}</p>
                 </div>
                 <button 
                     type="button" 
                     onClick={onClose} 
-                    className="p-1.5 rounded-full text-gray-400 hover:bg-gray-200 hover:text-gray-700 transition-colors"
+                    className="p-1.5 rounded-full text-gray-400 hover:bg-gray-200 hover:text-gray-700 transition-colors cursor-pointer"
                 >
                     <MdClose size={22} />
                 </button>
             </div>
             <div className="flex-1 min-h-0 overflow-y-auto scrollbar-none flex flex-col bg-white">
-                <div className="bg-gray-100 flex items-center justify-center border-b border-gray-100 min-h-[280px] lg:max-h-[350px] shrink-0">
-                    <Image
+                <div className="bg-gray-100 flex items-center justify-center border-b border-gray-100 min-h-[280px] lg:max-h-[350px] shrink-0 p-2">
+                    <img
                         src={selectedCert.imagenCertificado || selectedCert.imagenPrincipalUrl}
                         alt={selectedCert.titulo || selectedCert.nombre}
-                        width={500}
-                        height={300}
-                        className="w-full max-h-[50vh] lg:max-h-[280px] object-contain"
+                        className="w-full max-h-[50vh] lg:max-h-[280px] object-contain rounded-lg shadow-xs"
                     />
                 </div>
 
                 <div className="p-5 lg:p-4 space-y-5 bg-white flex-1 flex flex-col justify-start">
                     <h3 className="text-base sm:text-lg lg:text-base font-bold text-gray-900 leading-snug">
-                        {selectedCert.titulo}
+                        {selectedCert.titulo || selectedCert.nombre}
                     </h3>
+                    
                     <div className="space-y-1.5">
                         <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider block">
-                            Acerca del certificado
+                            {selectedCert.tipo === 'PROYECTO' 
+                                ? 'Acerca del proyecto' 
+                                : selectedCert.tipo === 'CERTIFICADO' 
+                                ? 'Acerca del certificado' 
+                                : 'Acerca del recurso'}
                         </span>
                         <p className="text-[13px] sm:text-[14px] text-gray-600 leading-relaxed font-normal">
                             {selectedCert.descripcion}
                         </p>
                     </div>
+
+                    {selectedCert.enlaces && selectedCert.enlaces.length > 0 && (
+                        <div className="space-y-2.5">
+                            <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider block">
+                                Enlaces y Repositorios
+                            </span>
+                            <div className="flex flex-wrap gap-2">
+                                {selectedCert.enlaces.filter(l => Boolean(l.url)).map((link) => (
+                                    <a
+                                        key={link.id}
+                                        href={link.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-medium text-[#0b57d0] bg-blue-50/50 hover:bg-blue-100/70 border border-blue-200 rounded-full transition-colors"
+                                    >
+                                        {getLinkIcon(link.type)}
+                                        <span className="capitalize">{link.type}</span>
+                                    </a>
+                                ))}
+                            </div>
+                        </div>
+                    )}
 
                     {selectedCert.categorias && selectedCert.categorias.length > 0 && (
                         <div className="space-y-2.5">

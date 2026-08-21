@@ -1,14 +1,17 @@
 import ImagesFabian from "@/features/fabianPage/pages/imagesFabian";
 import { getResourcesUseCase } from "@/server/resources/infrastructure/dependencies";
-export default async  function page() { 
-      const fakeRequest = new Request("http://localhost/api/resources");
-      const rawData = await getResourcesUseCase.execute(fakeRequest);
-      const certificadosIniciales = rawData.map((item: any) => ({
-          ...item,
-          titulo: item.nombre,
-          universidad: item.instituto || 'Certificación Profesional',
-          imagenCertificado: item.imagenPrincipalUrl,
-          imagenLogo: item.miniaturaUrl || '/log.webp'
-      }));
-    return <ImagesFabian datosCertificados={certificadosIniciales} /> 
+
+export default async function Page() { 
+    const fakeRequest = new Request("http://localhost/api/resources?tipo=IMAGENES");
+    const rawData = await getResourcesUseCase.execute(fakeRequest);
+    
+    const imagenesIniciales = (rawData || []).map((item: any) => ({
+        ...item,
+        titulo: item.titulo || item.nombre,
+        universidad: item.universidad || item.instituto || (item.tipo === 'PROYECTO' ? 'Proyecto de Software' : 'Certificación Profesional'),
+        imagenCertificado: item.imagenCertificado || item.imagenPrincipalUrl,
+        imagenLogo: item.imagenLogo || item.miniaturaUrl || (item.tipo === 'PROYECTO' ? '/FLogo.webp' : '/log.webp')
+    }));
+
+    return <ImagesFabian datosCertificados={imagenesIniciales} /> 
 }

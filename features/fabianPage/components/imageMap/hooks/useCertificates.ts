@@ -12,12 +12,21 @@ export interface Certificate {
     universidad: string;
     imagenCertificado: string;
     imagenLogo: string;
+    tipo?: string;
+    categorias?: { id: string; nombre: string }[];
+    vinetas?: { id: string; comentario: string }[];
+    enlaces?: { id: string; type: string; url: string }[];
 }
 
 export function useCertificates(initialData: Certificate[]) {
-    const [certificados] = useState<Certificate[]>(initialData)
+    const [certificados, setCertificados] = useState<Certificate[]>(initialData)
     const [selectedCert, setSelectedCert] = useState<Certificate | null>(null)
     const visorRef = useRef<HTMLDivElement>(null)
+
+    useEffect(() => {
+        setCertificados(initialData)
+    }, [initialData])
+
     useEffect(() => {
         if (!selectedCert) return
         let animationFrameId: number
@@ -58,7 +67,7 @@ export function useCertificates(initialData: Certificate[]) {
         }
     }, [selectedCert])
 
-   return {
+    return {
         certificados,
         selectedCert,
         setSelectedCert,

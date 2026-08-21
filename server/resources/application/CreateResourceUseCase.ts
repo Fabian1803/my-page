@@ -4,35 +4,11 @@ import { Resource } from "../domain/models/Resource";
 import { MediaStorage } from "@/server/media/domain/ports/MediaStorage";
 import { prisma } from "@/server/shared/infrastructure/prisma";
 
-interface ImagenInternaMetadata {
-  nombre?: string;
-  descripcion?: string;
-  tags?: string[];
-  detalles?: string[];
-}
-
 export class CreateResourceUseCase {
   constructor(
     private mediaStorage: MediaStorage,
     private repository: ResourceRepository
   ) { }
-
-  private parseMetadata(formData: FormData, token: string): ImagenInternaMetadata {
-    const raw = formData.get(`tiptap_media_meta_${token}`) as string | null;
-    if (!raw) return {};
-
-    try {
-      const parsed = JSON.parse(raw);
-      return {
-        nombre: parsed?.nombre || "",
-        descripcion: parsed?.descripcion || "",
-        tags: Array.isArray(parsed?.tags) ? parsed.tags : [],
-        detalles: Array.isArray(parsed?.detalles) ? parsed.detalles : []
-      };
-    } catch {
-      return {};
-    }
-  }
 
   private replaceBlobUrlsInSections(seccionesDoc: string[], replacements: Array<{ token: string; url: string }>): string[] {
     if (replacements.length === 0) return seccionesDoc;
@@ -70,18 +46,25 @@ export class CreateResourceUseCase {
     const imagenPrincipalFile = formData.get("imagenPrincipal") as File;
     const miniaturaFile = formData.get("miniaturaIcono") as File | null;
     if (!imagenPrincipalFile || imagenPrincipalFile.size === 0) throw new Error("Falta la imagen principal.");
-    const imagenPrincipalUrl = await this.mediaStorage.uploadImage(imagenPrincipalFile, imagenPrincipalFile.name);
+
+    const tipo = (formData.get("tipo") as string) || "PROYECTO";
+    const nombre = (formData.get("nombre") as string) || "";
+    const descripcion = (formData.get("descripcion") as string) || "";
+    const instituto = formData.get("instituto") as string | null;
+    const categoriasRaw = JSON.parse((formData.get("categorias") as string) || "[]");
+    const vinetasRaw = JSON.parse((formData.get("vinetas") as string) || "[]");
+
+    const extensionPortada = (imagenPrincipalFile.name?.split(".").pop() || "png").toLowerCase();
+    const nombreArchivoPortada = tipo === "PROYECTO" 
+      ? `${nombre.trim()}-portada.${extensionPortada}`
+      : imagenPrincipalFile.name;
+
+    const imagenPrincipalUrl = await this.mediaStorage.uploadImage(imagenPrincipalFile, nombreArchivoPortada);
     let miniaturaUrl: string | null = null;
     if (miniaturaFile && miniaturaFile.size > 0) {
       miniaturaUrl = await this.mediaStorage.uploadImage(miniaturaFile, miniaturaFile.name);
     }
 
-    const tipo = (formData.get("tipo") as string) || "PROYECTO";
-    const nombre = formData.get("nombre") as string;
-    const descripcion = formData.get("descripcion") as string;
-    const instituto = formData.get("instituto") as string | null;
-    const categoriasRaw = JSON.parse((formData.get("categorias") as string) || "[]");
-    const vinetasRaw = JSON.parse((formData.get("vinetas") as string) || "[]");
     if (tipo === "CERTIFICADO") {
       const nuevoCertificado = await prisma.mediaResource.create({
         data: {
@@ -136,8 +119,8 @@ export class CreateResourceUseCase {
       id: crypto.randomUUID(),
       tipo,
       destacado,
-      nombre,
-      descripcion,
+      nombre: nombre.trim(),
+      descripcion: descripcion.trim(),
       instituto,
       imagenPrincipalUrl,
       miniaturaUrl,
@@ -150,13 +133,29 @@ export class CreateResourceUseCase {
     const proyectoCreado = await this.repository.save(resourceEntity);
     const proyectoId = proyectoCreado?.id || resourceEntity.id;
 
+    // Guardar la imagen de portada como MediaResource con nombre "{nombre}-portada", su descripción y sus categorías/viñetas
     const portadaMedia = await prisma.mediaResource.create({
       data: {
         tipo: "PORTADA",
         destacado: false,
-        nombre: `${nombre.trim()} - portada`,
-        descripcion: `Portada de ${nombre.trim()}`,
+        nombre: `${nombre.trim()}-portada`,
+        descripcion: descripcion.trim(),
         imagenPrincipalUrl,
+        categorias: {
+          connectOrCreate: categoriasRaw.map((cat: any) => {
+            const nombreCat = typeof cat === 'string' ? cat : cat.nombre;
+            return {
+              where: { nombre: nombreCat },
+              create: { nombre: nombreCat, imagenUrl: "" }
+            };
+          })
+        },
+        vinetas: {
+          create: vinetasRaw.map((v: any) => {
+            const comentario = typeof v === 'string' ? v : v.comentario;
+            return { comentario };
+          })
+        },
         proyecto: {
           connect: { id: proyectoId }
         }
@@ -172,27 +171,37 @@ export class CreateResourceUseCase {
       }
     });
 
+    // Guardar las imágenes internas de Tiptap como "{nombre}-imagen1", "{nombre}-imagen2", etc., con sus categorías y viñetas
     const replacements: Array<{ token: string; url: string }> = [];
+    let tiptapIndex = 1;
     for (const [fieldName, value] of Array.from(formData.entries())) {
       if (fieldName.startsWith("tiptap_media_") && value instanceof File) {
         const token = fieldName.replace(/^tiptap_media_/, "");
-        const metadata = this.parseMetadata(formData, token);
-        const extension = (value.name?.split(".").pop() || "bin").toLowerCase();
-        const fileName = value.name?.trim() ? value.name : `tiptap-${token}.${extension}`;
-        const uploadedUrl = await this.mediaStorage.uploadImage(value, fileName);
+        const extension = (value.name?.split(".").pop() || "png").toLowerCase();
+        const customFileName = `${nombre.trim()}-imagen${tiptapIndex}.${extension}`;
+        const uploadedUrl = await this.mediaStorage.uploadImage(value, customFileName);
 
         await prisma.mediaResource.create({
           data: {
             tipo: "IMAGEN_INTERNA",
             destacado: false,
-            nombre: metadata.nombre?.trim() || `Imagen interna ${token}`,
-            descripcion: metadata.descripcion?.trim() || "Imagen interna del proyecto",
+            nombre: `${nombre.trim()}-imagen${tiptapIndex}`,
+            descripcion: descripcion.trim(),
             imagenPrincipalUrl: uploadedUrl,
             categorias: {
-              connect: (metadata.tags || []).map((tagName) => ({ nombre: tagName }))
+              connectOrCreate: categoriasRaw.map((cat: any) => {
+                const nombreCat = typeof cat === 'string' ? cat : cat.nombre;
+                return {
+                  where: { nombre: nombreCat },
+                  create: { nombre: nombreCat, imagenUrl: "" }
+                };
+              })
             },
             vinetas: {
-              create: (metadata.detalles || []).map((detalle) => ({ comentario: detalle }))
+              create: vinetasRaw.map((v: any) => {
+                const comentario = typeof v === 'string' ? v : v.comentario;
+                return { comentario };
+              })
             },
             proyecto: {
               connect: { id: proyectoId }
@@ -201,6 +210,7 @@ export class CreateResourceUseCase {
         });
 
         replacements.push({ token, url: uploadedUrl });
+        tiptapIndex++;
       }
     }
 
