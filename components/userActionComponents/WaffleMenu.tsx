@@ -7,7 +7,6 @@ import { FaGitlab } from 'react-icons/fa6';
 import { BiLogoGmail } from 'react-icons/bi';
 import { PiReadCvLogoBold } from 'react-icons/pi';
 
-
 interface WaffleMenuProps {
     left?: boolean;
     links?: {
@@ -34,6 +33,7 @@ export default function WaffleMenu({ left, links }: WaffleMenuProps) {
         { href: links?.linkedin || '#', label: "LinkedIn", icon: <FaLinkedin className="text-3xl text-[#0A66C2]" />, target: "_blank" },
         { href: links?.gitlab || '#', label: "GitLab", icon: <FaGitlab className="text-3xl text-orange-600" />, target: "_blank" },
     ];
+
     return (
         <div ref={menuRef} className="relative inline-block select-none">
             <button
@@ -56,7 +56,7 @@ export default function WaffleMenu({ left, links }: WaffleMenuProps) {
                 ))}
             </button>
             {isOpen && (
-                <div className={`absolute ${left ? 'left-0' : 'md:-right-5 -right-10'} top-11 w-80 max-h-[450px] overflow-y-auto bg-white border border-gray-300 shadow-xl rounded-2xl p-4 z-50 animate-fade-in flex flex-col gap-4`}>
+                <div className={`absolute ${left ? 'left-0 sm:left-auto sm:right-0 md:-right-5' : 'md:-right-5 -right-10'} top-11 w-80 max-h-[450px] overflow-y-auto bg-white border border-gray-300 shadow-xl rounded-2xl p-4 z-50 animate-fade-in flex flex-col gap-4`}>
 
                     <div className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 px-2">
                         Mis Aplicaciones
@@ -67,8 +67,8 @@ export default function WaffleMenu({ left, links }: WaffleMenuProps) {
                             <a
                                 key={index}
                                 href={app.href}
-                                target={app.target}
-                                rel={app.target ? "noopener noreferrer" : undefined}
+                                target={app.href !== '#' ? app.target : undefined}
+                                rel={app.href !== '#' && app.target ? "noopener noreferrer" : undefined}
                                 className="flex flex-col items-center justify-center gap-1 p-2 rounded-xl hover:bg-gray-100 cursor-pointer w-full transition-colors text-center"
                             >
                                 {app.icon}
