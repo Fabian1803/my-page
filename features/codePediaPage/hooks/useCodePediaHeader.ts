@@ -1,26 +1,64 @@
 "use client"
 import { useState, useEffect, useRef } from 'react'
 
+export interface SuggestionItem {
+  id: string;
+  label: string;
+  url: string;
+  image?: string;
+  type?: 'project' | 'skill';
+}
+
 export function useCodePediaHeader() {
   const [searchQuery, setSearchQuery] = useState('')
   const [showSuggestions, setShowSuggestions] = useState(false)
   const [openSearchInput, setOpenSearchInput] = useState(false)
   const [openAppearance, setOpenAppearance] = useState(false)
   const [openUserMenu, setOpenUserMenu] = useState(false)
+  const [items, setItems] = useState<SuggestionItem[]>([])
+  
   const searchContainerRef = useRef<HTMLDivElement>(null)
   const appearanceRef = useRef<HTMLDivElement>(null)
   const userMenuRef = useRef<HTMLDivElement>(null)
 
-  const sugerenciasMock = [
-    { label: 'Java & Spring Boot', url: '/Codepedia/project/spring-boot' },
-    { label: 'Docker & Microservicios', url: '/Codepedia/project/docker' },
-    { label: 'Next.js & React', url: '/Codepedia/project/nextjs' },
-    { label: 'Arquitectura Hexagonal', url: '/Codepedia/project/architecture' },
-  ]
-  
-  const sugerenciasFiltradas = sugerenciasMock.filter(item =>
-    item.label.toLowerCase().includes(searchQuery.toLowerCase())
-  )
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const [resProyectos, resCategorias] = await Promise.all([
+          fetch('/api/resources?tipo=PROYECTO').then(r => r.json()).catch(() => ({ data: [] })),
+          fetch('/api/categorias').then(r => r.json()).catch(() => ({ data: [] }))
+        ]);
+
+        const proyectos = Array.isArray(resProyectos.data) ? resProyectos.data : (Array.isArray(resProyectos) ? resProyectos : []);
+        const categorias = Array.isArray(resCategorias.data) ? resCategorias.data : (Array.isArray(resCategorias) ? resCategorias : []);
+
+        const mappedProjects: SuggestionItem[] = proyectos.map((p: any) => ({
+          id: p.id,
+          label: p.nombre,
+          url: `/Codepedia/project/${p.id}`,
+          image: p.imagenPrincipalUrl || p.miniaturaUrl || '/WikiLog.webp',
+          type: 'project'
+        }));
+
+        const mappedSkills: SuggestionItem[] = categorias.map((c: any) => ({
+          id: c.id,
+          label: c.nombre,
+          url: `/Codepedia/${encodeURIComponent(c.nombre)}`,
+          image: c.imagenUrl || '/WikiLog.webp',
+          type: 'skill'
+        }));
+
+        setItems([...mappedProjects, ...mappedSkills]);
+      } catch (err) {
+        console.error("Error cargando sugerencias en header:", err);
+      }
+    }
+    loadData();
+  }, []);
+
+  const sugerenciasFiltradas = items.filter(item =>
+    item.label.toLowerCase().includes(searchQuery.toLowerCase().trim())
+  ).slice(0, 6);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {

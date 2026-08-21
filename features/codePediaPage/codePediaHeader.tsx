@@ -5,11 +5,13 @@ import { BsEyeglasses } from "react-icons/bs"
 import { IoIosSearch } from "react-icons/io"
 import { TfiMoreAlt } from "react-icons/tfi"
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { AiOutlineFileSearch } from 'react-icons/ai'
 import CodePediaSection from './codePediaSection'
 import { useCodePediaHeader } from './hooks/useCodePediaHeader'
 
 export default function CodePediaHeader() {
+  const router = useRouter()
   const {
     searchQuery, setSearchQuery,
     showSuggestions, setShowSuggestions,
@@ -21,6 +23,15 @@ export default function CodePediaHeader() {
   } = useCodePediaHeader()
   const navButtonClass = "p-3 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-sm"
   const dropDownOptionClass = "w-full text-left px-3 py-2 text-sm text-blue-600 dark:text-blue-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-sm"
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      setShowSuggestions(false)
+      setOpenSearchInput(false)
+      const targetQuery = searchQuery.trim() || 'all'
+      router.push(`/Codepedia/${encodeURIComponent(targetQuery)}`)
+    }
+  }
 
   return (
     <header className=" h-17 px-4 lg:pl-9 lg:pr-12 bg-white dark:bg-[#101418] border-gray-100 dark:border-gray-800 transition-colors duration-300">
@@ -60,12 +71,19 @@ export default function CodePediaHeader() {
                 autoComplete="off"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={handleKeyDown}
                 onFocus={() => setShowSuggestions(true)}
                 placeholder="Buscar en Codepedia"
                 className="outline-none text-gray-900 dark:text-gray-100 bg-transparent w-full text-sm py-1"
               />
             </div>
-            <Link href="/Codepedia/loquesea" className="px-1 text-center py-[5px] hover:bg-gray-200 dark:hover:bg-gray-900 dark:text-gray-300 font-bold text-sm border-1 border-gray-600 dark:border-gray-500 dark:hover:border-gray-400 transition-colors duration-300">Buscar</Link>
+            <Link 
+              href={`/Codepedia/${encodeURIComponent(searchQuery.trim() || 'all')}`}
+              onClick={() => { setOpenSearchInput(false); setShowSuggestions(false); }}
+              className="px-1 text-center py-[5px] hover:bg-gray-200 dark:hover:bg-gray-900 dark:text-gray-300 font-bold text-sm border-1 border-gray-600 dark:border-gray-500 dark:hover:border-gray-400 transition-colors duration-300"
+            >
+              Buscar
+            </Link>
 
             {showSuggestions && searchQuery.length > 0 && (
               <div className="absolute top-full mt-[1px] left-0 w-[calc(100%-70px)] bg-white dark:bg-[#101418] border border-gray-300 dark:border-gray-600 shadow-lg z-50 flex flex-col overflow-hidden">
@@ -77,23 +95,25 @@ export default function CodePediaHeader() {
                       onClick={() => { setOpenSearchInput(false); setShowSuggestions(false); }}
                       className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-left"
                     >
-                      <div className="border border-gray-400 min-w-9 min-h-9 w-9 h-9">
-                        <img src="/perfil.jpeg" alt="Sugerencia" width={35} height={35} className='w-full h-full'/>
+                      <div className="border border-gray-400 min-w-9 min-h-9 w-9 h-9 overflow-hidden bg-gray-50 flex items-center justify-center">
+                        <img src={item.image || "/WikiLog.webp"} alt="Sugerencia" width={35} height={35} className='w-full h-full object-cover'/>
                       </div>
-                      <div className="flex flex-col">
+                      <div className="flex flex-col min-w-0">
                         <span className="font-semibold dark:text-white line-clamp-1">{item.label}</span>
-                        <span className="truncate text-xs line-clamp-1">{item.label}</span>
+                        <span className="truncate text-xs line-clamp-1 text-gray-500 dark:text-gray-400">
+                          {item.type === 'skill' ? 'Tecnología / Habilidad' : 'Proyecto'}
+                        </span>
                       </div>
                     </Link>
                   ))
                 )}
                 <Link
-                  href='/corelia/search'
+                  href={`/Codepedia/${encodeURIComponent(searchQuery.trim() || 'all')}`}
                   onClick={() => { setOpenSearchInput(false); setShowSuggestions(false); }}
                   className="flex items-center gap-2 px-3 py-3 border-t border-gray-300 dark:border-gray-600 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-left"
                 >
                   <AiOutlineFileSearch size={20} className="min-w-9 min-h-5" />
-                  <p className="text-sm line-clamp-1">Busca el proyecto que estás buscando...</p>
+                  <p className="text-sm line-clamp-1">Buscar &quot;{searchQuery}&quot; en proyectos y publicaciones...</p>
                 </Link>
               </div>
             )}
