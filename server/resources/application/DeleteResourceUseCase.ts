@@ -1,6 +1,6 @@
-// server/resources/application/DeleteResourceUseCase.ts
 import { ResourceRepository } from "../domain/ports/ResourceRepository";
 import { MediaStorage } from "@/server/media/domain/ports/MediaStorage";
+import { prisma } from "@/server/shared/infrastructure/prisma";
 
 function collectMediaUrls(value: unknown, urls: Set<string>) {
   if (typeof value === "string") {
@@ -23,15 +23,46 @@ export class DeleteResourceUseCase {
   constructor(
     private mediaStorage: MediaStorage,
     private repository: ResourceRepository
-  ) {}
+  ) { }
+
   async execute(request: Request) {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
     if (!id) throw new Error("El ID del recurso es totalmente requerido.");
+    const mediaResource = await prisma.mediaResource.findUnique({
+      where: { id },
+      include: { vinetas: true, categorias: true }
+    });
+
+    if (mediaResource) {
+      if (mediaResource.imagenPrincipalUrl) {
+        try {
+          await this.mediaStorage.deleteFile(mediaResource.imagenPrincipalUrl);
+        } catch { }
+      }
+      if (mediaResource.miniaturaUrl) {
+        try {
+          await this.mediaStorage.deleteFile(mediaResource.miniaturaUrl);
+        } catch { }
+      }
+
+      await prisma.mediaResource.delete({ where: { id } });
+      return { success: true, message: "Certificado y archivos eliminados exitosamente." };
+    }
+
     const resource = await this.repository.findById(id);
     if (!resource) throw new Error("El recurso que intentas eliminar no existe.");
-    if (resource.imagenPrincipalUrl) await this.mediaStorage.deleteFile(resource.imagenPrincipalUrl);
-    if (resource.miniaturaUrl) await this.mediaStorage.deleteFile(resource.miniaturaUrl);
+
+    if (resource.imagenPrincipalUrl) {
+      try {
+        await this.mediaStorage.deleteFile(resource.imagenPrincipalUrl);
+      } catch { }
+    }
+    if (resource.miniaturaUrl) {
+      try {
+        await this.mediaStorage.deleteFile(resource.miniaturaUrl);
+      } catch { }
+    }
 
     const urlsToDelete = new Set<string>();
     for (const media of resource.mediaResources || []) {
@@ -53,12 +84,10 @@ export class DeleteResourceUseCase {
     for (const url of urlsToDelete) {
       try {
         await this.mediaStorage.deleteFile(url);
-      } catch {
-        // Se ignoran errores de borrado parciales para no frenar la eliminación completa.
-      }
+      } catch { }
     }
 
     await this.repository.delete(id);
-    return { success: true, message: "Recurso y archivos eliminados de forma fulminante." };
+    return { success: true, message: "Proyecto y archivos multimedia eliminados correctamente." };
   }
 }

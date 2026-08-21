@@ -15,7 +15,7 @@ export class UpdateResourceUseCase {
   constructor(
     private mediaStorage: MediaStorage,
     private repository: ResourceRepository
-  ) {}
+  ) { }
 
   private parseMetadata(formData: FormData, token: string): ImagenInternaMetadata {
     const raw = formData.get(`tiptap_media_meta_${token}`) as string | null;
@@ -70,25 +70,124 @@ export class UpdateResourceUseCase {
     const formData = await request.formData();
     const id = formData.get("id") as string;
     if (!id) throw new Error("El ID del recurso es requerido para actualizar.");
+    const tipo = (formData.get("tipo") as string) || "PROYECTO";
+    const nuevaImagenFile = formData.get("imagenPrincipal") as File | null;
+    const nuevaMiniaturaFile = formData.get("miniaturaIcono") as File | null;
+    const mediaExistente = await prisma.mediaResource.findUnique({
+      where: { id },
+      include: { categorias: true, vinetas: true }
+    });
+
+    if (tipo === "CERTIFICADO" || mediaExistente) {
+      if (!mediaExistente) throw new Error("El certificado a actualizar no existe.");
+
+      let imagenPrincipalUrl = mediaExistente.imagenPrincipalUrl;
+      if (nuevaImagenFile && nuevaImagenFile.size > 0) {
+        if (imagenPrincipalUrl) {
+          try {
+            await this.mediaStorage.deleteFile(imagenPrincipalUrl);
+          } catch { }
+        }
+        imagenPrincipalUrl = await this.mediaStorage.uploadImage(nuevaImagenFile, nuevaImagenFile.name);
+      }
+
+      let miniaturaUrl = mediaExistente.miniaturaUrl;
+      if (nuevaMiniaturaFile && nuevaMiniaturaFile.size > 0) {
+        if (miniaturaUrl) {
+          try {
+            await this.mediaStorage.deleteFile(miniaturaUrl);
+          } catch { }
+        }
+        miniaturaUrl = await this.mediaStorage.uploadImage(nuevaMiniaturaFile, nuevaMiniaturaFile.name);
+      }
+
+      const nombre = (formData.get("nombre") as string) || mediaExistente.nombre;
+      const descripcion = (formData.get("descripcion") as string) || mediaExistente.descripcion;
+      const instituto = formData.has("instituto") ? (formData.get("instituto") as string | null) : mediaExistente.instituto;
+      const destacado = formData.has("destacado") ? formData.get("destacado") === "true" : mediaExistente.destacado;
+
+      const categoriasRaw = formData.has("categorias")
+        ? JSON.parse((formData.get("categorias") as string) || "[]")
+        : null;
+
+      const vinetasRaw = formData.has("vinetas")
+        ? JSON.parse((formData.get("vinetas") as string) || "[]")
+        : null;
+
+      if (vinetasRaw !== null) await prisma.vineta.deleteMany({ where: { mediaResourceId: id } });
+      const certActualizado = await prisma.mediaResource.update({
+        where: { id },
+        data: {
+          nombre: nombre.trim(),
+          descripcion: descripcion.trim(),
+          instituto: instituto?.trim() || null,
+          destacado,
+          imagenPrincipalUrl,
+          miniaturaUrl,
+          ...(categoriasRaw !== null && {
+            categorias: {
+              set: [],
+              connectOrCreate: categoriasRaw.map((cat: any) => {
+                const nombreCat = typeof cat === "string" ? cat : cat.nombre;
+                return {
+                  where: { nombre: nombreCat },
+                  create: { nombre: nombreCat, imagenUrl: "" }
+                };
+              })
+            }
+          }),
+          ...(vinetasRaw !== null && {
+            vinetas: {
+              create: vinetasRaw.map((v: any) => {
+                const comentario = typeof v === "string" ? v : v.comentario;
+                return { comentario };
+              })
+            }
+          })
+        },
+        include: {
+          categorias: true,
+          vinetas: true
+        }
+      });
+
+      return {
+        id: certActualizado.id,
+        tipo: certActualizado.tipo,
+        nombre: certActualizado.nombre,
+        institucion: certActualizado.instituto,
+        descripcion: certActualizado.descripcion,
+        destacado: certActualizado.destacado,
+        imagenPrincipalUrl: certActualizado.imagenPrincipalUrl,
+        miniaturaUrl: certActualizado.miniaturaUrl,
+        vinetas: certActualizado.vinetas,
+        categorias: certActualizado.categorias
+      };
+    }
 
     const recursoExistente = await this.repository.findById(id);
     if (!recursoExistente) throw new Error("El recurso a actualizar no existe.");
 
-    const nuevaImagenFile = formData.get("imagenPrincipal") as File | null;
-    const nuevaMiniaturaFile = formData.get("miniaturaIcono") as File | null;
     let imagenPrincipalUrl = recursoExistente.imagenPrincipalUrl;
     if (nuevaImagenFile && nuevaImagenFile.size > 0) {
-      if (imagenPrincipalUrl) await this.mediaStorage.deleteFile(imagenPrincipalUrl);
+      if (imagenPrincipalUrl) {
+        try {
+          await this.mediaStorage.deleteFile(imagenPrincipalUrl);
+        } catch { }
+      }
       imagenPrincipalUrl = await this.mediaStorage.uploadImage(nuevaImagenFile, nuevaImagenFile.name);
     }
 
     let miniaturaUrl = recursoExistente.miniaturaUrl;
     if (nuevaMiniaturaFile && nuevaMiniaturaFile.size > 0) {
-      if (miniaturaUrl) await this.mediaStorage.deleteFile(miniaturaUrl);
+      if (miniaturaUrl) {
+        try {
+          await this.mediaStorage.deleteFile(miniaturaUrl);
+        } catch { }
+      }
       miniaturaUrl = await this.mediaStorage.uploadImage(nuevaMiniaturaFile, nuevaMiniaturaFile.name);
     }
 
-    const tipo = (formData.get("tipo") as string) || "PROYECTO";
     const destacado = formData.get("destacado") === "true";
     const nombre = formData.get("nombre") as string;
     const descripcion = formData.get("descripcion") as string;
@@ -171,9 +270,7 @@ export class UpdateResourceUseCase {
         replacements.push({ token, url: uploadedUrl });
       }
     }
-
     const seccionesDoc = this.replaceBlobUrlsInSections(seccionesDocRaw, replacements);
-
     if (replacements.length > 0) {
       await prisma.proyecto.update({
         where: { id },
