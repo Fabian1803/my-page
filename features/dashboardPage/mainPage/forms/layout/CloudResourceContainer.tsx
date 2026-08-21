@@ -24,11 +24,11 @@ interface CloudResourceContainerProps {
     backHref?: string;
 }
 
-export default function CloudResourceContainer({ 
-    children, 
-    costosActuales, 
-    title, 
-    activeField, 
+export default function CloudResourceContainer({
+    children,
+    costosActuales,
+    title,
+    activeField,
     setActiveField,
     onSubmit,
     isSubmitting = false,
@@ -97,9 +97,9 @@ export default function CloudResourceContainer({
                 </div>
             )}
             <div className="flex items-center px-4 gap-4 w-full border-b border-[#dbdce0] py-3 bg-white rounded-t-2xl">
-                <button 
-                    type="button" 
-                    onClick={handleBack} 
+                <button
+                    type="button"
+                    onClick={handleBack}
                     className="p-1 hover:bg-gray-100 rounded-full transition-colors cursor-pointer"
                     title="Volver"
                 >
@@ -110,7 +110,7 @@ export default function CloudResourceContainer({
             <div className="grid grid-cols-1 min-[930px]:grid-cols-[auto_400px] xl:grid-cols-[250px_auto_400px]">
                 <DecorationLeft activeField={activeField} title={title} />
                 <div
-                    className="pt-2 pb-20 border-x border-[#dbdce0] px-4 py-2 flex flex-col gap-4 max-h-none overflow-y-visible min-[930px]:max-h-[78.2vh] min-[930px]:overflow-y-auto"
+                    className="pt-2 pb-20 border-x border-[#dbdce0] px-4 py-2 flex flex-col gap-4 max-h-none overflow-y-visible min-[930px]:min-h-[78.2vh] min-[930px]:max-h-[78.2vh] min-[930px]:overflow-y-auto"
                     onFocusCapture={(e) => {
                         const target = e.target as HTMLInputElement | HTMLTextAreaElement;
                         if (target.placeholder?.includes("nombre de la " + title) || target.placeholder?.includes("nombre del " + title)) {
@@ -131,7 +131,7 @@ export default function CloudResourceContainer({
                 />
                 <hr className="hidden xl:block border-[#dbdce0]" />
                 <div className="col-span-1 xl:col-start-2 border-t border-[#dbdce0] py-4 px-6 gap-2 flex flex-wrap items-center">
-                    <button 
+                    <button
                         type="button"
                         onClick={onSubmit}
                         disabled={isSubmitting}
@@ -139,7 +139,7 @@ export default function CloudResourceContainer({
                     >
                         {isSubmitting ? "Creating..." : "Create"}
                     </button>
-                    <button 
+                    <button
                         type="button"
                         onClick={handleBack}
                         disabled={isSubmitting}

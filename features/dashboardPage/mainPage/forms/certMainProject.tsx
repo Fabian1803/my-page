@@ -44,8 +44,8 @@ export default function CertMainProject() {
         console.log("Archivo registrado:", fileId, file);
     };
     return (
-        <CloudResourceContainer 
-            costosActuales={costosActuales} 
+        <CloudResourceContainer
+            costosActuales={costosActuales}
             title="proyecto"
             activeField={activeField}
             setActiveField={setActiveField}
@@ -85,12 +85,12 @@ export default function CertMainProject() {
                 value={null}
                 onChange={() => { }}
             />
-            <LinksProyect 
+            <LinksProyect
                 onClick={() => setActiveField('Enlaces')}
-                dynamicLinks={[]} 
-                onAddLink={() => {}} 
-                onUrlChange={() => {}} 
-                onRemoveLink={() => {}}
+                dynamicLinks={[]}
+                onAddLink={() => { }}
+                onUrlChange={() => { }}
+                onRemoveLink={() => { }}
             />
             <DocumentationSectionsCloud
                 contentBlocks={contentBlocks}

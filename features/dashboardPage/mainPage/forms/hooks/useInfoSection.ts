@@ -2,7 +2,11 @@ import { Node, useEditor } from "@tiptap/react"
 import StarterKit from "@tiptap/starter-kit"
 import { useEffect, useRef, useState } from "react"
 import Image from '@tiptap/extension-image'
-import { DetailedImageData } from "../detailedImageModal"
+
+export interface DetailedImageData {
+    imagen?: File | null
+    nombre?: string
+}
 
 const VideoExtension = Node.create({
     name: 'video',
