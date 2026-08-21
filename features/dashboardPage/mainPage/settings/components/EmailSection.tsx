@@ -34,7 +34,7 @@ export default function EmailSection({
     }
 
     return (
-        <div className="flex flex-col gap-4 min-w-0 pt-4">
+        <div className="flex flex-col gap-4 min-w-0">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
                 <div className="flex items-center gap-2.5">
                     <div className="w-8 h-8 rounded bg-blue-50 text-[#0c68e0] flex items-center justify-center shrink-0">
@@ -66,8 +66,8 @@ export default function EmailSection({
             </div>
 
             {isEditing && (
-                <form 
-                    onSubmit={handleSubmit} 
+                <form
+                    onSubmit={handleSubmit}
                     className="border border-[#dadce0] rounded-lg bg-white overflow-hidden shadow-2xs transition-all"
                 >
                     <div className="bg-[#f8f9fa] border-b border-[#dadce0] px-4 py-2 flex items-center justify-between">
@@ -121,8 +121,7 @@ export default function EmailSection({
                                 disabled={emailLoading}
                                 className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-[#0c68e0] hover:bg-blue-700 text-white text-xs font-semibold rounded shadow-xs transition-colors cursor-pointer disabled:opacity-50"
                             >
-                                <MdCheck size={16} />
-                                <span>{emailLoading ? "Guardando..." : "Guardar cambios"}</span>
+                                <span>{emailLoading ? "Guardando..." : "Guardar"}</span>
                             </button>
                         </div>
                     </div>

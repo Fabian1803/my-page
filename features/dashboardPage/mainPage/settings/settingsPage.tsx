@@ -36,7 +36,7 @@ export default function SettingsPage() {
         loadProfile,
     } = useSettingsPage()
     return (
-        <div className="max-w-[1600px] mx-auto flex flex-col h-full gap-1 bg-[#f9fafb] rounded-t-2xl min-h-[85vh]">
+        <div className="max-w-[1600px] mx-auto flex flex-col h-full bg-[#f9fafb] rounded-t-2xl min-h-[85vh]">
             <SettingsHeaderBar onRefresh={loadProfile} isLoading={loadingProfile} />
             <div className="p-4 sm:p-6 space-y-6 bg-white flex-1">
                 {message && (

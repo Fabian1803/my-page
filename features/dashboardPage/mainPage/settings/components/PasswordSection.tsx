@@ -68,8 +68,8 @@ export default function PasswordSection({
             </div>
 
             {isEditing && (
-                <form 
-                    onSubmit={handleSubmit} 
+                <form
+                    onSubmit={handleSubmit}
                     className="border border-[#dadce0] rounded-lg bg-white overflow-hidden shadow-2xs transition-all"
                 >
                     <div className="bg-[#f8f9fa] border-b border-[#dadce0] px-4 py-2 flex items-center justify-between">
@@ -155,8 +155,7 @@ export default function PasswordSection({
                                 disabled={passwordLoading}
                                 className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-[#0c68e0] hover:bg-blue-700 text-white text-xs font-semibold rounded shadow-xs transition-colors cursor-pointer disabled:opacity-50"
                             >
-                                <MdCheck size={16} />
-                                <span>{passwordLoading ? "Actualizando..." : "Actualizar Contraseña"}</span>
+                                <span>{passwordLoading ? "Actualizando..." : "Actualizar"}</span>
                             </button>
                         </div>
                     </div>

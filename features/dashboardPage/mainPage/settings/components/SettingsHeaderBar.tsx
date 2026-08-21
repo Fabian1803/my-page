@@ -11,17 +11,9 @@ export default function SettingsHeaderBar({ onRefresh, isLoading }: SettingsHead
     return (
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-4 sm:px-6 py-4 bg-white border-b border-[#dadce0] rounded-t-2xl">
             <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-blue-50 text-[#0c68e0] flex items-center justify-center shrink-0">
-                    <MdSecurity size={24} />
-                </div>
-                <div>
-                    <h1 className="text-lg sm:text-xl font-semibold text-gray-800 tracking-tight">
-                        Configuración y Seguridad de Acceso
-                    </h1>
-                    <p className="text-xs text-gray-500">
-                        Gestiona tus credenciales tradicionales y dispositivos biométricos (Passkeys / Touch ID)
-                    </p>
-                </div>
+                <h1 className="text-lg sm:text-lg text-gray-800 tracking-tight">
+                    Configuración y Seguridad de Acceso
+                </h1>
             </div>
 
             <button
