@@ -1,27 +1,62 @@
-import Link from 'next/link'
 import SearchMapComponent from './components/searchMapComponent'
-export default function fabianPageMain() {
-    return (
-        <SearchMapComponent>
-            <Link href="/Codepedia/project/loquesea" className="gap-2 p-4 grid grid-cols-[auto_140] min-[500px]:grid-cols-[auto_180] max-w-200">
-                <div className="flex gap-2 flex-col max-[500px]:col-span-2">
-                    <p className="text-md font-bold">Destacado</p>
-                    <div className="grid grid-cols-[40_auto] grid-rows-2 items-center h-9">
-                        <div className="row-span-2 flex justify-center">
-                            <div className="bg-blue-400 rounded-full w-8 h-8"></div>
-                        </div>
-                        <h3 className="text-sm font-bold line-clamp-1">Titulo de la pagina Titulo de la pagina Titulo de la pagina</h3>
-                        <p className="text-xs line-clamp-1">https://example.com/example.com/example.com/example.com</p>
-                    </div>
-                </div>
-                <div className="col-start-1 min-[500px]:row-start-2">
-                    <h1 className="text-blue-800 font-bold">Titulo de la pagina</h1>
-                    <p className="line-clamp-5 md:line-clamp-4">Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptas, voluptate. Lorem ipsum dolor si  Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptas, voluptate. Lorem ipsum dolor si Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptas, voluptate. Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptas, voluptate. Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptas, voluptate.</p>
-                </div>
-                <div className="flex items-center justify-center row-span-2 col-start-2">
-                    <div className="w-40 h-40 max-[500px]:w-30 max-[500px]:h-30 rounded-2xl bg-amber-400"></div>
-                </div>
-            </Link>
-        </SearchMapComponent>
-    )
+import ProjectCard, { ProjectItemData } from './components/ProjectCard'
+import SkillCard, { SkillItemData } from './components/SkillCard'
+import ImagesPreviewSection from './components/ImagesPreviewSection'
+import CertificatesPreviewSection from './components/CertificatesPreviewSection'
+
+export interface FabianMainData {
+  proyectos: ProjectItemData[];
+  skills: SkillItemData[];
+  imagenes: any[];
+  certificados: any[];
+}
+
+export default function FabianPageMain({ data }: { data?: FabianMainData }) {
+  const {
+    proyectos = [],
+    skills = [],
+    imagenes = [],
+    certificados = []
+  } = data || {};
+
+  const proyecto1 = proyectos[0];
+  const proyecto2 = proyectos[1];
+  const proyectosRestantes = proyectos.slice(2);
+
+  const skill1 = skills[0];
+  const skillsRestantes = skills.slice(1);
+
+  return (
+    <SearchMapComponent>
+      <div className="flex flex-col py-2">
+        {imagenes.length > 0 && (
+          <ImagesPreviewSection images={imagenes} />
+        )}
+        {proyecto1 && (
+          <ProjectCard project={proyecto1} />
+        )}
+        {proyecto2 && (
+          <ProjectCard project={proyecto2} />
+        )}
+
+        {skill1 && (
+          <div className="p-4 max-w-200">
+            <SkillCard skill={skill1} />
+          </div>
+        )}
+
+        {certificados.length > 0 && (
+          <CertificatesPreviewSection certificates={certificados} />
+        )}
+        {proyectosRestantes.map((proj) => (
+          <ProjectCard key={proj.id} project={proj} />
+        ))}
+        {skillsRestantes.map((sk) => (
+          <div key={sk.id} className="p-4 max-w-200">
+            <SkillCard skill={sk} />
+          </div>
+        ))}
+      </div>
+    </SearchMapComponent>
+  )
 }
