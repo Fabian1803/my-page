@@ -4,17 +4,18 @@ import { BsCloudUpload, BsImage, BsX } from 'react-icons/bs';
 interface InputImageCloudProps {
   label: string;
   value?: File | null;
+  initialUrl?: string | null;
   onChange: (file: File | null) => void;
   placeholder?: string;
   required?: boolean;
   onClick?: () => void;
 }
 
-export default function InputImageCloud({ label, onChange, placeholder = "Haz clic para subir una imagen", required = false, onClick }: InputImageCloudProps) {
+export default function InputImageCloud({ label, onChange, initialUrl, placeholder = "Haz clic para subir una imagen", required = false, onClick }: InputImageCloudProps) {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [fileName, setFileName] = useState<string>(''); 
+  const [fileName, setFileName] = useState<string>('');
   const fileInputRef = useRef<HTMLInputElement>(null);
-
+  const activePreview = imagePreview || initialUrl || null;
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -61,15 +62,14 @@ export default function InputImageCloud({ label, onChange, placeholder = "Haz cl
       />
 
       <div
-        className={`relative flex items-center justify-between rounded border border-gray-300 bg-transparent px-3 py-2 text-sm text-gray-800 outline-none focus-within:border-blue-600 ${
-          imagePreview ? 'cursor-default' : 'cursor-pointer hover:border-gray-400'
-        }`}
-        onClick={imagePreview ? undefined : handleInputClick}
+        className={`relative flex items-center justify-between rounded border border-gray-300 bg-transparent px-3 py-2 text-sm text-gray-800 outline-none focus-within:border-blue-600 ${activePreview ? 'cursor-default' : 'cursor-pointer hover:border-gray-400'
+          }`}
+        onClick={activePreview ? undefined : handleInputClick}
       >
         <div className="flex items-center gap-3">
-          {imagePreview ? (
+          {activePreview ? (
             <img
-              src={imagePreview}
+              src={activePreview}
               alt="Preview"
               className="w-35 h-20 rounded-sm object-cover border border-gray-200"
             />
@@ -78,13 +78,13 @@ export default function InputImageCloud({ label, onChange, placeholder = "Haz cl
               <BsImage size={16} />
             </div>
           )}
-          
-          <span className={imagePreview ? 'text-gray-800 font-medium truncate' : 'text-gray-400'}>
-            {imagePreview ? fileName : placeholder}
+
+          <span className={activePreview ? 'text-gray-800 font-medium truncate' : 'text-gray-400'}>
+            {activePreview ? (fileName || 'Logotipo actual cargado') : placeholder}
           </span>
         </div>
 
-        {imagePreview ? (
+        {activePreview ? (
           <div className="flex gap-2 items-center">
             <button
               type="button"

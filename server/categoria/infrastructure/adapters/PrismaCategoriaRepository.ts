@@ -33,6 +33,17 @@ export class PrismaCategoriaRepository implements CategoriaRepository {
     return await this.prisma.categoria.findUnique({ where: { nombre } });
   }
 
+  async update(id: string, data: Partial<Omit<Categoria, 'id'>>): Promise<Categoria> {
+    return await this.prisma.categoria.update({
+      where: { id },
+      data: {
+        ...(data.nombre !== undefined && { nombre: data.nombre }),
+        ...(data.imagenUrl !== undefined && { imagenUrl: data.imagenUrl }),
+        ...(data.destacado !== undefined && { destacado: data.destacado }),
+      }
+    });
+  }
+
   async delete(id: string): Promise<void> {
     await this.prisma.categoria.delete({ where: { id } });
   }

@@ -5,5 +5,6 @@ export interface CategoriaRepository {
   findAll(): Promise<Categoria[]>;
   findById(id: string): Promise<Categoria | null>;
   findByNombre(nombre: string): Promise<Categoria | null>;
+  update(id: string, data: Partial<Omit<Categoria, 'id'>>): Promise<Categoria>;
   delete(id: string): Promise<void>;
 }

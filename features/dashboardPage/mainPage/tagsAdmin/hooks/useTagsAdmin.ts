@@ -1,11 +1,7 @@
-import { useEffect, useState, useMemo } from "react"
-
-export interface TagItem {
-    id: string;
-    nombre: string;
-    imagenUrl: string;
-    destacado: boolean;
-}
+import { useEffect, useState, useMemo, useCallback } from "react"
+import { tagServices, TagItem } from "../services/tagServices"
+import { useNotifications } from "@/features/dashboardPage/context/NotificationContext"
+export type { TagItem } from "../services/tagServices"
 
 export function useTagsAdmin() {
     const [tags, setTags] = useState<TagItem[]>([])
@@ -14,44 +10,74 @@ export function useTagsAdmin() {
     const [filterTab, setFilterTab] = useState<'all' | 'destacados' | 'estandar'>('all')
     const [copiedId, setCopiedId] = useState<string | null>(null)
     const [selectedIds, setSelectedIds] = useState<string[]>([])
-
+    const { addNotification } = useNotifications()
     const skeletons = [1, 2, 3, 4, 5, 6]
-
-    // 🔄 1. CARGAR CATEGORÍAS (GET)
-    const cargarCategorias = async () => {
+    const cargarCategorias = useCallback(async () => {
         setIsLoading(true)
         try {
-            const response = await fetch('/api/categorias')
-            const result = await response.json()
-            if (result.success) {
+            const result = await tagServices.getAll()
+            if (result.success && result.data) {
                 setTags(result.data)
+            } else {
+                console.error("Error al obtener categorías:", result.error)
             }
         } catch (error) {
-            console.error("Error al obtener categorías de Postgres:", error)
+            console.error("Error de red:", error)
         } finally {
             setIsLoading(false)
         }
-    }
+    }, [])
 
     useEffect(() => {
         cargarCategorias()
-    }, [])
+    }, [cargarCategorias])
 
     const handleDeleteTag = async (id: string, nombreTag: string) => {
-        if (!confirm(`¿Estás seguro de que deseas eliminar "${nombreTag}"? Se borrará de Postgres y Vercel Blob Storage.`)) return
+        if (!confirm(`¿Estás seguro de que deseas eliminar "${nombreTag}"? Se borrará de Postgres y Cloud Storage.`)) return
         try {
-            const response = await fetch(`/api/categorias?id=${id}`, { method: 'DELETE' })
-            const result = await response.json()
+            const result = await tagServices.delete(id)
             if (!result.success) throw new Error(result.error)
+
             setTags(prev => prev.filter(tag => tag.id !== id))
             setSelectedIds(prev => prev.filter(item => item !== id))
+
+            addNotification({
+                type: 'info',
+                title: 'Recurso eliminado',
+                desc: `La etiqueta "${nombreTag}" fue eliminada de Postgres y Cloud Storage con éxito.`
+            })
         } catch (error: any) {
             alert("No se pudo eliminar: " + error.message)
+            addNotification({
+                type: 'error',
+                title: 'Fallo al eliminar etiqueta',
+                desc: `Error al intentar eliminar "${nombreTag}": ${error.message}`
+            })
         }
     }
 
-    const handleToggleDestacado = (id: string) => {
-        setTags(tags.map(tag => tag.id === id ? { ...tag, destacado: !tag.destacado } : tag))
+    const handleToggleDestacado = async (id: string) => {
+        const targetTag = tags.find(t => t.id === id)
+        if (!targetTag) return
+        const newDestacado = !targetTag.destacado
+        setTags(prev => prev.map(tag => tag.id === id ? { ...tag, destacado: newDestacado } : tag))
+        try {
+            const result = await tagServices.toggleDestacado(id, newDestacado)
+            if (!result.success) throw new Error(result.error)
+            addNotification({
+                type: 'success',
+                title: 'Estado de etiqueta actualizado',
+                desc: `"${targetTag.nombre}" ahora está marcada como ${newDestacado ? 'Destacada (Principal)' : 'Estándar'}.`
+            })
+        } catch (error: any) {
+            console.error("Error al alternar destacado:", error)
+            setTags(prev => prev.map(tag => tag.id === id ? { ...tag, destacado: !newDestacado } : tag))
+            addNotification({
+                type: 'error',
+                title: 'Error al actualizar estado',
+                desc: `No se pudo actualizar el estado de "${targetTag.nombre}".`
+            })
+        }
     }
 
     const handleCopyId = (id: string) => {
@@ -63,7 +89,7 @@ export function useTagsAdmin() {
     }
 
     const handleSelectRow = (id: string) => {
-        setSelectedIds(prev => 
+        setSelectedIds(prev =>
             prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
         )
     }
