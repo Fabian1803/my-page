@@ -23,13 +23,20 @@ export class CreateMetadataUseCase {
             if (metadatosActuales.url_imagen) await this.mediaStorage.deleteFile(metadatosActuales.url_imagen);
             const urlImagen = await this.mediaStorage.uploadImage(imagenFile, imagenFile.name);
             metadatosFinales.url_imagen = urlImagen;
+        } else if (metadatosNuevos.url_imagen === "") {
+            if (metadatosActuales.url_imagen) await this.mediaStorage.deleteFile(metadatosActuales.url_imagen);
+            metadatosFinales.url_imagen = "";
         } else {
             metadatosFinales.url_imagen = metadatosActuales.url_imagen || "";
         }
+
         if (pdfFile && pdfFile.size > 0) {
             if (metadatosActuales.url_cv_pdf) await this.mediaStorage.deleteFile(metadatosActuales.url_cv_pdf);
             const urlPdf = await this.mediaStorage.uploadDocument(pdfFile, pdfFile.name);
             metadatosFinales.url_cv_pdf = urlPdf;
+        } else if (metadatosNuevos.url_cv_pdf === "") {
+            if (metadatosActuales.url_cv_pdf) await this.mediaStorage.deleteFile(metadatosActuales.url_cv_pdf);
+            metadatosFinales.url_cv_pdf = "";
         } else {
             metadatosFinales.url_cv_pdf = metadatosActuales.url_cv_pdf || "";
         }

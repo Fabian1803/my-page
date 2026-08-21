@@ -1,6 +1,6 @@
 'use client'
 import React, { useState } from 'react'
-import { useInputTemplateProps } from './hooks/useCv'
+import { useCv } from './hooks'
 import {
     CvHeaderBar,
     CvTabsNav,
@@ -15,10 +15,13 @@ export default function CvPage() {
         cvFile,
         pdfPreviewUrl,
         loading,
+        loadingInitial,
         handleFileChange,
-        handleRemoveCV,
-        handleSubmit
-    } = useInputTemplateProps()
+        handleDiscardLocalChanges,
+        handleDeleteCv,
+        handleSubmit,
+        cargarCvExistente
+    } = useCv()
 
     const [activeTab, setActiveTab] = useState<'details' | 'permissions' | 'versions'>('details')
 
@@ -28,7 +31,7 @@ export default function CvPage() {
             const partes = pdfPreviewUrl.split('/');
             const nombreConTimestamp = partes[partes.length - 1];
             const indiceGuion = nombreConTimestamp.indexOf('-');
-            return indiceGuion !== -1 ? nombreConTimestamp.substring(indiceGuion + 1) : nombreConTimestamp;
+            return indiceGuion !== -1 ? decodeURIComponent(nombreConTimestamp.substring(indiceGuion + 1)) : decodeURIComponent(nombreConTimestamp);
         }
         return 'curriculum-vitae.pdf';
     };
@@ -41,7 +44,7 @@ export default function CvPage() {
                 type="file"
                 ref={fileInputRef}
                 className="sr-only hidden"
-                accept=".pdf"
+                accept=".pdf,application/pdf"
                 onChange={handleFileChange}
             />
             <form onSubmit={handleSubmit} className="flex-1 flex flex-col">
@@ -49,28 +52,39 @@ export default function CvPage() {
                     pdfPreviewUrl={pdfPreviewUrl}
                     loading={loading}
                     onUploadClick={() => fileInputRef.current?.click()}
-                    onRefresh={() => window.location.reload()}
+                    onRefresh={cargarCvExistente}
                 />
                 <CvTabsNav
                     activeTab={activeTab}
                     onSelectTab={setActiveTab}
                 />
-                <CvMetadataCard
-                    cvFile={cvFile}
-                    pdfPreviewUrl={pdfPreviewUrl}
-                    fileName={fileName}
-                />
-                <CvViewerCard
-                    pdfPreviewUrl={pdfPreviewUrl}
-                    fileName={fileName}
-                    onUploadClick={() => fileInputRef.current?.click()}
-                    onRemoveClick={handleRemoveCV}
-                />
+
+                {loadingInitial ? (
+                    <div className="flex-1 bg-white p-12 flex flex-col items-center justify-center min-h-[50vh]">
+                        <div className="w-8 h-8 border-3 border-blue-600 border-t-transparent rounded-full animate-spin mb-3"></div>
+                        <p className="text-sm text-gray-500 font-medium">Consultando objeto en Cloud Storage...</p>
+                    </div>
+                ) : (
+                    <>
+                        <CvMetadataCard
+                            cvFile={cvFile}
+                            pdfPreviewUrl={pdfPreviewUrl}
+                            fileName={fileName}
+                        />
+                        <CvViewerCard
+                            pdfPreviewUrl={pdfPreviewUrl}
+                            fileName={fileName}
+                            onUploadClick={() => fileInputRef.current?.click()}
+                            onRemoveClick={handleDeleteCv}
+                        />
+                    </>
+                )}
+
                 <CvActionBar
                     cvFile={cvFile}
                     pdfPreviewUrl={pdfPreviewUrl}
                     loading={loading}
-                    onDiscard={handleRemoveCV}
+                    onDiscard={cvFile ? handleDiscardLocalChanges : handleDeleteCv}
                 />
             </form>
         </div>
