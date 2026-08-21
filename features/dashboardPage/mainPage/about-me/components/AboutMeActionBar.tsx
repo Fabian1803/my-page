@@ -22,14 +22,14 @@ export default function AboutMeActionBar({
                     type="button"
                     onClick={onReset}
                     disabled={loading}
-                    className="px-4 py-2 text-xs sm:text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-sm transition-colors disabled:opacity-40 cursor-pointer"
+                    className="flex-1 sm:flex-initial px-4 py-2 text-xs sm:text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-sm transition-colors disabled:opacity-40 cursor-pointer text-center"
                 >
                     Descartar
                 </button>
                 <button
                     type="submit"
                     disabled={loading}
-                    className="inline-flex items-center justify-center gap-2 bg-[#0c68e0] hover:bg-blue-900 text-white px-5 py-2 rounded-sm text-xs sm:text-sm font-semibold transition-all shadow-xs disabled:opacity-50 cursor-pointer"
+                    className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 bg-[#0c68e0] hover:bg-blue-900 text-white px-5 py-2 rounded-sm text-xs sm:text-sm font-semibold transition-all shadow-xs disabled:opacity-50 cursor-pointer"
                 >
                     {loading ? (
                         <>
