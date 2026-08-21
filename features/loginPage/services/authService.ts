@@ -1,5 +1,5 @@
+// features/loginPage/services/authService.ts
 import { startAuthentication } from "@simplewebauthn/browser";
-export const ADMIN_EMAIL = "fabianriveraabian3@gmail.com";
 
 export interface LoginResult {
   success: boolean;
@@ -8,13 +8,34 @@ export interface LoginResult {
   error?: string;
 }
 
+export interface ProfileMetadata {
+  nombre?: string;
+  url_imagen?: string;
+}
+
 export const authService = {
-  async loginWithPassword(password: string, email: string = ADMIN_EMAIL): Promise<LoginResult> {
+
+  async getProfileMetadata(): Promise<ProfileMetadata | null> {
+    try {
+      const response = await fetch('/api/metadata');
+      if (!response.ok) return null;
+      const json = await response.json();
+      const raw = json?.data || json;
+      return {
+        nombre: raw?.nombre || '',
+        url_imagen: raw?.url_imagen || ''
+      };
+    } catch {
+      return null;
+    }
+  },
+
+  async loginWithPassword(password: string, email: string): Promise<LoginResult> {
     try {
       const response = await fetch('/api/auth', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ email: email.trim(), password })
       });
       const result = await response.json();
       if (!response.ok || !result.success) {
@@ -36,19 +57,21 @@ export const authService = {
       };
     }
   },
-  async loginWithBiometrics(email: string = ADMIN_EMAIL): Promise<LoginResult> {
+
+  async loginWithBiometrics(email?: string): Promise<LoginResult> {
     try {
+      const cleanEmail = email?.trim() || undefined;
       const challengeRes = await fetch("/api/auth/challenge", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email: cleanEmail }),
       });
       if (!challengeRes.ok) throw new Error("Error al obtener el desafío biométrico.");
       const challengeData = await challengeRes.json();
       if (!challengeData.success || !challengeData.data?.options) {
         throw new Error(challengeData.error || "Desafío biométrico no válido.");
       }
-      const { options } = challengeData.data;
+      const { options, email: targetEmail } = challengeData.data;
       const authResponse = await startAuthentication(options);
       const verifyRes = await fetch("/api/auth/verify-challenge", {
         method: "POST",
@@ -56,7 +79,7 @@ export const authService = {
         body: JSON.stringify({
           body: authResponse,
           expectedChallenge: options.challenge,
-          email,
+          email: targetEmail || cleanEmail,
         }),
       });
       if (!verifyRes.ok) throw new Error("Error en la verificación del dispositivo.");

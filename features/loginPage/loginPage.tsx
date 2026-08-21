@@ -1,8 +1,9 @@
 'use client'
 import Image from 'next/image'
 import { useLogin } from './hooks/useLogin'
-import { TbFingerprintScan } from "react-icons/tb";
-import { LuScanFace } from "react-icons/lu";
+import { TbFingerprintScan } from "react-icons/tb"
+import { LuScanFace } from "react-icons/lu"
+
 export default function LoginPage() {
     const {
         step,
@@ -13,6 +14,7 @@ export default function LoginPage() {
         setPassword,
         showPassword,
         setShowPassword,
+        avatarUrl,
         error,
         loading,
         handleSubmit,
@@ -27,31 +29,36 @@ export default function LoginPage() {
             <form onSubmit={handleSubmit} className="w-full lg:max-w-[1050px] bg-transparent lg:bg-white border-none lg:border lg:border-[#dadce0] lg:rounded-3xl lg:p-12 flex flex-col md:flex-row justify-between items-start gap-8 md:gap-16 lg:gap-16">
                 <div className="w-full md:w-[45%] lg:w-1/2">
                     <div className="mb-6 md:mb-4 -ml-4">
-                        <Image src="/FLogo.webp" alt="Logo" width={60} height={60} />
+                        <Image src="/FLogo.webp" alt="Logo" width={60} height={60} priority />
                     </div>
                     <h1 className="text-[28px] md:text-[38px] text-[#202124] mb-3 font-normal tracking-tight leading-tight transition-all duration-300">
                         {step === 'email' ? 'Inicia sesión' : 'Te damos la bienvenida'}
                     </h1>
                     {step === 'email' ? (
                         <p className="text-[16px] md:text-[16px] text-[#202124] transition-all duration-300">
-                            Utiliza tu cuenta de Google
+                            Utiliza tu cuenta de Fabian Cloud
                         </p>
                     ) : (
                         <div
                             onClick={() => { setStep('email'); setError(null); }}
-                            className="rounded-full flex gap-2.5 border border-[#dadce0] pl-1 pr-3 py-1 w-max h-8 justify-center items-center bg-white hover:bg-gray-50 cursor-pointer transition-colors duration-200"
+                            className="rounded-full flex gap-2.5 border border-[#dadce0] pl-1 pr-3 py-1 w-max h-8 justify-center items-center bg-white hover:bg-gray-50 cursor-pointer transition-colors duration-200 shadow-xs"
+                            title="Haz clic para cambiar de cuenta"
                         >
-                            <div className="rounded-full overflow-hidden w-6 h-6 flex items-center justify-center shrink-0">
-                                <Image
-                                    src="/perfil.jpeg"
-                                    alt="Profile"
-                                    width={24}
-                                    height={24}
-                                    className="w-full h-full object-cover"
-                                />
+                            <div className="rounded-full overflow-hidden w-6 h-6 flex items-center justify-center shrink-0 bg-blue-100 border border-gray-200">
+                                {avatarUrl ? (
+                                    <img
+                                        src={avatarUrl}
+                                        alt="Profile"
+                                        className="w-full h-full object-cover"
+                                    />
+                                ) : (
+                                    <span className="text-[11px] font-bold text-[#0b57d0]">
+                                        {email ? email[0].toUpperCase() : 'U'}
+                                    </span>
+                                )}
                             </div>
-                            <p className="text-[14px] text-[#3c4043] font-medium tracking-normal">
-                                fabianriveraabian3@gmail.com
+                            <p className="text-[14px] text-[#3c4043] font-medium tracking-normal max-w-[220px] sm:max-w-[300px] truncate">
+                                {email}
                             </p>
                         </div>
                     )}
@@ -74,6 +81,7 @@ export default function LoginPage() {
                                     onChange={(e) => setEmail(e.target.value)}
                                     className="peer w-full px-3 py-4 border border-[#747775] rounded-[4px] focus:outline-none focus:border-2 focus:border-[#0b57d0] transition-all placeholder-transparent bg-transparent"
                                     placeholder="Correo electrónico o teléfono"
+                                    autoComplete="email"
                                 />
                                 <label
                                     htmlFor="email"
@@ -116,6 +124,7 @@ export default function LoginPage() {
                                     onChange={(e) => setPassword(e.target.value)}
                                     className="peer w-full px-3 py-4 border border-[#747775] rounded-[4px] focus:outline-none focus:border-2 focus:border-[#0b57d0] transition-all placeholder-transparent bg-transparent"
                                     placeholder="Introduce tu contraseña"
+                                    autoComplete="current-password"
                                 />
                                 <label
                                     htmlFor="password"
@@ -150,41 +159,44 @@ export default function LoginPage() {
                     <div className="flex justify-between items-center md:justify-end md:gap-4 w-full pt-4 bg-transparent z-10">
                         {step === 'email' ? (
                             <>
-                                <span
+                                <button
+                                    type="button"
                                     onClick={loading ? undefined : handleBiometricLogin}
-                                    className={`text-[#0b57d0] font-medium text-[14px] cursor-pointer hover:underline py-2 flex gap-1 items-center
+                                    className={`text-[#0b57d0] font-medium text-[14px] cursor-pointer hover:underline py-2 flex gap-1.5 items-center
                                         ${loading ? 'opacity-50 cursor-not-allowed' : ''}
                                     `}
                                 >
                                     {showFace ? (
-                                        <LuScanFace className="animate-pulse px-[1.1px]" size={26} />
+                                        <LuScanFace className="animate-pulse px-[1.1px]" size={24} />
                                     ) : (
-                                        <TbFingerprintScan className="animate-pulse" size={26} />
-                                    )} {loading ? 'Escaneando...' : 'Usar IFace'} 
-                                </span>
+                                        <TbFingerprintScan className="animate-pulse" size={24} />
+                                    )}
+                                    <span>{loading ? 'Escaneando...' : 'Iniciar con Passkey'}</span>
+                                </button>
                                 <button
                                     type="button"
                                     onClick={handleSubmit}
-                                    className="bg-[#0b57d0] text-white px-6 py-2.5 rounded-full font-medium text-[14px] hover:bg-[#155bd3]"
+                                    className="bg-[#0b57d0] text-white px-6 py-2.5 rounded-full font-medium text-[14px] hover:bg-[#155bd3] transition-colors cursor-pointer"
                                 >
                                     Siguiente
                                 </button>
                             </>
                         ) : (
                             <>
-                                <span
+                                <button
+                                    type="button"
                                     onClick={() => { setStep('email'); setError(null); }}
                                     className="text-[#0b57d0] font-medium text-[14px] cursor-pointer hover:underline py-2"
                                 >
                                     Atrás
-                                </span>
+                                </button>
                                 <button
                                     type="button"
                                     onClick={handleSubmit}
                                     disabled={loading}
-                                    className="bg-[#0b57d0] text-white px-6 py-2.5 rounded-full font-medium text-[14px] hover:bg-[#155bd3]"
+                                    className="bg-[#0b57d0] text-white px-6 py-2.5 rounded-full font-medium text-[14px] hover:bg-[#155bd3] transition-colors cursor-pointer disabled:opacity-50"
                                 >
-                                    {loading ? 'Cargando...' : 'Siguiente'}
+                                    {loading ? 'Iniciando sesión...' : 'Siguiente'}
                                 </button>
                             </>
                         )}

@@ -26,13 +26,13 @@ export interface ServiceResult<T = any> {
 }
 
 export const aboutMeServices = {
-
     async getAboutMe(): Promise<ServiceResult<AboutMeData>> {
         try {
             const response = await fetch('/api/metadata');
             const result = await response.json();
             if (!result.success) return { success: false, error: result.error || 'Error al obtener información de perfil.' };
-            const data = result.data || {};
+            const rawData = result.data || result;
+            const data = rawData.metadatos || rawData;
             return {
                 success: true,
                 data: {

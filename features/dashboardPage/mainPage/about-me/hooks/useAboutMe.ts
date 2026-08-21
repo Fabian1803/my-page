@@ -2,7 +2,9 @@
 import { useEffect, useState, useCallback } from "react"
 import { aboutMeServices, ExperienceItem, AboutMeData } from "../services/aboutMeServices"
 import { useNotifications } from "@/features/dashboardPage/context/NotificationContext"
+
 export type { ExperienceItem, AboutMeData } from "../services/aboutMeServices"
+
 export function useAboutMe() {
     const [nombre, setNombre] = useState('')
     const [descripcion, setDescripcion] = useState('')
@@ -37,6 +39,7 @@ export function useAboutMe() {
     useEffect(() => {
         cargarMetadatos()
     }, [cargarMetadatos])
+
     useEffect(() => {
         if (!fotoPerfil) {
             setLocalPreviewUrl(null)
@@ -46,7 +49,9 @@ export function useAboutMe() {
         setLocalPreviewUrl(objectUrl)
         return () => URL.revokeObjectURL(objectUrl)
     }, [fotoPerfil])
+
     const previewUrl = localPreviewUrl || serverImageUrl || null
+
     const handleFotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
             const file = e.target.files[0]
@@ -154,6 +159,16 @@ export function useAboutMe() {
 
             setFotoPerfil(null)
             await cargarMetadatos()
+
+            // Disparar evento para actualizar UserProfileMenuCloud en tiempo real
+            if (typeof window !== 'undefined') {
+                window.dispatchEvent(new CustomEvent('profile-updated', {
+                    detail: {
+                        nombre: nombre.trim(),
+                        url_imagen: result.data?.url_imagen || serverImageUrl || null
+                    }
+                }))
+            }
         } catch (err: any) {
             setError(err.message)
             addNotification({

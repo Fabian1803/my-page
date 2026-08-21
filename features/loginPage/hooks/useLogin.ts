@@ -1,21 +1,38 @@
+'use client'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { authService, ADMIN_EMAIL } from '../services/authService'
+import { authService } from '../services/authService'
+
 export function useLogin() {
     const router = useRouter()
     const [step, setStep] = useState<'email' | 'password'>('email')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [showPassword, setShowPassword] = useState(false)
+    const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
+    const [nombre, setNombre] = useState<string>('')
     const [error, setError] = useState<string | null>(null)
     const [loading, setLoading] = useState(false)
     const [showFace, setShowFace] = useState(true)
+
     useEffect(() => {
         const interval = setInterval(() => {
             setShowFace((prev) => !prev)
         }, 1000)
         return () => clearInterval(interval)
     }, [])
+
+    useEffect(() => {
+        const loadProfile = async () => {
+            const profile = await authService.getProfileMetadata()
+            if (profile) {
+                if (profile.url_imagen) setAvatarUrl(profile.url_imagen)
+                if (profile.nombre) setNombre(profile.nombre)
+            }
+        }
+        loadProfile()
+    }, [])
+
     const handleEmailNext = () => {
         setError(null)
         const cleanEmail = email.trim()
@@ -23,12 +40,16 @@ export function useLogin() {
             setError('Introduce un correo electrónico o un número de teléfono')
             return
         }
-        if (cleanEmail !== ADMIN_EMAIL) {
-            setError('No hemos podido encontrar tu Cuenta de Google')
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        if (!emailRegex.test(cleanEmail)) {
+            setError('Introduce un correo electrónico válido')
             return
         }
+
         setStep('password')
     }
+
     const handleLoginSubmit = async () => {
         setError(null)
         if (!password) {
@@ -37,7 +58,7 @@ export function useLogin() {
         }
         setLoading(true)
         try {
-            const result = await authService.loginWithPassword(password, ADMIN_EMAIL)
+            const result = await authService.loginWithPassword(password, email)
             if (!result.success) {
                 setError(result.error || 'Contraseña incorrecta. Vuelve a intentarlo.')
                 return
@@ -60,11 +81,12 @@ export function useLogin() {
             handleLoginSubmit()
         }
     }
+
     const handleBiometricLogin = async () => {
         setError(null)
         setLoading(true)
         try {
-            const result = await authService.loginWithBiometrics(ADMIN_EMAIL)
+            const result = await authService.loginWithBiometrics(email)
             if (!result.success) {
                 setError(result.error || 'No se pudo verificar la autenticación biométrica.')
                 return
@@ -78,9 +100,23 @@ export function useLogin() {
             setLoading(false)
         }
     }
+
     return {
-        step, setStep, email, setEmail, password, setPassword,
-        showPassword, setShowPassword, error, setError, loading,
-        handleSubmit, handleBiometricLogin, showFace
+        step,
+        setStep,
+        email,
+        setEmail,
+        password,
+        setPassword,
+        showPassword,
+        setShowPassword,
+        avatarUrl,
+        nombre,
+        error,
+        setError,
+        loading,
+        handleSubmit,
+        handleBiometricLogin,
+        showFace
     }
 }

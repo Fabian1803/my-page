@@ -10,6 +10,8 @@ import { AiOutlineChrome } from "react-icons/ai";
 interface ProfileMenuProps {
     left?: boolean;
     imageSrc?: string;
+    userName?: string;
+    userEmail?: string;
 }
 
 const QUICK_SECTIONS = [
@@ -31,12 +33,12 @@ const QUICK_SECTIONS = [
     }
 ];
 
-export default function ProfileMenu({ left, imageSrc }: ProfileMenuProps) {
+export default function ProfileMenu({ left, imageSrc, userName, userEmail }: ProfileMenuProps) {
     const { isOpen, menuRef, toggleMenu } = useProfileMenu();
     const user = {
-        name: "Fabián Rivera Morales",
-        email: "fabianriveraabian3@gmail.com",
-        initial: "F"
+        name: userName || "Fabián Rivera Morales",
+        email: userEmail || "fabianriveraabian3@gmail.com",
+        initial: (userName || "F")[0].toUpperCase()
     };
 
     const GoogleRing = () => (
@@ -55,14 +57,14 @@ export default function ProfileMenu({ left, imageSrc }: ProfileMenuProps) {
         <div ref={menuRef} className="relative inline-block select-none">
             <button
                 onClick={toggleMenu}
-                className="relative flex h-10 w-10 items-center justify-center rounded-full text-white font-medium text-base cursor-pointer focus:outline-none"
-                title={`Cuenta de Google: ${user.name}`}
+                className="relative flex h-10 w-10 items-center justify-center rounded-full text-white font-medium text-base cursor-pointer focus:outline-none bg-blue-100"
+                title={`Cuenta: ${user.name}`}
             >
                 <div className="w-[82%] h-[82%] rounded-full overflow-hidden flex items-center justify-center relative">
                     {imageSrc ? (
-                        <Image src={imageSrc} alt="Profile" width={36} height={36} className="object-cover w-full h-full" />
+                        <Image src={imageSrc} alt={user.name} width={36} height={36} className="object-cover w-full h-full" />
                     ) : (
-                        <span>{user.initial}</span>
+                        <span className="text-sm font-bold text-[#4285f4]">{user.initial}</span>
                     )}
                 </div>
                 <GoogleRing />
@@ -86,15 +88,15 @@ export default function ProfileMenu({ left, imageSrc }: ProfileMenuProps) {
                         >
                             <BiX size={32} />
                         </button>
-                        <div className="text-[14px] font-medium text-gray-600 w-full mt-8 sm:mt-0">
+                        <div className="text-[14px] font-medium text-gray-600 w-full mt-8 sm:mt-0 truncate">
                             {user.email}
                         </div>
-                        <div className="relative flex h-24 w-24 items-center justify-center rounded-full text-white font-normal text-3xl flex-shrink-0">
+                        <div className="relative flex h-24 w-24 items-center justify-center rounded-full text-white font-normal text-3xl flex-shrink-0 bg-blue-100">
                             <div className="w-[84%] h-[84%] rounded-full overflow-hidden flex items-center justify-center relative">
                                 {imageSrc ? (
-                                    <Image src={imageSrc} alt="Profile" fill className="object-cover" />
+                                    <Image src={imageSrc} alt={user.name} fill className="object-cover" />
                                 ) : (
-                                    <span>{user.initial}</span>
+                                    <span className="text-2xl font-bold text-[#4285f4]">{user.initial}</span>
                                 )}
                             </div>
                             <GoogleRing />
