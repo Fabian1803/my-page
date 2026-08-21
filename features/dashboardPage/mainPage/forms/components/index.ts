@@ -7,3 +7,4 @@ export { default as TextAreaCloud } from './TextAreaCloud';
 export { default as InfoSection } from './InfoSection';
 export { default as TagSelector } from './TagSelector';
 export { default as VignetteInput } from './VignetteInput';
+export { default as VisibilityStateCloud } from './VisibilityStateCloud';

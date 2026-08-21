@@ -1,21 +1,10 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
 import { useRouter, useParams } from 'next/navigation'
-import {
-    InputCloud,
-    InputImageCloud,
-    TextAreaCloud,
-    TagSelector,
-    VignetteInput
-} from './components'
-import LinksProyect from './components/LinksProyect'
-import DocumentationSectionsCloud from './components/DocumentationSectionsCloud'
-import CloudResourceContainer from './layout/CloudResourceContainer'
-import { MdStar, MdCheck } from 'react-icons/md'
-import { projectServices, ProjectLink, ContentBlock } from '../projects/services/projectServices'
+import { projectServices, ProjectLink, ContentBlock } from '@/features/dashboardPage/mainPage/projects/services/projectServices'
 import { useNotifications } from '@/features/dashboardPage/context/NotificationContext'
 
-const COSTOS_POR_CAMPO: Record<string, { item: string; itemCost: string; total: string }> = {
+export const PROJECT_COSTS: Record<string, { item: string; itemCost: string; total: string }> = {
     'Nombre del proyecto': { item: "E2 Standard vCPU Provisioning", itemCost: "$25.40", total: "$36,738.90" },
     'Descripción': { item: "Cloud Storage Bucket Metadata", itemCost: "$0.15", total: "$36,713.65" },
     'Categoría': { item: "Global VPC Network Tag Routing", itemCost: "$7.30", total: "$36,720.80" },
@@ -27,7 +16,7 @@ const COSTOS_POR_CAMPO: Record<string, { item: string; itemCost: string; total: 
     'default': { item: "Compute Node base infrastructure", itemCost: "$36,713.50", total: "$36,713.50" }
 };
 
-export default function CertMainProject() {
+export function useProjectForm() {
     const router = useRouter()
     const params = useParams()
     const { addNotification } = useNotifications()
@@ -45,21 +34,15 @@ export default function CertMainProject() {
     const [contentBlocks, setContentBlocks] = useState<ContentBlock[]>([])
     const [esDestacado, setEsDestacado] = useState(false)
     const [loading, setLoading] = useState(false)
-    const [loadingInitial, setLoadingInitial] = useState(isEditing)
     const [activeField, setActiveField] = useState<string>('Nombre del proyecto')
 
     // Almacenamiento en memoria de archivos binarios subidos dentro del editor Tiptap
     const tiptapFilesRef = useRef<Map<string, File>>(new Map())
 
-    // Cargar datos si estamos en modo edición
     useEffect(() => {
-        if (!isEditing || !projectId) {
-            setLoadingInitial(false)
-            return
-        }
+        if (!isEditing || !projectId) return
 
         const fetchProject = async () => {
-            setLoadingInitial(true)
             try {
                 const result = await projectServices.getById(projectId)
                 if (result.success && result.data) {
@@ -68,11 +51,11 @@ export default function CertMainProject() {
                     setDescripcion(proy.descripcion || '')
                     setEsDestacado(Boolean(proy.destacado))
                     setInitialImageUrl(proy.imagenPrincipalUrl || null)
-                    setCompTags((proy.categorias || []).map(c => typeof c === 'string' ? c : c.nombre))
+                    setCompTags((proy.categorias || []).map((c: any) => typeof c === 'string' ? c : c.nombre))
                     setDynamicLinks(proy.enlaces || [])
 
                     if (proy.seccionesDoc && proy.seccionesDoc.length > 0) {
-                        setContentBlocks(proy.seccionesDoc.map((s, idx) => ({
+                        setContentBlocks(proy.seccionesDoc.map((s: any, idx: number) => ({
                             id: s.id || `${projectId}-sec-${idx}`,
                             content: s.contenidoJson
                         })))
@@ -83,37 +66,34 @@ export default function CertMainProject() {
                 }
             } catch (error) {
                 console.error("Error al cargar proyecto:", error)
-            } finally {
-                setLoadingInitial(false)
             }
         }
 
         fetchProject()
     }, [isEditing, projectId, router])
 
-    const costosActuales = COSTOS_POR_CAMPO[activeField] || COSTOS_POR_CAMPO['default']
+    const costosActuales = PROJECT_COSTS[activeField] || PROJECT_COSTS['default']
 
-    // Métodos para bloques de documentación
     const handleAddBlock = () => {
         const newBlock: ContentBlock = {
             id: crypto.randomUUID(),
             content: ''
         };
-        setContentBlocks([...contentBlocks, newBlock]);
+        setContentBlocks(prev => [...prev, newBlock]);
     };
 
     const handleRemoveBlock = (id: string) => {
-        setContentBlocks(contentBlocks.filter(block => block.id !== id));
+        setContentBlocks(prev => prev.filter(block => block.id !== id));
     };
 
     const handleBlockChange = (id: string, value: string) => {
-        setContentBlocks(contentBlocks.map(block =>
+        setContentBlocks(prev => prev.map(block =>
             block.id === id ? { ...block, content: value } : block
         ));
     };
 
     const handleRegisterTiptapFile = (fileId: string, file: File) => {
-        tiptapFilesRef.current.set(fileId, file)
+        tiptapFilesRef.current.set(fileId, file);
     };
 
     const handleAddLink = (type: 'github' | 'docker' | 'gitlab' | 'web') => {
@@ -122,17 +102,17 @@ export default function CertMainProject() {
             type,
             url: ''
         };
-        setDynamicLinks([...dynamicLinks, newLink]);
+        setDynamicLinks(prev => [...prev, newLink]);
     };
 
     const handleUrlChange = (id: string, value: string) => {
-        setDynamicLinks(dynamicLinks.map(link =>
+        setDynamicLinks(prev => prev.map(link =>
             link.id === id ? { ...link, url: value } : link
         ));
     };
 
     const handleRemoveLink = (id: string) => {
-        setDynamicLinks(dynamicLinks.filter(link => link.id !== id));
+        setDynamicLinks(prev => prev.filter(link => link.id !== id));
     };
 
     const handleSubmit = async () => {
@@ -167,7 +147,6 @@ export default function CertMainProject() {
                 formData.append("imagenPrincipal", fotoFile)
             }
 
-            // Adjuntar todos los binarios multimedia registrados en el editor Tiptap
             tiptapFilesRef.current.forEach((file, token) => {
                 formData.append(`tiptap_media_${token}`, file)
             })
@@ -201,111 +180,35 @@ export default function CertMainProject() {
         }
     }
 
-    return (
-        <CloudResourceContainer
-            costosActuales={costosActuales}
-            title={isEditing ? `Editar ${nombre || 'proyecto'}` : "proyecto"}
-            activeField={activeField}
-            setActiveField={setActiveField}
-            onSubmit={handleSubmit}
-            isSubmitting={loading}
-            backHref="/dashboard/proyectos"
-        >
-            <InputCloud
-                label="Nombre del proyecto"
-                value={nombre}
-                onChange={(e) => setNombre(e.target.value)}
-                onClick={() => setActiveField('Nombre del proyecto')}
-                placeholder="Ej: Antigravity Cloud Engine, Portfolio Platform"
-                required
-            />
-
-            <TextAreaCloud
-                label="Descripción"
-                value={descripcion}
-                onChange={(e) => setDescripcion(e.target.value)}
-                onClick={() => setActiveField('Descripción')}
-                placeholder="Describe los objetivos, arquitectura y alcance del proyecto..."
-                required
-            />
-
-            <TagSelector
-                selectedTags={compTags}
-                onClick={() => setActiveField('Categoría')}
-                onTagsChange={setCompTags}
-            />
-
-            <VignetteInput
-                bullets={compBullets}
-                onClick={() => setActiveField('Viñetas')}
-                onBulletsChange={setCompBullets}
-            />
-
-            <InputImageCloud
-                label="Imagen de Portada del Proyecto"
-                value={fotoFile}
-                initialUrl={initialImageUrl}
-                onChange={(file) => {
-                    setFotoFile(file)
-                    if (file) setInitialImageUrl(null)
-                }}
-                onClick={() => setActiveField('Imagen del proyecto')}
-                placeholder="Haz clic para subir la imagen de portada"
-                required={!isEditing}
-            />
-
-            <LinksProyect
-                onClick={() => setActiveField('Enlaces')}
-                dynamicLinks={dynamicLinks}
-                onAddLink={handleAddLink}
-                onUrlChange={handleUrlChange}
-                onRemoveLink={handleRemoveLink}
-            />
-
-            <DocumentationSectionsCloud
-                contentBlocks={contentBlocks}
-                nombre={nombre}
-                descripcion={descripcion}
-                tags={compTags}
-                onClick={() => setActiveField('Documentación')}
-                onAddBlock={handleAddBlock}
-                onRemoveBlock={handleRemoveBlock}
-                onBlockChange={handleBlockChange}
-                onRegisterTiptapFile={handleRegisterTiptapFile}
-            />
-
-            {/* Configuración de Visibilidad y Destacado */}
-            <div
-                onClick={() => {
-                    setActiveField('Visibilidad y Estado')
-                    setEsDestacado(!esDestacado)
-                }}
-                className={`relative mt-4 w-full p-4 rounded border transition-all cursor-pointer ${activeField === 'Visibilidad y Estado'
-                    ? 'border-blue-500 bg-blue-50/20'
-                    : 'border-gray-300 hover:border-gray-400 bg-white'
-                    }`}
-            >
-                <label className="absolute -top-2 left-3 bg-white z-10 px-1 text-xs font-medium text-gray-500">
-                    Visibilidad y Estado
-                </label>
-
-                <div className="flex items-center justify-between gap-4">
-                    <div className="flex items-center gap-3">
-                        <div className={`p-2 rounded-lg ${esDestacado ? 'bg-yellow-100 text-yellow-600' : 'bg-gray-100 text-gray-400'}`}>
-                            <MdStar size={22} />
-                        </div>
-                        <div>
-                            <p className="text-sm font-medium text-gray-800">Destacar en la página principal</p>
-                            <p className="text-xs text-gray-500">Mostrar este proyecto en la portada y sección principal del portafolio.</p>
-                        </div>
-                    </div>
-
-                    <div className={`w-5 h-5 rounded border flex items-center justify-center shrink-0 transition-colors ${esDestacado ? 'bg-[#0c68e0] border-[#0c68e0] text-white' : 'border-gray-400 bg-white'
-                        }`}>
-                        {esDestacado && <MdCheck size={14} />}
-                    </div>
-                </div>
-            </div>
-        </CloudResourceContainer>
-    )
+    return {
+        isEditing,
+        nombre,
+        setNombre,
+        descripcion,
+        setDescripcion,
+        fotoFile,
+        setFotoFile,
+        initialImageUrl,
+        setInitialImageUrl,
+        compTags,
+        setCompTags,
+        compBullets,
+        setCompBullets,
+        dynamicLinks,
+        contentBlocks,
+        esDestacado,
+        setEsDestacado,
+        loading,
+        activeField,
+        setActiveField,
+        costosActuales,
+        handleAddBlock,
+        handleRemoveBlock,
+        handleBlockChange,
+        handleRegisterTiptapFile,
+        handleAddLink,
+        handleUrlChange,
+        handleRemoveLink,
+        handleSubmit
+    }
 }

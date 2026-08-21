@@ -1,4 +1,4 @@
-import CertMainCertificate from '@/features/dashboardPage/mainPage/forms/certMainCertificate'
+import CertMainCertificate from '@/features/dashboardPage/mainPage/forms/pages/certificatePageForm/certMainCertificate'
 export default function page() {
   return (
     <CertMainCertificate />
