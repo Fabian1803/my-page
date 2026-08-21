@@ -1,58 +1,84 @@
-import { getMetadata, saveMetadata } from '@/components/shared/apiClient'
-import { useState, useEffect } from 'react'
-export function useInputTemplateProps() {
-    const [socialLinks, setSocialLinks] = useState({
-        telefono: '',
-        discord: '',
-        gmail: '',
-        whatsapp: '',
-        github: '',
-        linkedin: '',
-        gitlab: ''
-    })
+'use client'
+import { useState, useEffect, useCallback } from 'react'
+import { socialLinksServices, SocialLinksData } from '../services/socialLinksServices'
+import { useNotifications } from '@/features/dashboardPage/context/NotificationContext'
+
+export type { SocialLinksData } from '../services/socialLinksServices'
+
+const INITIAL_STATE: SocialLinksData = {
+    telefono: '',
+    discord: '',
+    gmail: '',
+    whatsapp: '',
+    github: '',
+    linkedin: '',
+    gitlab: ''
+}
+
+export function useSocialLinks() {
+    const [socialLinks, setSocialLinks] = useState<SocialLinksData>(INITIAL_STATE)
     const [loading, setLoading] = useState(false)
-    useEffect(() => {
-        const cargarRedesExistentes = async () => {
-            const data = await getMetadata()
-            if (data) {
-                setSocialLinks({
-                    telefono: data.telefono || '',
-                    discord: data.discord || '',
-                    gmail: data.gmail || '',
-                    whatsapp: data.whatsapp || '',
-                    github: data.github || '',
-                    linkedin: data.linkedin || '',
-                    gitlab: data.gitlab || ''
-                })
+    const [loadingInitial, setLoadingInitial] = useState(true)
+    const { addNotification } = useNotifications()
+    const cargarRedesExistentes = useCallback(async () => {
+        setLoadingInitial(true)
+        try {
+            const result = await socialLinksServices.getSocialLinks()
+            if (result.success && result.data) {
+                setSocialLinks(result.data)
             }
+        } catch (error) {
+            console.error("Error al cargar redes sociales:", error)
+        } finally {
+            setLoadingInitial(false)
         }
-        cargarRedesExistentes()
     }, [])
+
+    useEffect(() => {
+        cargarRedesExistentes()
+    }, [cargarRedesExistentes])
 
     const handleInputChange = (field: string, value: string) => {
         setSocialLinks(prev => ({ ...prev, [field]: value }))
     }
 
     const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setLoading(true);
+        e.preventDefault()
+        setLoading(true)
         try {
-            await saveMetadata(socialLinks);
-            alert("🌐 ¡Brutal! Redes sociales actualizadas correctamente.");
+            const result = await socialLinksServices.saveSocialLinks(socialLinks)
+            if (!result.success) throw new Error(result.error)
+
+            addNotification({
+                type: 'success',
+                title: 'Canales y Redes sincronizados',
+                desc: 'Los enlaces de contacto y perfiles profesionales se han guardado exitosamente en Postgres.'
+            })
         } catch (error: any) {
-            alert("No se pudieron guardar los enlaces: " + error.message);
+            console.error("Error al guardar enlaces:", error)
+            addNotification({
+                type: 'error',
+                title: 'Fallo al sincronizar redes',
+                desc: `Error al guardar enlaces: ${error.message}`
+            })
         } finally {
-            setLoading(false);
+            setLoading(false)
         }
     }
+
     const handleReset = () => {
-        if (confirm("¿Estás seguro de que deseas limpiar los cambios no guardados?")) window.location.reload()
+        if (confirm("¿Estás seguro de que deseas descartar los cambios no guardados?")) {
+            cargarRedesExistentes()
+        }
     }
+
     return {
         socialLinks,
         loading,
+        loadingInitial,
         handleInputChange,
         handleSubmit,
-        handleReset
+        handleReset,
+        cargarRedesExistentes
     }
 }

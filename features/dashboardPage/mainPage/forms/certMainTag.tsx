@@ -19,7 +19,7 @@ export default function CertMainTag() {
     const params = useParams()
     const { addNotification } = useNotifications()
     const tagId = params?.url as string | undefined
-    const isEditing = Boolean(tagId && tagId !== 'create')
+    const isEditing = Boolean(tagId && tagId !== 'crear' && tagId !== 'create')
     const [nombre, setNombre] = useState('')
     const [fotoFile, setFotoFile] = useState<File | null>(null)
     const [initialImageUrl, setInitialImageUrl] = useState<string | null>(null)
@@ -29,7 +29,10 @@ export default function CertMainTag() {
     const [activeField, setActiveField] = useState<string>('Nombre de la tecnología')
 
     useEffect(() => {
-        if (!isEditing || !tagId) return
+        if (!isEditing || !tagId) {
+            setLoadingInitial(false)
+            return
+        }
 
         const fetchTag = async () => {
             setLoadingInitial(true)

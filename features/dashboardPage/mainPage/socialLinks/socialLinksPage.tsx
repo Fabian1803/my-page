@@ -1,6 +1,6 @@
 'use client'
 import React from 'react'
-import { useInputTemplateProps } from './hooks/useSocialLinks'
+import { useSocialLinks } from './hooks'
 import {
     SocialLinksHeaderBar,
     SocialLinksGrid,
@@ -8,7 +8,14 @@ import {
 } from './components'
 
 export default function SocialLinksPage() {
-    const { socialLinks, loading, handleInputChange, handleSubmit, handleReset } = useInputTemplateProps()
+    const {
+        socialLinks,
+        loading,
+        loadingInitial,
+        handleInputChange,
+        handleSubmit,
+        handleReset
+    } = useSocialLinks()
 
     return (
         <div className="max-w-[1600px] mx-auto flex flex-col h-full gap-1 bg-[#f9fafb] rounded-t-2xl min-h-[85vh]">
