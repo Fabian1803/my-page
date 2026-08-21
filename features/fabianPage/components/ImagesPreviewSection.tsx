@@ -41,7 +41,7 @@ export default function ImagesPreviewSection({ images }: ImagesPreviewSectionPro
               href="/fabianrivera/imagenes"
               className="group flex flex-col min-w-0"
             >
-              <div className="w-full aspect-square rounded-2xl bg-gray-100/80 overflow-hidden flex items-center justify-center border border-gray-200/60 shadow-2xs group-hover:shadow-md transition-all duration-200">
+              <div className="w-full aspect-[4/3] rounded-2xl bg-gray-100/80 overflow-hidden flex items-center justify-center border border-gray-200/60 shadow-2xs group-hover:shadow-md transition-all duration-200">
                 <img
                   src={src}
                   alt={title}
