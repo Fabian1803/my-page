@@ -2,7 +2,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { MdLoyalty, MdOutlineAlternateEmail, MdOutlineAssignmentInd, MdOutlineDashboard, MdOutlinePermIdentity } from 'react-icons/md'
+import { MdLoyalty, MdOutlineAlternateEmail, MdOutlineAssignmentInd, MdOutlineDashboard, MdOutlinePermIdentity, MdOutlineSecurity } from 'react-icons/md'
 import { HiOutlineXMark } from "react-icons/hi2";
 import { FaChevronRight } from 'react-icons/fa'
 interface HeaderProps {
@@ -20,6 +20,7 @@ export default function DashboardAsidePage({ isMenuOpen, onOpenMenu }: HeaderPro
     ], bottom: [
         { href: '/dashboard/about-me', label: 'Sobre mí', icon: <MdOutlinePermIdentity size={20} /> },
         { href: '/dashboard/redes-sociales', label: 'Redes Sociales', icon: <MdOutlineAlternateEmail size={20} /> },
+        { href: '/dashboard/configuracion', label: 'Configuración', icon: <MdOutlineSecurity size={20} /> },
     ]}
     
 

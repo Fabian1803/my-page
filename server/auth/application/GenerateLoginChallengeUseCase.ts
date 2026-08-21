@@ -15,10 +15,10 @@ export class GenerateLoginChallengeUseCase {
       rpID: rpID,
       allowCredentials: dispositivos.map((dev) => ({
         id: dev.credentialId,
-        type: "public-key",
-        transports: ["hybrid"],
+        type: "public-key" as const,
+        transports: ["internal", "hybrid"] as AuthenticatorTransport[],
       })),
-      userVerification: "required",
+      userVerification: "preferred",
     });
     return {
       id: usuario.id,

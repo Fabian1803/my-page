@@ -1,13 +1,12 @@
-'use client'
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { authService } from '@/features/loginPage/services/authService'
+import { sessionService } from '@/features/dashboardPage/services/sessionService'
 export function useSessionHeartbeat() {
     const router = useRouter()
     useEffect(() => {
         let isMounted = true
         const verify = async () => {
-            const session = await authService.checkSession()
+            const session = await sessionService.checkSession()
             if (!isMounted) return
             if (!session.authenticated) router.push('/login')
         }
