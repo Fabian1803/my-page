@@ -1,8 +1,7 @@
 import AboutFabian from '@/features/fabianPage/pages/aboutFabian'
 import { getMetadataUseCase } from '@/server/metadata/infrastructure/dependencies';
-export default async function page() {
+export const revalidate = 3600;
+export default async function Page() {
     const config = await getMetadataUseCase.execute();
-    const { nombre, descripcion, url_imagen, experiencias, educacion } = config || {};
-    const datosFiltrados = { nombre, descripcion, url_imagen, experiencias, educacion };
-    return <AboutFabian metadata={datosFiltrados} />
+    return <AboutFabian metadata={config || {}} />
 }

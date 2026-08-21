@@ -1,7 +1,5 @@
 'use client'
-import Image from "next/image"
 import SearchMapComponent from "../components/searchMapComponent"
-import Link from "next/link"
 
 interface Experiencia {
   empresa: string;
@@ -27,7 +25,7 @@ export default function AboutFabian({ metadata }: AboutFabianProps) {
   const abouttext = {
     name: metadata?.nombre || "",
     description: metadata?.descripcion || "",
-    image: metadata?.url_imagen || "/profile.jpeg",
+    image: metadata?.url_imagen || "/perfil.jpeg",
     experiences: metadata?.experiencias || [],
     education: metadata?.educacion || [],
   }
@@ -37,13 +35,10 @@ export default function AboutFabian({ metadata }: AboutFabianProps) {
       <div className="max-w-4xl pt-8 pb-50 px-4 sm:px-6 lg:px-8 flex flex-col gap-4">
         <section className="block md:flex md:flex-row gap-8 items-start justify-between border-b border-gray-100 pb-8 overflow-hidden">
           <div className="float-right ml-4 mb-2 md:float-none md:ml-0 md:mb-0 md:order-last shrink-0">
-            <Image
+            <img
               src={abouttext.image}
-              alt="Fabián Rivera"
-              width={100}
-              height={100}
-              priority
-              className="rounded-xl border border-blue-50 shadow-sm object-contain md:w-[140px] md:h-[140px]"
+              alt={abouttext.name || "Fabián Rivera"}
+              className="rounded-xl border border-blue-50 shadow-sm object-cover w-[100px] h-[100px] md:w-[140px] md:h-[140px]"
             />
           </div>
 
@@ -125,9 +120,9 @@ export default function AboutFabian({ metadata }: AboutFabianProps) {
                 <div className="absolute -left-[6.5px] top-1.5 w-3 h-3 rounded-full bg-gray-400 ring-4 ring-gray-50" />
                 <div className="space-y-1">
                   <div className="flex flex-wrap items-baseline gap-x-2">
-                    <h3 className="text-base font-bold text-gray-900">{edu.empresa}</h3> {/* Institución */}
+                    <h3 className="text-base font-bold text-gray-900">{edu.empresa}</h3>
                     <span className="text-gray-400 hidden sm:inline">•</span>
-                    <span className="text-xs font-bold uppercase tracking-wider text-gray-700">{edu.cargo}</span> {/* Grado/Carrera */}
+                    <span className="text-xs font-bold uppercase tracking-wider text-gray-700">{edu.cargo}</span>
                   </div>
                   <p className="text-xs text-gray-400 font-medium">{edu.fechaInicio} - {edu.fechaFin}</p>
                 </div>

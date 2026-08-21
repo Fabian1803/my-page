@@ -1,18 +1,25 @@
-// server/resources/application/GetResourcesUseCase.ts
 import { ResourceRepository } from "../domain/ports/ResourceRepository";
 import { prisma } from "@/server/shared/infrastructure/prisma";
 
-export class GetResourcesUseCase {
-  constructor(private repository: ResourceRepository) {}
+export interface GetResourcesParams {
+  tipo?: "PROYECTO" | "CERTIFICADO" | "IMAGENES" | "ALL" | string;
+  id?: string | null;
+}
 
-  async execute(request?: Request) {
+export class GetResourcesUseCase {
+  constructor(private repository: ResourceRepository) { }
+
+  async execute(input?: Request | GetResourcesParams) {
     let tipo = "PROYECTO";
     let id: string | null = null;
 
-    if (request && request.url) {
-      const { searchParams } = new URL(request.url);
+    if (input instanceof Request) {
+      const { searchParams } = new URL(input.url);
       tipo = searchParams.get("tipo") || "PROYECTO";
       id = searchParams.get("id");
+    } else if (input) {
+      tipo = input.tipo || "PROYECTO";
+      id = input.id || null;
     }
 
     if (id) {
@@ -26,11 +33,15 @@ export class GetResourcesUseCase {
           id: cert.id,
           tipo: cert.tipo,
           nombre: cert.nombre,
+          titulo: cert.nombre,
           institucion: cert.instituto,
+          universidad: cert.instituto || 'Certificación Profesional',
           descripcion: cert.descripcion,
           destacado: cert.destacado,
           imagenPrincipalUrl: cert.imagenPrincipalUrl,
+          imagenCertificado: cert.imagenPrincipalUrl,
           miniaturaUrl: cert.miniaturaUrl,
+          imagenLogo: cert.miniaturaUrl || '/log.webp',
           vinetas: cert.vinetas,
           categorias: cert.categorias
         };
@@ -50,11 +61,15 @@ export class GetResourcesUseCase {
         id: c.id,
         tipo: c.tipo,
         nombre: c.nombre,
+        titulo: c.nombre,
         institucion: c.instituto,
+        universidad: c.instituto || 'Certificación Profesional',
         descripcion: c.descripcion,
         destacado: c.destacado,
         imagenPrincipalUrl: c.imagenPrincipalUrl,
+        imagenCertificado: c.imagenPrincipalUrl,
         miniaturaUrl: c.miniaturaUrl,
+        imagenLogo: c.miniaturaUrl || '/log.webp',
         vinetas: c.vinetas,
         categorias: c.categorias
       }));

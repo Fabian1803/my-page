@@ -1,8 +1,7 @@
 import CvFabian from '@/features/fabianPage/pages/cvFabian'
 import { getMetadataUseCase } from '@/server/metadata/infrastructure/dependencies';
-export default async function page() {
+export const revalidate = 3600;
+export default async function Page() {
     const config = await getMetadataUseCase.execute();
-    const { url_cv_pdf } = config || {};
-    const datosFiltrados = { url_cv_pdf };
-    return <CvFabian metadata={datosFiltrados} />
+    return <CvFabian metadata={{ url_cv_pdf: config?.url_cv_pdf }} />
 }
