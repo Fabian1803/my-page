@@ -1,13 +1,13 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
-import { 
-    InputCloud, 
-    InputImageCloud, 
-    InstitutionInputCloud, 
-    TextAreaCloud, 
-    TagSelector, 
-    VignetteInput 
+import {
+    InputCloud,
+    InputImageCloud,
+    InstitutionInputCloud,
+    TextAreaCloud,
+    TagSelector,
+    VignetteInput
 } from './components'
 import CloudResourceContainer from './layout/CloudResourceContainer'
 import { MdStar, MdCheck } from 'react-icons/md'
@@ -148,15 +148,6 @@ export default function CertMainCertificate() {
         }
     }
 
-    if (loadingInitial) {
-        return (
-            <div className="max-w-[1600px] mx-auto p-12 bg-white rounded-2xl flex flex-col items-center justify-center min-h-[50vh]">
-                <div className="w-8 h-8 border-3 border-blue-600 border-t-transparent rounded-full animate-spin mb-3"></div>
-                <p className="text-sm text-gray-500 font-medium">Cargando credencial desde Cloud Storage...</p>
-            </div>
-        )
-    }
-
     return (
         <CloudResourceContainer
             costosActuales={costosActuales}
@@ -220,16 +211,15 @@ export default function CertMainCertificate() {
             />
 
             {/* Configuración de Visibilidad y Destacado */}
-            <div 
+            <div
                 onClick={() => {
                     setActiveField('Visibilidad y Estado')
                     setEsDestacado(!esDestacado)
                 }}
-                className={`relative mt-4 w-full p-4 rounded border transition-all cursor-pointer ${
-                    activeField === 'Visibilidad y Estado' 
-                        ? 'border-blue-500 bg-blue-50/20' 
+                className={`relative mt-4 w-full p-4 rounded border transition-all cursor-pointer ${activeField === 'Visibilidad y Estado'
+                        ? 'border-blue-500 bg-blue-50/20'
                         : 'border-gray-300 hover:border-gray-400 bg-white'
-                }`}
+                    }`}
             >
                 <label className="absolute -top-2 left-3 bg-white z-10 px-1 text-xs font-medium text-gray-500">
                     Visibilidad y Estado
@@ -246,9 +236,8 @@ export default function CertMainCertificate() {
                         </div>
                     </div>
 
-                    <div className={`w-5 h-5 rounded border flex items-center justify-center shrink-0 transition-colors ${
-                        esDestacado ? 'bg-[#0c68e0] border-[#0c68e0] text-white' : 'border-gray-400 bg-white'
-                    }`}>
+                    <div className={`w-5 h-5 rounded border flex items-center justify-center shrink-0 transition-colors ${esDestacado ? 'bg-[#0c68e0] border-[#0c68e0] text-white' : 'border-gray-400 bg-white'
+                        }`}>
                         {esDestacado && <MdCheck size={14} />}
                     </div>
                 </div>

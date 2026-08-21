@@ -107,15 +107,6 @@ export default function CertMainTag() {
         }
     }
 
-    if (loadingInitial) {
-        return (
-            <div className="max-w-[1600px] mx-auto p-12 bg-white rounded-2xl flex flex-col items-center justify-center min-h-[50vh]">
-                <div className="w-8 h-8 border-3 border-blue-600 border-t-transparent rounded-full animate-spin mb-3"></div>
-                <p className="text-sm text-gray-500 font-medium">Cargando datos del recurso Cloud...</p>
-            </div>
-        )
-    }
-
     return (
         <CloudResourceContainer
             costosActuales={costosActuales}
@@ -155,8 +146,8 @@ export default function CertMainTag() {
                     setEsDestacado(!esDestacado)
                 }}
                 className={`relative mt-3 w-full p-4 rounded border transition-all cursor-pointer ${activeField === 'Visibilidad y Estado'
-                        ? 'border-blue-500 bg-blue-50/20'
-                        : 'border-gray-300 hover:border-gray-400 bg-white'
+                    ? 'border-blue-500 bg-blue-50/20'
+                    : 'border-gray-300 hover:border-gray-400 bg-white'
                     }`}
             >
                 <label className="absolute -top-2 left-3 bg-white z-10 px-1 text-xs font-medium text-gray-500">

@@ -1,17 +1,19 @@
-// server/resources/infrastructure/adapters/PrismaResourceRepository.ts
 import { ResourceRepository } from "../../domain/ports/ResourceRepository";
 import { Resource } from "../../domain/models/Resource";
 import { prisma } from "@/server/shared/infrastructure/prisma";
+
 export class PrismaResourceRepository implements ResourceRepository {
   async save(resource: Resource): Promise<any> {
     const data = resource.toObject();
+    const categoriasNombres = (data.categorias || []).map((c: any) => typeof c === 'string' ? c : c.nombre);
+
     const proyecto = await prisma.proyecto.create({
       data: {
         id: data.id,
         destacado: data.destacado,
         nombre: data.nombre,
         descripcion: data.descripcion,
-        categorias: data.categorias,
+        categorias: categoriasNombres,
         enlaces: data.enlaces,
         seccionesDoc: data.seccionesDoc
       },
@@ -54,13 +56,15 @@ export class PrismaResourceRepository implements ResourceRepository {
 
   async update(id: string, resource: Resource): Promise<any> {
     const data = resource.toObject();
+    const categoriasNombres = (data.categorias || []).map((c: any) => typeof c === 'string' ? c : c.nombre);
+
     const proyectoActualizado = await prisma.proyecto.update({
       where: { id },
       data: {
         destacado: data.destacado,
         nombre: data.nombre,
         descripcion: data.descripcion,
-        categorias: data.categorias,
+        categorias: categoriasNombres,
         enlaces: data.enlaces,
         seccionesDoc: data.seccionesDoc
       },
@@ -76,8 +80,8 @@ export class PrismaResourceRepository implements ResourceRepository {
   private toProjectView(proyecto: any) {
     return {
       id: proyecto.id,
-      tipo: proyecto.tipo,
-      destacado: proyecto.destacado,
+      tipo: "PROYECTO",
+      destacado: Boolean(proyecto.destacado),
       nombre: proyecto.nombre,
       descripcion: proyecto.descripcion,
       instituto: null,
@@ -85,27 +89,27 @@ export class PrismaResourceRepository implements ResourceRepository {
       miniaturaUrl: proyecto.portada?.miniaturaUrl || null,
       categorias: (proyecto.categorias || []).map((nombre: string, index: number) => ({
         id: `${proyecto.id}-${index}`,
-        nombre
+        nombre: typeof nombre === 'string' ? nombre : (nombre as any)?.nombre || ''
       })),
       enlaces: Array.isArray(proyecto.enlaces)
         ? proyecto.enlaces.map((enlace: any, index: number) => ({
-            id: `${proyecto.id}-link-${index}`,
-            tipo: enlace?.tipo || "WEB",
-            url: enlace?.url || ""
-          }))
+          id: enlace?.id || `${proyecto.id}-link-${index}`,
+          type: enlace?.type || enlace?.tipo || "web",
+          url: enlace?.url || ""
+        }))
         : [],
       seccionesDoc: Array.isArray(proyecto.seccionesDoc)
-        ? proyecto.seccionesDoc.map((contenido: string, index: number) => ({
-            id: `${proyecto.id}-section-${index}`,
-            orden: index,
-            contenidoJson: contenido
-          }))
+        ? proyecto.seccionesDoc.map((contenido: any, index: number) => ({
+          id: `${proyecto.id}-section-${index}`,
+          orden: index,
+          contenidoJson: typeof contenido === "string" ? contenido : JSON.stringify(contenido)
+        }))
         : [],
       portada: proyecto.portada
         ? {
-            id: proyecto.portada.id,
-            imagenPrincipalUrl: proyecto.portada.imagenPrincipalUrl
-          }
+          id: proyecto.portada.id,
+          imagenPrincipalUrl: proyecto.portada.imagenPrincipalUrl
+        }
         : null,
       mediaResources: proyecto.mediaResources || []
     };
