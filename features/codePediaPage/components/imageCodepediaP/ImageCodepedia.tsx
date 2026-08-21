@@ -1,7 +1,7 @@
 "use client";
-import Image from "next/image"
 import { BiDownload, BiExitFullscreen, BiFullscreen, BiMinusFront, BiX } from "react-icons/bi";
 import { useImageCodepedia } from "./useImageCodepedia";
+
 interface ImageCodepediaProps {
     title: string
     description: string
@@ -27,9 +27,9 @@ export default function ImageCodepedia({ title, description, imageSrc, id }: Ima
             <div className="w-full max-w-2xl @container border bg-gray-100 dark:bg-gray-800 border-gray-400 p-1 grid grid-rows-[auto_auto] gap-2">
                 <button
                     onClick={openModal}
-                    className="w-full h-full border dark:bg-gray-900 border-gray-400 cursor-zoom-in"
+                    className="w-full h-full border dark:bg-gray-900 border-gray-400 cursor-zoom-in overflow-hidden flex items-center justify-center"
                 >
-                    <Image src={imageSrc} alt="CodePediaImage" width={400} height={200} priority className="w-full h-auto object-cover" />
+                    <img src={imageSrc} alt="CodePediaImage" className="w-full h-auto object-cover" />
                 </button>
                 <p className="text-md text-center line-clamp-3 @md:line-clamp-1 break-words dark:text-white">{title}</p>
             </div>
@@ -44,12 +44,11 @@ export default function ImageCodepedia({ title, description, imageSrc, id }: Ima
                         isFullscreen ? 'h-[100vh]' : 'h-[85vh]'
                     }`}>
 
-                        <div className="relative w-full h-full flex items-center justify-center">
-                            <Image
+                        <div className="relative w-full h-full flex items-center justify-center p-4">
+                            <img
                                 src={imageSrc}
                                 alt="CodePediaImage Preview"
-                                fill
-                                className="object-contain"
+                                className="max-w-full max-h-full object-contain"
                             />
                             <div className="absolute top-4 right-4 flex flex-col items-center gap-4 bg-black/40 p-2 rounded-md backdrop-blur-sm z-10">
                                 <button
