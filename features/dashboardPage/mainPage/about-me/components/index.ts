@@ -1,6 +1,6 @@
 export { default as InputAboutMe } from './InputAboutMe'
 export { default as InputProfileImage } from './InputProfileImage'
-export { default as TextareaAboutMe } from './TeaxAreaAboutMe'
+export { default as TextareaAboutMe } from './TextareaAboutMe'
 export { default as InputTemplate } from './InputTemplate'
 export { default as AboutMeHeaderBar } from './AboutMeHeaderBar'
 export { default as AboutMeTabsNav } from './AboutMeTabsNav'

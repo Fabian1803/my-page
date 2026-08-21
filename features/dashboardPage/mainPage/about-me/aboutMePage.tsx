@@ -8,7 +8,7 @@ import {
     AboutMeHeaderBar,
     AboutMeActionBar
 } from './components'
-import { useAboutMe } from './hooks/useAboutMe'
+import { useAboutMe } from './hooks'
 
 export default function AboutMePage() {
     const {
@@ -17,10 +17,9 @@ export default function AboutMePage() {
         descripcion,
         setDescripcion,
         fotoPerfil,
-        setFotoPerfil,
         previewUrl,
-        setPreviewUrl,
         handleFotoChange,
+        handleRemovePhoto,
         experiencias,
         agregarExperiencia,
         eliminarExperiencia,
@@ -29,6 +28,7 @@ export default function AboutMePage() {
         eliminarVineta,
         actualizarVineta,
         handleSubmit,
+        handleReset,
         educacion,
         agregarEducacion,
         eliminarEducacion,
@@ -36,7 +36,8 @@ export default function AboutMePage() {
         agregarVinetaEdu,
         eliminarVinetaEdu,
         actualizarVinetaEdu,
-        loading
+        loading,
+        loadingInitial
     } = useAboutMe()
 
     return (
@@ -53,10 +54,9 @@ export default function AboutMePage() {
                             />
                             <InputProfileImage
                                 fotoPerfil={fotoPerfil}
-                                setFotoPerfil={setFotoPerfil}
                                 previewUrl={previewUrl}
-                                setPreviewUrl={setPreviewUrl}
                                 handleFotoChange={handleFotoChange}
+                                onRemoveImage={previewUrl ? handleRemovePhoto : undefined}
                             />
                             <TextareaAboutMe
                                 title="Descripción"
@@ -65,6 +65,7 @@ export default function AboutMePage() {
                             />
                         </div>
                     </div>
+
                     <InputTemplate
                         titulo="Experiencia Laboral"
                         placeholderUno="Nombre de la empresa u organización"
@@ -77,6 +78,7 @@ export default function AboutMePage() {
                         eliminarVineta={eliminarVineta}
                         actualizarVineta={actualizarVineta}
                     />
+
                     <InputTemplate
                         titulo="Educación y Formación"
                         placeholderUno="Institución Educativa (Ej: Universidad Tecnológica)"
@@ -93,11 +95,7 @@ export default function AboutMePage() {
                 </div>
                 <AboutMeActionBar
                     loading={loading}
-                    onReset={() => {
-                        if (confirm("¿Estás seguro de descartar los cambios no guardados?")) {
-                            window.location.reload()
-                        }
-                    }}
+                    onReset={handleReset}
                 />
             </form>
         </div>

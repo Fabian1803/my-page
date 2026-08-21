@@ -1,3 +1,6 @@
+'use client'
+import React from 'react'
+
 interface TextareaAboutMeProps {
     title: string
     nombre: string
