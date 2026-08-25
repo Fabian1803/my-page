@@ -9,10 +9,8 @@ export default async function Page({ params }: PageProps) {
   const resolvedParams = await params;
   const rawQuery = resolvedParams.searchQuery ? decodeURIComponent(resolvedParams.searchQuery).trim() : '';
   const isAll = !rawQuery || rawQuery.toLowerCase() === 'all' || rawQuery.toLowerCase() === 'todos';
-
   const proyectosRaw = await getResourcesUseCase.execute({ tipo: "PROYECTO" });
   const allProjects = Array.isArray(proyectosRaw) ? proyectosRaw : [];
-
   const queryNormalized = rawQuery.toLowerCase();
 
   const matchedProjects = isAll

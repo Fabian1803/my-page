@@ -20,7 +20,7 @@ interface TabsProps {
 }
 
 function Tabs({ tabs, currentPath }: { tabs: any[], currentPath: string }) {
-        return (
+    return (
         <ul className="flex h-full items-center flex-nowrap list-none m-0 p-0 text-sm whitespace-nowrap">
             {tabs.map((tab) => {
                 const isActive = currentPath === tab.href
@@ -48,7 +48,7 @@ export default function FabianPageHeader({ userActionsSlot }: FabianPageHeaderPr
     const linksTaps = [
         { href: '/fabianrivera', label: 'Todo' },
         { href: '/fabianrivera/proyectos', label: 'Proyectos' },
-        { href: '/fabianrivera/imagenes', label: 'Imagenes' },
+        { href: '/fabianrivera/imagenes', label: 'Imágenes' },
         { href: '/fabianrivera/certificados', label: 'Certificados' },
         { href: '/fabianrivera/cv', label: 'CV' },
         { href: '/fabianrivera/skills', label: 'Skills' },
@@ -63,7 +63,7 @@ export default function FabianPageHeader({ userActionsSlot }: FabianPageHeaderPr
                 max-[940px]:max-w-[760px]"
             >
                 <div className="items-center flex col-span-3 min-[500px]:hidden">
-                    {userActionsSlot}               
+                    {userActionsSlot}
                 </div>
                 <div className="flex justify-center items-center max-[940px]:hidden">
                     <Image src="/log.webp" alt="GoogleIcon" width={90} height={30} priority />

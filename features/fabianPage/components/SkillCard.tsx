@@ -26,7 +26,7 @@ export default function SkillCard({ skill }: SkillCardProps) {
         <img
           src={iconUrl}
           alt={skill.nombre}
-          className="w-[64px] h-[64px] sm:w-[70px] sm:h-[70px] rounded-xl border border-gray-100 object-contain p-1 bg-white shadow-2xs"
+          className="w-[64px] h-[64px] sm:w-[70px] sm:h-[70px] object-contain p-1"
         />
       </Link>
       <div className="w-full min-w-0">
