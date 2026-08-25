@@ -269,37 +269,45 @@ export class UpdateResourceUseCase {
     for (const [fieldName, value] of Array.from(formData.entries())) {
       if (fieldName.startsWith("tiptap_media_") && value instanceof File) {
         const token = fieldName.replace(/^tiptap_media_/, "");
-        const extension = (value.name?.split(".").pop() || "png").toLowerCase();
-        const customFileName = `${nombre.trim()}-imagen${tiptapIndex}.${extension}`;
-        const uploadedUrl = await this.mediaStorage.uploadImage(value, customFileName);
+        const isVideo = (value.type && value.type.startsWith("video/")) || /\.(mp4|webm|ogg|mov|mkv|avi)$/i.test(value.name) || token.includes("video");
+        const extension = (value.name?.split(".").pop() || (isVideo ? "mp4" : "png")).toLowerCase();
 
-        await prisma.mediaResource.create({
-          data: {
-            tipo: "IMAGEN_INTERNA",
-            destacado: false,
-            nombre: `${nombre.trim()}-imagen${tiptapIndex}`,
-            descripcion: descripcion.trim(),
-            imagenPrincipalUrl: uploadedUrl,
-            categorias: {
-              connectOrCreate: categorias.map((cat: any) => {
-                const nombreCat = typeof cat === 'string' ? cat : cat.nombre;
-                return {
-                  where: { nombre: nombreCat },
-                  create: { nombre: nombreCat, imagenUrl: "" }
-                };
-              })
-            },
-            vinetas: {
-              create: vinetas.map((v: any) => {
-                const comentario = typeof v === 'string' ? v : v.comentario;
-                return { comentario };
-              })
-            },
-            proyecto: {
-              connect: { id }
+        let uploadedUrl = "";
+        if (isVideo) {
+          const customFileName = `${nombre.trim()}-video${tiptapIndex}.${extension}`;
+          uploadedUrl = await this.mediaStorage.uploadVideo(value, customFileName);
+        } else {
+          const customFileName = `${nombre.trim()}-imagen${tiptapIndex}.${extension}`;
+          uploadedUrl = await this.mediaStorage.uploadImage(value, customFileName);
+
+          await prisma.mediaResource.create({
+            data: {
+              tipo: "IMAGEN_INTERNA",
+              destacado: false,
+              nombre: `${nombre.trim()}-imagen${tiptapIndex}`,
+              descripcion: descripcion.trim(),
+              imagenPrincipalUrl: uploadedUrl,
+              categorias: {
+                connectOrCreate: categorias.map((cat: any) => {
+                  const nombreCat = typeof cat === 'string' ? cat : cat.nombre;
+                  return {
+                    where: { nombre: nombreCat },
+                    create: { nombre: nombreCat, imagenUrl: "" }
+                  };
+                })
+              },
+              vinetas: {
+                create: vinetas.map((v: any) => {
+                  const comentario = typeof v === 'string' ? v : v.comentario;
+                  return { comentario };
+                })
+              },
+              proyecto: {
+                connect: { id }
+              }
             }
-          }
-        });
+          });
+        }
 
         replacements.push({ token, url: uploadedUrl });
         tiptapIndex++;
