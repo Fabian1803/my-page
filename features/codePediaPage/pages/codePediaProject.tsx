@@ -10,23 +10,47 @@ interface CodePediaProjectProps {
     changeForm: boolean
     setChangeForm: (change: boolean) => void
     keytap: number
+    totalSections?: number
 }
 
-function SectionProject({ children, changeForm, setChangeForm, keytap }: CodePediaProjectProps) {
-    const sectionNumber: Record<number, { width: string; rowSpan: string }> = {
-        0: { width: 'max-h-150', rowSpan: '' },
-        1: { width: 'max-h-330', rowSpan: 'row-span-4' },
-        2: { width: 'max-h-100', rowSpan: '' },
-        3: { width: 'max-h-150', rowSpan: 'row-span-3' },
-        4: { width: 'max-h-75', rowSpan: '' },
+function SectionProject({ children, changeForm, setChangeForm, keytap, totalSections = 5 }: CodePediaProjectProps) {
+    const sectionPresets: Record<number, Record<number, { width: string; rowSpan: string }>> = {
+        1: {
+            0: { width: 'max-h-none', rowSpan: 'lg:col-span-2' }
+        },
+        2: {
+            0: { width: 'max-h-240', rowSpan: 'lg:col-start-1' },
+            1: { width: 'max-h-240', rowSpan: 'lg:col-start-2' }
+        },
+        3: {
+            0: { width: 'max-h-140', rowSpan: 'lg:col-start-1 lg:row-start-1' },
+            1: { width: 'max-h-300', rowSpan: 'lg:col-start-2 lg:row-start-1 lg:row-span-2' },
+            2: { width: 'max-h-140', rowSpan: 'lg:col-start-1 lg:row-start-2' }
+        },
+        4: {
+            0: { width: 'max-h-220', rowSpan: 'lg:col-start-1 lg:row-start-1 lg:row-span-2' },
+            1: { width: 'max-h-120', rowSpan: 'lg:col-start-2 lg:row-start-1' },
+            2: { width: 'max-h-120', rowSpan: 'lg:col-start-1 lg:row-start-3' },
+            3: { width: 'max-h-220', rowSpan: 'lg:col-start-2 lg:row-start-2 lg:row-span-2' }
+        },
+        5: {
+            0: { width: 'max-h-150', rowSpan: '' },
+            1: { width: 'max-h-350', rowSpan: 'row-span-4' },
+            2: { width: 'max-h-100', rowSpan: '' },
+            3: { width: 'max-h-150', rowSpan: 'row-span-3' },
+            4: { width: 'max-h-75', rowSpan: '' }
+        }
     }
+
+    const currentConfig = sectionPresets[totalSections]?.[keytap] || sectionPresets[5][keytap % 5] || { width: 'max-h-150', rowSpan: '' };
+
     return (
-        <div className={changeForm ? '' : 'p-4 border border-gray-400 flex flex-col justify-between' + ' ' + sectionNumber[keytap].rowSpan}>
-            <div className={`w-full ${changeForm ? '' : sectionNumber[keytap].width + ' overflow-hidden'}`}>
+        <div className={changeForm ? '' : 'p-4 border border-gray-400 flex flex-col justify-between ' + currentConfig.rowSpan}>
+            <div className={`w-full ${changeForm ? '' : currentConfig.width + ' overflow-hidden'}`}>
                 {children}
             </div>
             <div className={`w-full flex items-center justify-between gap-4 mt-4 ${changeForm ? 'hidden' : ''}`}>
-                <button className="border border-gray-400 px-4 py-1 font-bold hover:bg-gray-100 dark:hover:bg-gray-800" onClick={() => setChangeForm(true)}>
+                <button className="border border-gray-400 px-4 py-1 font-bold hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer" onClick={() => setChangeForm(true)}>
                     Leer
                 </button>
                 <Link href="#" className="w-full font-bold hover:underline">
@@ -37,8 +61,6 @@ function SectionProject({ children, changeForm, setChangeForm, keytap }: CodePed
         </div>
     )
 }
-
-
 
 export default function CodePediaProject() {
     const { changeForm, setChangeForm, textSize } = useCodePedia()
@@ -57,8 +79,9 @@ export default function CodePediaProject() {
             { website: 'https://www.example.com', tag: 'Website' },
             { docker: 'https://hub.docker.com/r/user/repo', tag: 'Docker' },
         ]
-
     }
+
+    const sections = [0, 1, 2, 3, 4];
 
     return (
         <div className={`w-full h-full pt-4 gap-4 flex flex-col ${changeForm ? 'pb-25' : ''}`}>
@@ -86,17 +109,17 @@ export default function CodePediaProject() {
                                         {item.tag}
                                     </Link>
                                 </li>
-                            )
-                            )}
+                            ))}
                         </ul>
                     </div>
                 </div>
             </section>
+
             <div
-                className={`grid gap-4 grid-rows-auto w-full ${changeForm ? 'grid-cols-1' : 'lg:grid-cols-[55%_45%] lg:pr-4 '}`}
+                className={`grid gap-4 grid-rows-auto w-full ${changeForm ? 'grid-cols-1' : 'lg:grid-cols-[55%_45%] lg:pr-4'}`}
             >
-                {[0, 1, 2, 3, 4].map((num) => (
-                    <SectionProject key={num} changeForm={changeForm} setChangeForm={setChangeForm} keytap={num}>
+                {sections.map((num) => (
+                    <SectionProject key={num} changeForm={changeForm} setChangeForm={setChangeForm} keytap={num} totalSections={sections.length}>
                         <h1 className="font-bold" style={{ fontSize: fontSizes[textSize] + 12 }}>Sección {num + 1}</h1>
                         <h2 className="font-semibold" style={{ fontSize: fontSizes[textSize] + 8 }}>Subtítulo de la sección {num + 1}</h2>
                         <h3 className="font-medium" style={{ fontSize: fontSizes[textSize] + 6 }}>Tercer título de la sección {num + 1}</h3>
@@ -113,7 +136,38 @@ export default function CodePediaProject() {
                             <li>Segunda viñeta de logro</li>
                         </ul>
                         <ImageCodepedia id='imagen-portada' imageSrc="/log.webp" title="Titulo del articulo destacado" description="Descripción del articulo destacado" />
+                        <h1 className="font-bold" style={{ fontSize: fontSizes[textSize] + 12 }}>Sección {num + 1}</h1>
+                        <h2 className="font-semibold" style={{ fontSize: fontSizes[textSize] + 8 }}>Subtítulo de la sección {num + 1}</h2>
+                        <h3 className="font-medium" style={{ fontSize: fontSizes[textSize] + 6 }}>Tercer título de la sección {num + 1}</h3>
+                        <p style={{ fontSize: fontSizes[textSize] }}>Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis neque veniam fugiat, totam voluptates.</p>
+                        <strong className="highlight" style={{ fontSize: fontSizes[textSize] }}>Texto en negrita de la sección {num + 1}</strong>
+                        <em className="underline" style={{ fontSize: fontSizes[textSize] }}>Texto en cursiva de la sección {num + 1}</em>
+                        <ol className="list-decimal pl-5" style={{ fontSize: fontSizes[textSize] }}>
+                            <li>Primera viñeta de logro</li>
+                            <li>Segunda viñeta de logro</li>
+                        </ol>
 
+                        <ul className="list-disc pl-5" style={{ fontSize: fontSizes[textSize] }}>
+                            <li>Primera viñeta de logro</li>
+                            <li>Segunda viñeta de logro</li>
+                        </ul>
+                        <ImageCodepedia id='imagen-portada' imageSrc="/log.webp" title="Titulo del articulo destacado" description="Descripción del articulo destacado" />
+                        <h1 className="font-bold" style={{ fontSize: fontSizes[textSize] + 12 }}>Sección {num + 1}</h1>
+                        <h2 className="font-semibold" style={{ fontSize: fontSizes[textSize] + 8 }}>Subtítulo de la sección {num + 1}</h2>
+                        <h3 className="font-medium" style={{ fontSize: fontSizes[textSize] + 6 }}>Tercer título de la sección {num + 1}</h3>
+                        <p style={{ fontSize: fontSizes[textSize] }}>Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis neque veniam fugiat, totam voluptates.</p>
+                        <strong className="highlight" style={{ fontSize: fontSizes[textSize] }}>Texto en negrita de la sección {num + 1}</strong>
+                        <em className="underline" style={{ fontSize: fontSizes[textSize] }}>Texto en cursiva de la sección {num + 1}</em>
+                        <ol className="list-decimal pl-5" style={{ fontSize: fontSizes[textSize] }}>
+                            <li>Primera viñeta de logro</li>
+                            <li>Segunda viñeta de logro</li>
+                        </ol>
+
+                        <ul className="list-disc pl-5" style={{ fontSize: fontSizes[textSize] }}>
+                            <li>Primera viñeta de logro</li>
+                            <li>Segunda viñeta de logro</li>
+                        </ul>
+                        <ImageCodepedia id='imagen-portada' imageSrc="/log.webp" title="Titulo del articulo destacado" description="Descripción del articulo destacado" />
                     </SectionProject>
                 ))}
             </div>
