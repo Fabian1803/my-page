@@ -96,7 +96,7 @@ export default function CodePediaHeader() {
                       className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-left"
                     >
                       <div className="border border-gray-400 min-w-9 min-h-9 w-9 h-9 overflow-hidden bg-gray-50 flex items-center justify-center">
-                        <img src={item.image || "/WikiLog.webp"} alt="Sugerencia" width={35} height={35} className='w-full h-full object-cover'/>
+                        <img src={item.image || "/wikiLog.webp"} alt="Sugerencia" width={35} height={35} className='w-full h-full object-cover'/>
                       </div>
                       <div className="flex flex-col min-w-0">
                         <span className="font-semibold dark:text-white line-clamp-1">{item.label}</span>

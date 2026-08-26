@@ -28,7 +28,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
         <div className="grid grid-cols-[40px_auto] grid-rows-2 items-center h-9">
           <div className="row-span-2 flex justify-center">
             <div className="rounded-full w-8 h-8 overflow-hidden flex items-center justify-center">
-              <img src="/WikiLog.webp" alt="Logo" className="w-full h-full object-contain" />
+              <img src="/wikiLog.webp" alt="Logo" className="w-full h-full object-contain" />
             </div>
           </div>
           <h3 className="text-sm font-bold line-clamp-1">{project.nombre}</h3>

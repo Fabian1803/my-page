@@ -36,7 +36,7 @@ export function useCodePediaHeader() {
           id: p.id,
           label: p.nombre,
           url: `/Codepedia/project/${p.id}`,
-          image: p.imagenPrincipalUrl || p.miniaturaUrl || '/WikiLog.webp',
+          image: p.imagenPrincipalUrl || p.miniaturaUrl || '/wikiLog.webp',
           type: 'project'
         }));
 
@@ -44,7 +44,7 @@ export function useCodePediaHeader() {
           id: c.id,
           label: c.nombre,
           url: `/Codepedia/${encodeURIComponent(c.nombre)}`,
-          image: c.imagenUrl || '/WikiLog.webp',
+          image: c.imagenUrl || '/wikiLog.webp',
           type: 'skill'
         }));
 

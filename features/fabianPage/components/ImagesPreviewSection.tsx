@@ -31,7 +31,7 @@ export default function ImagesPreviewSection({ images }: ImagesPreviewSectionPro
         {displayImages.map((img) => {
           const src = img.imagenCertificado || img.imagenPrincipalUrl;
           const title = img.titulo || img.nombre || "Imagen";
-          const logo = img.imagenLogo || img.miniaturaUrl || '/WikiLog.webp';
+          const logo = img.imagenLogo || img.miniaturaUrl || '/wikiLog.webp';
           const sourceName = img.universidad || img.instituto || 'fabianrivera.dev';
 
           if (!src) return null;
