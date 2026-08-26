@@ -20,7 +20,7 @@ export class VerifyLoginChallengeUseCase {
       expectedRPID: expectedRPID,
       credential: {
         id: dispositivo.credentialId,
-        publicKey: Buffer.from(dispositivo.publicKey, "base64"),
+        publicKey: new Uint8Array(Buffer.from(dispositivo.publicKey, "base64")),
         counter: dispositivo.counter,
       },
     });

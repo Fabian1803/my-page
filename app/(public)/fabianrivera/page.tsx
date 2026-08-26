@@ -30,26 +30,28 @@ export default async function Page() {
   const imagenes = Array.isArray(imagenesRaw) ? imagenesRaw : [];
   const certificados = Array.isArray(certificadosRaw) ? certificadosRaw : [];
 
-  const skills = categorias.map((cat: any) => {
-    const proyectosRelacionados = proyectos.filter((p: any) => {
-      const pCats = p.categorias || [];
-      return pCats.some((c: any) => {
-        const catName = typeof c === 'string' ? c : c.nombre;
-        return catName?.trim().toLowerCase() === cat.nombre?.trim().toLowerCase();
+  const skills = categorias
+    .map((cat: any) => {
+      const proyectosRelacionados = proyectos.filter((p: any) => {
+        const pCats = p.categorias || [];
+        return pCats.some((c: any) => {
+          const catName = typeof c === 'string' ? c : c.nombre;
+          return catName?.trim().toLowerCase() === cat.nombre?.trim().toLowerCase();
+        });
       });
-    });
 
-    return {
-      id: cat.id,
-      nombre: cat.nombre,
-      imagenUrl: cat.imagenUrl,
-      proyectos: proyectosRelacionados.slice(0, 3).map((p: any) => ({
-        id: p.id,
-        nombre: p.nombre,
-        descripcion: p.descripcion
-      }))
-    };
-  });
+      return {
+        id: cat.id,
+        nombre: cat.nombre,
+        imagenUrl: cat.imagenUrl,
+        proyectos: proyectosRelacionados.slice(0, 3).map((p: any) => ({
+          id: p.id,
+          nombre: p.nombre,
+          descripcion: p.descripcion
+        }))
+      };
+    })
+    .filter((s) => s.proyectos.length > 0);
 
   return (
     <FabianPageMain 

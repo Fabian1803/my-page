@@ -72,7 +72,7 @@ export const authService = {
         throw new Error(challengeData.error || "Desafío biométrico no válido.");
       }
       const { options, email: targetEmail } = challengeData.data;
-      const authResponse = await startAuthentication(options);
+      const authResponse = await startAuthentication({ optionsJSON: options });
       const verifyRes = await fetch("/api/auth/verify-challenge", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

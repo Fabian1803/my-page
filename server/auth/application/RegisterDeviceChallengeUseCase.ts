@@ -25,7 +25,7 @@ export class RegisterDeviceChallengeUseCase {
     const options = await generateRegistrationOptions({
       rpName: "Google Cloud Platform Portfolio",
       rpID,
-      userID: new TextEncoder().encode(usuario.id),
+      userID: new Uint8Array(Buffer.from(usuario.id)),
       userName: usuario.email,
       attestationType: "none",
       excludeCredentials: existingDevices.map(dev => ({

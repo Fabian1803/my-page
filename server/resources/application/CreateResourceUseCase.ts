@@ -25,8 +25,8 @@ export class CreateResourceUseCase {
             const tokenAttr = typeof value.attrs.token === "string" ? value.attrs.token : "";
             const titleAttr = typeof value.attrs.title === "string" ? value.attrs.title : "";
 
-            const replacement = replacements.find((item) =>
-              (altToken && (altToken.includes(item.token) || item.token.includes(altToken))) ||
+            const replacement = replacements.find((item) => 
+              (altToken && (altToken.includes(item.token) || item.token.includes(altToken))) || 
               (tokenAttr && (tokenAttr.includes(item.token) || item.token.includes(tokenAttr))) ||
               (titleAttr && (titleAttr.includes(item.token) || item.token.includes(titleAttr)))
             ) || (fallbackIndex < replacements.length ? replacements[fallbackIndex++] : null);
@@ -65,14 +65,17 @@ export class CreateResourceUseCase {
     const vinetasRaw = JSON.parse((formData.get("vinetas") as string) || "[]");
 
     const extensionPortada = (imagenPrincipalFile.name?.split(".").pop() || "png").toLowerCase();
-    const nombreArchivoPortada = tipo === "PROYECTO"
-      ? `${nombre.trim()}-portada.${extensionPortada}`
-      : imagenPrincipalFile.name;
+    const cleanNombre = (nombre.trim() || (tipo === "CERTIFICADO" ? "certificado" : "proyecto")).replace(/[^a-zA-Z0-9_-]/g, "_");
+    const nombreArchivoPortada = tipo === "PROYECTO" 
+      ? `${cleanNombre}-portada.${extensionPortada}`
+      : `${cleanNombre}.${extensionPortada}`;
 
     const imagenPrincipalUrl = await this.mediaStorage.uploadImage(imagenPrincipalFile, nombreArchivoPortada);
     let miniaturaUrl: string | null = null;
     if (miniaturaFile && miniaturaFile.size > 0) {
-      miniaturaUrl = await this.mediaStorage.uploadImage(miniaturaFile, miniaturaFile.name);
+      const extensionMiniatura = (miniaturaFile.name?.split(".").pop() || "png").toLowerCase();
+      const nombreArchivoMiniatura = `${cleanNombre}-logo.${extensionMiniatura}`;
+      miniaturaUrl = await this.mediaStorage.uploadImage(miniaturaFile, nombreArchivoMiniatura);
     }
 
     if (tipo === "CERTIFICADO") {
@@ -81,7 +84,7 @@ export class CreateResourceUseCase {
           tipo: "CERTIFICADO",
           destacado: formData.get("destacado") === "true",
           nombre: nombre.trim(),
-          descripcion: descripcion.trim(),
+          descripcion: descripcion.trim().slice(0, 150),
           instituto: instituto?.trim() || null,
           imagenPrincipalUrl,
           miniaturaUrl,
@@ -107,17 +110,17 @@ export class CreateResourceUseCase {
         }
       });
       return {
-        success: true,
-        data: {
-          id: nuevoCertificado.id,
-          nombre: nuevoCertificado.nombre,
-          institucion: nuevoCertificado.instituto,
-          descripcion: nuevoCertificado.descripcion,
-          imagenPrincipalUrl: nuevoCertificado.imagenPrincipalUrl,
-          miniaturaUrl: nuevoCertificado.miniaturaUrl,
-          vinetas: nuevoCertificado.vinetas,
-          categorias: nuevoCertificado.categorias
-        }
+        id: nuevoCertificado.id,
+        tipo: nuevoCertificado.tipo,
+        nombre: nuevoCertificado.nombre,
+        instituto: nuevoCertificado.instituto,
+        institucion: nuevoCertificado.instituto,
+        descripcion: nuevoCertificado.descripcion,
+        destacado: nuevoCertificado.destacado,
+        imagenPrincipalUrl: nuevoCertificado.imagenPrincipalUrl,
+        miniaturaUrl: nuevoCertificado.miniaturaUrl,
+        vinetas: nuevoCertificado.vinetas,
+        categorias: nuevoCertificado.categorias
       };
     }
 
@@ -138,11 +141,11 @@ export class CreateResourceUseCase {
 
         let uploadedUrl = "";
         if (isVideo) {
-          const customFileName = `${nombre.trim()}-video${tiptapIndex}.${extension}`;
+          const customFileName = `${cleanNombre}-video${tiptapIndex}.${extension}`;
           uploadedUrl = await this.mediaStorage.uploadVideo(value, customFileName);
           uploadedMediaList.push({ isVideo: true, url: uploadedUrl, index: tiptapIndex });
         } else {
-          const customFileName = `${nombre.trim()}-imagen${tiptapIndex}.${extension}`;
+          const customFileName = `${cleanNombre}-imagen${tiptapIndex}.${extension}`;
           uploadedUrl = await this.mediaStorage.uploadImage(value, customFileName);
           uploadedMediaList.push({ isVideo: false, url: uploadedUrl, index: tiptapIndex });
         }
@@ -159,7 +162,7 @@ export class CreateResourceUseCase {
       tipo,
       destacado,
       nombre: nombre.trim(),
-      descripcion: descripcion.trim(),
+      descripcion: descripcion.trim().slice(0, 150),
       instituto,
       imagenPrincipalUrl,
       miniaturaUrl,
@@ -178,7 +181,7 @@ export class CreateResourceUseCase {
         tipo: "PORTADA",
         destacado: false,
         nombre: `${nombre.trim()}-portada`,
-        descripcion: descripcion.trim(),
+        descripcion: descripcion.trim().slice(0, 150),
         imagenPrincipalUrl,
         categorias: {
           connectOrCreate: categoriasRaw.map((cat: any) => {
@@ -219,7 +222,7 @@ export class CreateResourceUseCase {
             tipo: "IMAGEN_INTERNA",
             destacado: false,
             nombre: `${nombre.trim()}-imagen${media.index}`,
-            descripcion: descripcion.trim(),
+            descripcion: descripcion.trim().slice(0, 150),
             imagenPrincipalUrl: media.url,
             categorias: {
               connectOrCreate: categoriasRaw.map((cat: any) => {
@@ -244,9 +247,6 @@ export class CreateResourceUseCase {
       }
     }
 
-    return {
-      success: true,
-      data: proyectoCreado
-    };
+    return proyectoCreado;
   }
 }

@@ -95,7 +95,7 @@ export class UpdateResourceUseCase {
         where: { id },
         data: {
           nombre: nombre.trim(),
-          descripcion: descripcion.trim(),
+          descripcion: descripcion.trim().slice(0, 150),
           instituto: instituto?.trim() || null,
           destacado,
           imagenPrincipalUrl,

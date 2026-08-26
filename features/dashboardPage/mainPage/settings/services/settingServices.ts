@@ -47,13 +47,12 @@ export const settingServices = {
             const challengeRes = await fetch('/api/auth/register-device/challenge', {
                 method: 'POST',
             });
-            if (!challengeRes.ok) throw new Error('Error al solicitar registro biométrico.');
-            const challengeData = await challengeRes.json();
-            if (!challengeData.success || !challengeData.data?.options) {
-                throw new Error(challengeData.error || 'Opciones de registro inválidas.');
+            const challengeData = await challengeRes.json().catch(() => ({}));
+            if (!challengeRes.ok || !challengeData.success || !challengeData.data?.options) {
+                throw new Error(challengeData.error || 'Error al solicitar registro biométrico.');
             }
             const { options } = challengeData.data;
-            const regResponse = await startRegistration(options);
+            const regResponse = await startRegistration({ optionsJSON: options });
             const verifyRes = await fetch('/api/auth/register-device/verify', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -63,9 +62,8 @@ export const settingServices = {
                 }),
             });
 
-            if (!verifyRes.ok) throw new Error('Error en la verificación del registro.');
-            const verifyData = await verifyRes.json();
-            if (!verifyData.success) {
+            const verifyData = await verifyRes.json().catch(() => ({}));
+            if (!verifyRes.ok || !verifyData.success) {
                 throw new Error(verifyData.error || 'Fallo al vincular el dispositivo.');
             }
 
