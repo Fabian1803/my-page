@@ -1,12 +1,23 @@
 import SkillsFabian from '@/features/fabianPage/pages/skillsFabian'
 import { getCategoriasUseCase } from '@/server/categoria/infrastructure/dependencies'
 import { getResourcesUseCase } from '@/server/resources/infrastructure/dependencies'
+
 export const revalidate = 3600;
+
 export default async function Page() {
-  const [categoriasRaw, proyectosRaw] = await Promise.all([
-    getCategoriasUseCase.execute(),
-    getResourcesUseCase.execute({ tipo: "PROYECTO" })
-  ]);
+  let categoriasRaw: any = [];
+  let proyectosRaw: any = [];
+
+  try {
+    const results = await Promise.all([
+      getCategoriasUseCase.execute(),
+      getResourcesUseCase.execute({ tipo: "PROYECTO" })
+    ]);
+    categoriasRaw = results[0];
+    proyectosRaw = results[1];
+  } catch (error) {
+    console.error("Error al cargar skills en /fabianrivera/skills:", error);
+  }
 
   const categorias = Array.isArray(categoriasRaw) ? categoriasRaw : [];
   const proyectos = Array.isArray(proyectosRaw) ? proyectosRaw : [];

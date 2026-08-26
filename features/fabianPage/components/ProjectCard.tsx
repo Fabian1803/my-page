@@ -19,7 +19,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
   return (
     <Link
       href={`/Codepedia/project/${project.id}`}
-      className="gap-2 px-4 pt-4 grid grid-cols-[auto_140px] min-[500px]:grid-cols-[auto_180px] grid-rows-[auto_1fr] max-w-200"
+      className="gap-2 px-4 pt-4 grid grid-cols-[auto_128px] min-[500px]:grid-cols-[auto_168px] grid-rows-[auto_1fr] max-w-200"
     >
       <div className="flex gap-2 flex-col max-[500px]:col-span-2">
         {project.destacado && (
@@ -42,7 +42,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
       </div>
 
       <div className="flex items-center justify-center row-span-2 col-start-2">
-        <div className="w-40 h-40 max-[500px]:w-30 max-[500px]:h-30 rounded-2xl bg-amber-400 overflow-hidden flex items-center justify-center">
+        <div className="w-40 h-40 max-[500px]:w-30 max-[500px]:h-30 rounded-2xl overflow-hidden flex items-center justify-center">
           {project.imagenPrincipalUrl ? (
             <img src={project.imagenPrincipalUrl} alt={project.nombre} className="w-full h-full object-cover" />
           ) : (

@@ -1,14 +1,28 @@
-// server/shared/infrastructure/prisma.ts
 import pg from "pg";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@/prisma/generated/prisma-client/index.js";
-const connectionString = process.env.PRISMA_DATABASE_URL || process.env.DATABASE_URL;
-if (!connectionString) throw new Error("Falta la variable de entorno de la base de datos (DATABASE_URL o PRISMA_DATABASE_URL)");
+
+const rawConnectionString = process.env.PRISMA_DATABASE_URL || process.env.DATABASE_URL;
+if (!rawConnectionString) throw new Error("Falta la variable de entorno de la base de datos (DATABASE_URL o PRISMA_DATABASE_URL)");
+
 const globalForPrisma = global as unknown as { prismaInstance?: PrismaClient; poolInstance?: pg.Pool };
 let prisma: PrismaClient;
 
 if (!globalForPrisma.prismaInstance) {
-  const pool = new pg.Pool({ connectionString });
+  const isLocal = rawConnectionString.includes("localhost") || rawConnectionString.includes("127.0.0.1");
+
+  const pool = new pg.Pool({
+    connectionString: rawConnectionString,
+    max: 10,
+    connectionTimeoutMillis: 20000,
+    idleTimeoutMillis: 30000,
+    ssl: isLocal ? undefined : { rejectUnauthorized: false }
+  });
+
+  pool.on("error", (err) => {
+    console.warn("Aviso de conexión inactiva en Vercel Postgres pool:", err.message);
+  });
+
   const adapter = new PrismaPg(pool);
 
   globalForPrisma.poolInstance = pool;
