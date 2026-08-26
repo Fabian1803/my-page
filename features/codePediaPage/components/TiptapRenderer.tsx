@@ -7,9 +7,18 @@ interface TiptapRendererProps {
   textSize?: 'small' | 'medium' | 'large';
   baseId?: string;
   projectDescription?: string;
+  projectName?: string;
 }
 
-function renderTiptapNode(node: any, index: number, baseSize: number, baseId: string, projectDescription?: string): React.ReactNode {
+function renderTiptapNode(
+  node: any,
+  index: number,
+  baseSize: number,
+  baseId: string,
+  projectDescription?: string,
+  projectName?: string,
+  imageCounterRef?: { count: number }
+): React.ReactNode {
   if (!node) return null;
 
   if (node.type === 'text') {
@@ -34,7 +43,9 @@ function renderTiptapNode(node: any, index: number, baseSize: number, baseId: st
     return <React.Fragment key={index}>{content}</React.Fragment>;
   }
 
-  const children = node.content ? node.content.map((child: any, i: number) => renderTiptapNode(child, i, baseSize, baseId, projectDescription)) : null;
+  const children = node.content
+    ? node.content.map((child: any, i: number) => renderTiptapNode(child, i, baseSize, baseId, projectDescription, projectName, imageCounterRef))
+    : null;
 
   switch (node.type) {
     case 'doc':
@@ -79,9 +90,15 @@ function renderTiptapNode(node: any, index: number, baseSize: number, baseId: st
       );
     case 'image': {
       const src = node.attrs?.src || '';
-      const title = node.attrs?.title || node.attrs?.alt || 'Imagen del documento';
-      const description = projectDescription || node.attrs?.title || node.attrs?.alt || '';
       if (!src) return null;
+
+      const imgNumber = imageCounterRef ? ++imageCounterRef.count : (index + 1);
+      const title = projectName
+        ? `${projectName.trim()}-imagen${imgNumber}`
+        : (node.attrs?.title || `imagen-${imgNumber}`);
+
+      const description = projectDescription || title;
+
       return (
         <div key={index} className="my-2 w-full">
           <ImageCodepedia
@@ -113,7 +130,13 @@ function renderTiptapNode(node: any, index: number, baseSize: number, baseId: st
   }
 }
 
-export default function TiptapRenderer({ htmlContent, textSize = 'medium', baseId = 'doc', projectDescription = '' }: TiptapRendererProps) {
+export default function TiptapRenderer({
+  htmlContent,
+  textSize = 'medium',
+  baseId = 'doc',
+  projectDescription = '',
+  projectName = ''
+}: TiptapRendererProps) {
   const fontSizes = {
     small: 14,
     medium: 18,
@@ -121,6 +144,7 @@ export default function TiptapRenderer({ htmlContent, textSize = 'medium', baseI
   };
 
   const baseSize = fontSizes[textSize] || 18;
+  const imageCounterRef = { count: 0 };
 
   if (!htmlContent) return null;
 
@@ -142,7 +166,7 @@ export default function TiptapRenderer({ htmlContent, textSize = 'medium', baseI
   if (tiptapJson) {
     return (
       <div className="tiptap-section-container space-y-2 w-full">
-        {renderTiptapNode(tiptapJson, 0, baseSize, baseId, projectDescription)}
+        {renderTiptapNode(tiptapJson, 0, baseSize, baseId, projectDescription, projectName, imageCounterRef)}
       </div>
     );
   }
@@ -172,11 +196,14 @@ export default function TiptapRenderer({ htmlContent, textSize = 'medium', baseI
     const matchedTag = match[0];
     if (matchedTag.startsWith('<img')) {
       const srcMatch = matchedTag.match(/src=["']([^"']*)["']/i);
-      const altMatch = matchedTag.match(/alt=["']([^"']*)["']/i);
-      const titleMatch = matchedTag.match(/title=["']([^"']*)["']/i);
       const src = srcMatch ? srcMatch[1] : '';
-      const title = titleMatch ? titleMatch[1] : (altMatch ? altMatch[1] : 'Imagen del documento');
-      const description = projectDescription || (titleMatch ? titleMatch[1] : (altMatch ? altMatch[1] : ''));
+
+      const imgNumber = ++imageCounterRef.count;
+      const title = projectName
+        ? `${projectName.trim()}-imagen${imgNumber}`
+        : `imagen-${imgNumber}`;
+
+      const description = projectDescription || title;
 
       if (src) {
         parts.push(

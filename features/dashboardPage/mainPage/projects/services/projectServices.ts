@@ -19,6 +19,7 @@ export interface ProjectItem {
     imagenPrincipalUrl: string;
     miniaturaUrl?: string | null;
     categorias: { id?: string; nombre: string }[];
+    vinetas?: { id?: string; comentario: string }[] | string[];
     enlaces: ProjectLink[];
     seccionesDoc: { id?: string; orden?: number; contenidoJson: string }[];
 }

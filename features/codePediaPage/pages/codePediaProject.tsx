@@ -70,9 +70,9 @@ function SectionProject({ children, changeForm, setChangeForm, keytap, totalSect
                 <button className="border border-gray-400 px-4 py-1 font-bold hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer" onClick={() => setChangeForm(true)}>
                     Leer
                 </button>
-                <Link href="/Codepedia" className="w-full font-bold hover:underline">
+                <div className="w-full font-bold ">
                     Todos los proyectos destacados
-                </Link>
+                </div>
                 <AiOutlineDash size={30} />
             </div>
         </div>
@@ -133,7 +133,7 @@ export default function CodePediaProject({ proyecto }: { proyecto?: ProjectData 
                     </div>
                 </div>
             </section>
-            
+
             <div
                 className={`grid gap-4 grid-rows-auto w-full ${changeForm ? 'grid-cols-1' : 'lg:grid-cols-[55%_45%] lg:pr-4'}`}
             >
@@ -150,6 +150,7 @@ export default function CodePediaProject({ proyecto }: { proyecto?: ProjectData 
                             textSize={textSize}
                             baseId={`sec-${sec.id || num}`}
                             projectDescription={projectData.descripcion}
+                            projectName={projectData.nombre}
                         />
                     </SectionProject>
                 ))}

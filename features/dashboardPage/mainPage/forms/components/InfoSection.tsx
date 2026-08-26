@@ -30,10 +30,10 @@ export default function InfoSection({ htmlContent, setHtmlContent, onRegisterFil
     const handleImageUploadDirect = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
         if (!file) return
-        const fileId = crypto.randomUUID()
+        const fileId = `tiptap-media-${crypto.randomUUID()}`
         onRegisterFile(fileId, file)
         const localUrl = URL.createObjectURL(file)
-        editor.chain().focus().setImage({ src: localUrl, alt: file.name }).run()
+        editor.chain().focus().setImage({ src: localUrl, alt: fileId, title: file.name }).run()
         e.target.value = ''
     }
 

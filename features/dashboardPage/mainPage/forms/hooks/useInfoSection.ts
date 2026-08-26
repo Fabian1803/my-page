@@ -16,7 +16,11 @@ const VideoExtension = Node.create({
     atom: true,
 
     addAttributes() {
-        return { src: { default: null } }
+        return { 
+            src: { default: null },
+            alt: { default: null },
+            token: { default: null }
+        }
     },
     parseHTML() {
         return [{ tag: 'video[src]' }]
@@ -33,7 +37,7 @@ const VideoExtension = Node.create({
     },
     addCommands() {
         return {
-            setVideo: (options: { src: string }) => ({ commands }: { commands: any }) => {
+            setVideo: (options: { src: string; alt?: string; token?: string }) => ({ commands }: { commands: any }) => {
                 return commands.insertContent({
                     type: this.name,
                     attrs: options,
@@ -111,8 +115,13 @@ export function useInfoSection(htmlContent: string, setHtmlContent: (value: stri
         onRegisterFile(tokenArchivo, file)
 
         if (editor) {
-            (editor.chain().focus() as any).setVideo({ src: blobUrlTemporal }).run()
+            (editor.chain().focus() as any).setVideo({ 
+                src: blobUrlTemporal,
+                alt: tokenArchivo,
+                token: tokenArchivo 
+            }).run()
         }
+        e.target.value = ''
     }
 
     return {

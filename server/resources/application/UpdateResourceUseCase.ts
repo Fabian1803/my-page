@@ -315,13 +315,60 @@ export class UpdateResourceUseCase {
     }
 
     const seccionesDoc = this.replaceBlobUrlsInSections(seccionesDocRaw, replacements);
-    if (replacements.length > 0) {
-      await prisma.proyecto.update({
-        where: { id },
-        data: {
-          seccionesDoc
+    await prisma.proyecto.update({
+      where: { id },
+      data: {
+        seccionesDoc
+      }
+    });
+
+    const activeUrls = new Set<string>();
+    for (const section of seccionesDoc) {
+      const text = typeof section === "string" ? section : JSON.stringify(section);
+      const matches = text.match(/https?:\/\/[^\s"')\\]+/g) || [];
+      matches.forEach((m) => activeUrls.add(m));
+    }
+
+    const internalImages = await prisma.mediaResource.findMany({
+      where: {
+        proyectoId: id,
+        tipo: "IMAGEN_INTERNA"
+      }
+    });
+
+    for (const img of internalImages) {
+      if (!activeUrls.has(img.imagenPrincipalUrl)) {
+        try {
+          await this.mediaStorage.deleteFile(img.imagenPrincipalUrl);
+        } catch (err) {
+          console.error("Error al borrar blob huérfano:", err);
         }
-      });
+        await prisma.mediaResource.delete({ where: { id: img.id } });
+      } else {
+        await prisma.vineta.deleteMany({ where: { mediaResourceId: img.id } });
+        await prisma.mediaResource.update({
+          where: { id: img.id },
+          data: {
+            descripcion: descripcion.trim(),
+            categorias: {
+              set: [],
+              connectOrCreate: categorias.map((cat: any) => {
+                const nombreCat = typeof cat === 'string' ? cat : cat.nombre;
+                return {
+                  where: { nombre: nombreCat },
+                  create: { nombre: nombreCat, imagenUrl: "" }
+                };
+              })
+            },
+            vinetas: {
+              create: vinetas.map((v: any) => {
+                const comentario = typeof v === 'string' ? v : v.comentario;
+                return { comentario };
+              })
+            }
+          }
+        });
+      }
     }
 
     return proyectoActualizado;

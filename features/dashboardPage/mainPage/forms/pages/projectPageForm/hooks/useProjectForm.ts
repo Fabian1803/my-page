@@ -53,6 +53,7 @@ export function useProjectForm() {
                     setInitialImageUrl(proy.imagenPrincipalUrl || null)
                     setCompTags((proy.categorias || []).map((c: any) => typeof c === 'string' ? c : c.nombre))
                     setDynamicLinks(proy.enlaces || [])
+                    setCompBullets((proy.vinetas || []).map((v: any) => typeof v === 'string' ? v : v.comentario || v))
 
                     if (proy.seccionesDoc && proy.seccionesDoc.length > 0) {
                         setContentBlocks(proy.seccionesDoc.map((s: any, idx: number) => ({

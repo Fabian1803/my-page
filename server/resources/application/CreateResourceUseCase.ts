@@ -12,16 +12,25 @@ export class CreateResourceUseCase {
 
   private replaceBlobUrlsInSections(seccionesDoc: string[], replacements: Array<{ token: string; url: string }>): string[] {
     if (replacements.length === 0) return seccionesDoc;
+    let fallbackIndex = 0;
     return seccionesDoc.map((section) => {
       try {
-        const parsed = JSON.parse(section);
+        const parsed = typeof section === "string" ? JSON.parse(section) : section;
         const visit = (value: any): any => {
           if (Array.isArray(value)) return value.map(visit);
           if (!value || typeof value !== "object") return value;
 
-          if (value.attrs && typeof value.attrs.src === "string" && value.attrs.src.startsWith("blob:")) {
+          if (value.attrs && typeof value.attrs.src === "string" && (value.attrs.src.startsWith("blob:") || value.attrs.src.startsWith("http://localhost") || value.attrs.src.includes("localhost"))) {
             const altToken = typeof value.attrs.alt === "string" ? value.attrs.alt : "";
-            const replacement = replacements.find((item) => altToken.includes(item.token));
+            const tokenAttr = typeof value.attrs.token === "string" ? value.attrs.token : "";
+            const titleAttr = typeof value.attrs.title === "string" ? value.attrs.title : "";
+
+            const replacement = replacements.find((item) =>
+              (altToken && (altToken.includes(item.token) || item.token.includes(altToken))) ||
+              (tokenAttr && (tokenAttr.includes(item.token) || item.token.includes(tokenAttr))) ||
+              (titleAttr && (titleAttr.includes(item.token) || item.token.includes(titleAttr)))
+            ) || (fallbackIndex < replacements.length ? replacements[fallbackIndex++] : null);
+
             if (replacement) {
               value = { ...value, attrs: { ...value.attrs, src: replacement.url } };
             }
@@ -34,7 +43,8 @@ export class CreateResourceUseCase {
           return result;
         };
 
-        return JSON.stringify(visit(parsed));
+        const transformed = visit(parsed);
+        return typeof section === "string" ? JSON.stringify(transformed) : transformed;
       } catch {
         return section;
       }
@@ -55,7 +65,7 @@ export class CreateResourceUseCase {
     const vinetasRaw = JSON.parse((formData.get("vinetas") as string) || "[]");
 
     const extensionPortada = (imagenPrincipalFile.name?.split(".").pop() || "png").toLowerCase();
-    const nombreArchivoPortada = tipo === "PROYECTO" 
+    const nombreArchivoPortada = tipo === "PROYECTO"
       ? `${nombre.trim()}-portada.${extensionPortada}`
       : imagenPrincipalFile.name;
 
@@ -115,6 +125,35 @@ export class CreateResourceUseCase {
     const enlaces = JSON.parse((formData.get("enlaces") as string) || "[]");
     const seccionesDocRaw = JSON.parse((formData.get("seccionesDoc") as string) || "[]");
 
+    // Subir archivos multimedia de Tiptap y generar reemplazos
+    const replacements: Array<{ token: string; url: string }> = [];
+    const uploadedMediaList: Array<{ isVideo: boolean; url: string; index: number }> = [];
+    let tiptapIndex = 1;
+
+    for (const [fieldName, value] of Array.from(formData.entries())) {
+      if (fieldName.startsWith("tiptap_media_") && value instanceof File) {
+        const token = fieldName.replace(/^tiptap_media_/, "");
+        const isVideo = (value.type && value.type.startsWith("video/")) || /\.(mp4|webm|ogg|mov|mkv|avi)$/i.test(value.name) || token.includes("video");
+        const extension = (value.name?.split(".").pop() || (isVideo ? "mp4" : "png")).toLowerCase();
+
+        let uploadedUrl = "";
+        if (isVideo) {
+          const customFileName = `${nombre.trim()}-video${tiptapIndex}.${extension}`;
+          uploadedUrl = await this.mediaStorage.uploadVideo(value, customFileName);
+          uploadedMediaList.push({ isVideo: true, url: uploadedUrl, index: tiptapIndex });
+        } else {
+          const customFileName = `${nombre.trim()}-imagen${tiptapIndex}.${extension}`;
+          uploadedUrl = await this.mediaStorage.uploadImage(value, customFileName);
+          uploadedMediaList.push({ isVideo: false, url: uploadedUrl, index: tiptapIndex });
+        }
+
+        replacements.push({ token, url: uploadedUrl });
+        tiptapIndex++;
+      }
+    }
+
+    const seccionesDoc = this.replaceBlobUrlsInSections(seccionesDocRaw, replacements);
+
     const resourceEntity = new Resource({
       id: crypto.randomUUID(),
       tipo,
@@ -127,13 +166,13 @@ export class CreateResourceUseCase {
       categorias: categoriasRaw,
       enlaces,
       vinetas: vinetasRaw,
-      seccionesDoc: seccionesDocRaw
+      seccionesDoc
     });
 
     const proyectoCreado = await this.repository.save(resourceEntity);
     const proyectoId = proyectoCreado?.id || resourceEntity.id;
 
-    // Guardar la imagen de portada como MediaResource con nombre "{nombre}-portada", su descripción y sus categorías/viñetas
+    // Guardar portada en MediaResource
     const portadaMedia = await prisma.mediaResource.create({
       data: {
         tipo: "PORTADA",
@@ -167,70 +206,42 @@ export class CreateResourceUseCase {
       data: {
         portada: {
           connect: { id: portadaMedia.id }
-        }
+        },
+        seccionesDoc
       }
     });
 
-    // Guardar las imágenes internas de Tiptap como "{nombre}-imagen1", "{nombre}-imagen2", etc., con sus categorías y viñetas
-    const replacements: Array<{ token: string; url: string }> = [];
-    let tiptapIndex = 1;
-    for (const [fieldName, value] of Array.from(formData.entries())) {
-      if (fieldName.startsWith("tiptap_media_") && value instanceof File) {
-        const token = fieldName.replace(/^tiptap_media_/, "");
-        const isVideo = (value.type && value.type.startsWith("video/")) || /\.(mp4|webm|ogg|mov|mkv|avi)$/i.test(value.name) || token.includes("video");
-        const extension = (value.name?.split(".").pop() || (isVideo ? "mp4" : "png")).toLowerCase();
-
-        let uploadedUrl = "";
-        if (isVideo) {
-          const customFileName = `${nombre.trim()}-video${tiptapIndex}.${extension}`;
-          uploadedUrl = await this.mediaStorage.uploadVideo(value, customFileName);
-        } else {
-          const customFileName = `${nombre.trim()}-imagen${tiptapIndex}.${extension}`;
-          uploadedUrl = await this.mediaStorage.uploadImage(value, customFileName);
-
-          await prisma.mediaResource.create({
-            data: {
-              tipo: "IMAGEN_INTERNA",
-              destacado: false,
-              nombre: `${nombre.trim()}-imagen${tiptapIndex}`,
-              descripcion: descripcion.trim(),
-              imagenPrincipalUrl: uploadedUrl,
-              categorias: {
-                connectOrCreate: categoriasRaw.map((cat: any) => {
-                  const nombreCat = typeof cat === 'string' ? cat : cat.nombre;
-                  return {
-                    where: { nombre: nombreCat },
-                    create: { nombre: nombreCat, imagenUrl: "" }
-                  };
-                })
-              },
-              vinetas: {
-                create: vinetasRaw.map((v: any) => {
-                  const comentario = typeof v === 'string' ? v : v.comentario;
-                  return { comentario };
-                })
-              },
-              proyecto: {
-                connect: { id: proyectoId }
-              }
+    // Guardar imágenes internas en MediaResource
+    for (const media of uploadedMediaList) {
+      if (!media.isVideo) {
+        await prisma.mediaResource.create({
+          data: {
+            tipo: "IMAGEN_INTERNA",
+            destacado: false,
+            nombre: `${nombre.trim()}-imagen${media.index}`,
+            descripcion: descripcion.trim(),
+            imagenPrincipalUrl: media.url,
+            categorias: {
+              connectOrCreate: categoriasRaw.map((cat: any) => {
+                const nombreCat = typeof cat === 'string' ? cat : cat.nombre;
+                return {
+                  where: { nombre: nombreCat },
+                  create: { nombre: nombreCat, imagenUrl: "" }
+                };
+              })
+            },
+            vinetas: {
+              create: vinetasRaw.map((v: any) => {
+                const comentario = typeof v === 'string' ? v : v.comentario;
+                return { comentario };
+              })
+            },
+            proyecto: {
+              connect: { id: proyectoId }
             }
-          });
-        }
-
-        replacements.push({ token, url: uploadedUrl });
-        tiptapIndex++;
+          }
+        });
       }
-    }
-
-    const seccionesDoc = this.replaceBlobUrlsInSections(seccionesDocRaw, replacements);
-
-    if (replacements.length > 0) {
-      await prisma.proyecto.update({
-        where: { id: proyectoId },
-        data: {
-          seccionesDoc
-        }
-      });
     }
 
     return {

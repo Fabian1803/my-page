@@ -18,8 +18,8 @@ export class PrismaResourceRepository implements ResourceRepository {
         seccionesDoc: data.seccionesDoc
       },
       include: {
-        portada: true,
-        mediaResources: { orderBy: { createdAt: 'desc' } }
+        portada: { include: { vinetas: true } },
+        mediaResources: { include: { vinetas: true }, orderBy: { createdAt: 'desc' } }
       }
     });
 
@@ -29,8 +29,8 @@ export class PrismaResourceRepository implements ResourceRepository {
   async findAll(): Promise<any[]> {
     const proyectos = await prisma.proyecto.findMany({
       include: {
-        portada: true,
-        mediaResources: { orderBy: { createdAt: 'desc' } }
+        portada: { include: { vinetas: true } },
+        mediaResources: { include: { vinetas: true }, orderBy: { createdAt: 'desc' } }
       },
       orderBy: { createdAt: 'desc' }
     });
@@ -42,8 +42,8 @@ export class PrismaResourceRepository implements ResourceRepository {
     const proyecto = await prisma.proyecto.findUnique({
       where: { id },
       include: {
-        portada: true,
-        mediaResources: { orderBy: { createdAt: 'desc' } }
+        portada: { include: { vinetas: true } },
+        mediaResources: { include: { vinetas: true }, orderBy: { createdAt: 'desc' } }
       }
     });
 
@@ -69,8 +69,8 @@ export class PrismaResourceRepository implements ResourceRepository {
         seccionesDoc: data.seccionesDoc
       },
       include: {
-        portada: true,
-        mediaResources: { orderBy: { createdAt: 'desc' } }
+        portada: { include: { vinetas: true } },
+        mediaResources: { include: { vinetas: true }, orderBy: { createdAt: 'desc' } }
       }
     });
 
@@ -91,6 +91,7 @@ export class PrismaResourceRepository implements ResourceRepository {
         id: `${proyecto.id}-${index}`,
         nombre: typeof nombre === 'string' ? nombre : (nombre as any)?.nombre || ''
       })),
+      vinetas: (proyecto.portada?.vinetas || []).map((v: any) => typeof v === 'string' ? v : v.comentario),
       enlaces: Array.isArray(proyecto.enlaces)
         ? proyecto.enlaces.map((enlace: any, index: number) => ({
           id: enlace?.id || `${proyecto.id}-link-${index}`,
@@ -108,7 +109,8 @@ export class PrismaResourceRepository implements ResourceRepository {
       portada: proyecto.portada
         ? {
           id: proyecto.portada.id,
-          imagenPrincipalUrl: proyecto.portada.imagenPrincipalUrl
+          imagenPrincipalUrl: proyecto.portada.imagenPrincipalUrl,
+          vinetas: proyecto.portada.vinetas || []
         }
         : null,
       mediaResources: proyecto.mediaResources || []
