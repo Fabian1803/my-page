@@ -6,14 +6,14 @@ export default function ImagesMap({ datosCertificados }: { datosCertificados: an
     const { certificados, selectedCert, setSelectedCert, visorRef } = useCertificates(datosCertificados)
 
     return (
-        <div className="flex flex-col lg:flex-row gap-6 p-5 items-start relative overflow-x-hidden max-w-6xl">
+        <div className="flex flex-col lg:flex-row gap-6 p-5 items-start relative overflow-x-hidden">
             <div className={`w-full min-w-0 transition-all duration-300 ${selectedCert ? 'lg:w-[58%] xl:w-[63%]' : 'w-full'}`}>
-                <div className={`columns-2 gap-4 space-y-4 ${selectedCert ? 'md:columns-2 xl:columns-3' : 'md:columns-3 lg:columns-4'}`}>
+                <div className={`columns-2 gap-4 space-y-4 ${selectedCert ? 'md:columns-2 xl:columns-3' : 'md:columns-3 lg:columns-5'}`}>
                     {certificados.map((item) => {
                         const isCurrent = selectedCert?.id === item.id;
                         const imageUrl = item.imagenCertificado || item.imagenPrincipalUrl;
                         const title = item.titulo || item.nombre;
-                        const logoUrl = item.imagenLogo || item.miniaturaUrl || (item.tipo === 'PROYECTO' ? '/FLogo.webp' : '/log.webp');
+                        const logoUrl = item.imagenLogo || item.miniaturaUrl || '/wikiLog.webp';
                         const subtitle = item.universidad || item.instituto || (item.tipo === 'PROYECTO' ? 'Proyecto de Software' : 'Certificación');
 
                         return (
@@ -23,10 +23,10 @@ export default function ImagesMap({ datosCertificados }: { datosCertificados: an
                                 className="inline-block w-full break-inside-avoid mb-4 cursor-pointer group"
                             >
                                 <div className={`rounded-2xl bg-white border overflow-hidden shadow-sm transition-all duration-200 group-hover:shadow-md ${isCurrent ? 'border-2 border-[#0b57d0] ring-4 ring-blue-50' : 'border-[#dadce0]'}`}>
-                                    <img 
-                                        src={imageUrl} 
-                                        alt={title} 
-                                        className="w-full h-auto object-contain block bg-gray-50" 
+                                    <img
+                                        src={imageUrl}
+                                        alt={title}
+                                        className="w-full h-auto object-contain block bg-gray-50"
                                         loading="lazy"
                                     />
                                 </div>

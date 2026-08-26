@@ -44,7 +44,7 @@ export default function ImageVisor({ selectedCert, onClose, visorRef }: Certific
             <div className="flex justify-between items-center px-4 py-4 lg:py-3 border-b border-gray-100 bg-gray-50/50 shrink-0">
                 <div className="flex gap-1.5 items-center min-w-0">
                     <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-md overflow-hidden shrink-0 border border-gray-100 p-0.5 bg-white flex items-center justify-center">
-                        <img src={selectedCert.imagenLogo || '/log.webp'} alt="Logo" className="w-full h-full object-contain" />
+                        <img src={selectedCert.imagenLogo || selectedCert.miniaturaUrl || '/wikiLog.webp'} alt="Logo" className="w-full h-full object-contain" />
                     </div>
                     <p className="text-[14px] sm:text-[16px] truncate font-medium text-gray-900">{selectedCert.universidad}</p>
                 </div>
