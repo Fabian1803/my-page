@@ -1,8 +1,19 @@
+import type { Metadata } from 'next'
 import SkillsFabian from '@/features/fabianPage/pages/skillsFabian'
 import { getCategoriasUseCase } from '@/server/categoria/infrastructure/dependencies'
 import { getResourcesUseCase } from '@/server/resources/infrastructure/dependencies'
 
 export const revalidate = 3600;
+
+export const metadata: Metadata = {
+  title: "Habilidades Técnicas y Stack",
+  description: "Tecnologías, lenguajes de programación, frameworks y herramientas que domina Fabian Rivera en el desarrollo de software.",
+  openGraph: {
+    title: "Habilidades Técnicas y Stack | Fabian Rivera",
+    description: "Tecnologías, lenguajes de programación y frameworks que domina Fabian Rivera.",
+    url: "https://fabianrivera.dev/fabianrivera/skills",
+  }
+};
 
 export default async function Page() {
   let categoriasRaw: any = [];

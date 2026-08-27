@@ -1,8 +1,44 @@
+import type { Metadata } from 'next'
 import SearchQueryProject from '@/features/codePediaPage/pages/searchQueryProject'
 import { getResourcesUseCase } from '@/server/resources/infrastructure/dependencies'
 export const revalidate = 3600;
-interface PageProps {
-  params: Promise<{ searchQuery: string }>;
+interface PageProps { params: Promise<{ searchQuery: string }>; }
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const resolvedParams = await params;
+  const rawQuery = resolvedParams.searchQuery ? decodeURIComponent(resolvedParams.searchQuery).trim() : 'Todos';
+  const title = `Búsqueda: ${rawQuery} | Codepedia`;
+  const description = `Explora los proyectos y artículos relacionados con "${rawQuery}" en la enciclopedia técnica Codepedia.`;
+  return {
+    title,
+    description,
+    icons: {
+      icon: '/wikiLog.webp',
+      shortcut: '/wikiLog.webp',
+      apple: '/wikiLog.webp'
+    },
+    openGraph: {
+      title,
+      description,
+      url: `https://fabianrivera.dev/Codepedia/${encodeURIComponent(rawQuery)}`,
+      siteName: 'Codepedia',
+      images: [
+        {
+          url: '/wikiBack.png',
+          width: 1200,
+          height: 630,
+          alt: `Codepedia - ${rawQuery}`
+        }
+      ],
+      locale: 'es_LA',
+      type: 'website'
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: ['/wikiBack.png']
+    }
+  };
 }
 
 export default async function Page({ params }: PageProps) {

@@ -1,0 +1,23 @@
+'use client'
+import React from 'react'
+import { CodePediaHeader, CodePediaFooter, CodePediaSection } from '@/features/codePediaPage'
+import { CodePediaProvider } from "@/features/codePediaPage/context/CodePediaContext"
+
+export default function CodepediaLayoutClient({ children }: { children: React.ReactNode }) {
+  return (
+    <CodePediaProvider>
+      <div className="min-h-screen flex flex-col bg-white text-gray-900 dark:bg-[#101418] dark:text-gray-100 transition-colors duration-300">
+        <CodePediaHeader />
+        <main className="flex px-4 lg:px-8 w-full max-w-[1440px] mx-auto">
+          <div className="w-full">
+            {children}
+          </div>
+          <div className="hidden w-65 lg:flex">
+            <CodePediaSection />
+          </div>
+        </main>
+        <CodePediaFooter />
+      </div>
+    </CodePediaProvider>
+  )
+}
