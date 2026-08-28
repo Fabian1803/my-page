@@ -32,7 +32,10 @@ export class PrismaResourceRepository implements ResourceRepository {
         portada: { include: { vinetas: true } },
         mediaResources: { include: { vinetas: true }, orderBy: { createdAt: 'desc' } }
       },
-      orderBy: { createdAt: 'desc' }
+      orderBy: [
+        { destacado: 'desc' },
+        { createdAt: 'desc' }
+      ]
     });
 
     return proyectos.map((proyecto) => this.toProjectView(proyecto));

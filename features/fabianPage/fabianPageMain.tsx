@@ -19,9 +19,15 @@ export default function FabianPageMain({ data }: { data?: FabianMainData }) {
     certificados = []
   } = data || {};
 
-  const proyecto1 = proyectos[0];
-  const proyecto2 = proyectos[1];
-  const proyectosRestantes = proyectos.slice(2);
+  const sortedProyectos = [...proyectos].sort((a, b) => {
+    if (a.destacado && !b.destacado) return -1;
+    if (!a.destacado && b.destacado) return 1;
+    return 0;
+  });
+
+  const proyecto1 = sortedProyectos[0];
+  const proyecto2 = sortedProyectos[1];
+  const proyectosRestantes = sortedProyectos.slice(2);
 
   const skill1 = skills[0];
   const skillsRestantes = skills.slice(1);
