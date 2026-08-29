@@ -38,8 +38,9 @@ export default function FabianPageMain({ data }: { data?: FabianMainData }) {
   return (
     <SearchMapComponent>
       <div className="flex flex-col py-2">
-        {imagenes.length > 0 && (
-          <ImagesPreviewSection images={imagenes} />
+
+        {certificados.length > 0 && (
+          <CertificatesPreviewSection certificates={certificados} />
         )}
         {proyecto1 && (
           <ProjectCard project={proyecto1} />
@@ -54,8 +55,8 @@ export default function FabianPageMain({ data }: { data?: FabianMainData }) {
           </div>
         )}
 
-        {certificados.length > 0 && (
-          <CertificatesPreviewSection certificates={certificados} />
+        {imagenes.length > 0 && (
+          <ImagesPreviewSection images={imagenes} />
         )}
 
         {proyectosRestantes.map((proj) => (
