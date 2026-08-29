@@ -34,7 +34,7 @@ export default function HomeCodepedia({ metadata }: HomeCodepediaProps) {
     const aboutText = {
         name: metadata?.nombre || "Fabián Mauro Rivera Morales",
         description: metadata?.descripcion || "Bachiller en Ingeniería de Software por la Universidad Tecnológica del Perú. Desarrollador enfocado en la construcción de aplicaciones full-stack robustas y scalables, con experiencia implementando arquitecturas limpias, principios SOLID y la automatización de entornos de desarrollo.",
-        image: metadata?.url_imagen || "/perfil.jpeg",
+        image: metadata?.url_imagen || "/FLogo.webp",
         experiences: metadata?.experiencias || [],
         education: metadata?.educacion || []
     }

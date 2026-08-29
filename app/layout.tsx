@@ -46,7 +46,7 @@ export const metadata: Metadata = {
     siteName: "Fabian Rivera",
     images: [
       {
-        url: "/perfil.jpeg",
+        url: "/FLogo.webp",
         width: 800,
         height: 800,
         alt: "Fabian Rivera - Software Engineer"
@@ -59,7 +59,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Fabian Rivera | Software Engineer & Cloud Architect",
     description: "Portafolio profesional y proyectos de ingeniería de software desarrollados por Fabian Rivera.",
-    images: ["/perfil.jpeg"],
+    images: ["/FLogo.webp"],
     creator: "@fabianrivera"
   },
   robots: {

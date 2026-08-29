@@ -3,41 +3,54 @@ import UserActionsHeader from '@/components/userActionsHeader'
 import { FabianPageFooter, FabianPageHeader } from '@/features/fabianPage'
 import { getMetadataUseCase } from '@/server/metadata/infrastructure/dependencies'
 
-export const metadata: Metadata = {
-    title: {
-        template: '%s | Fabian Rivera',
-        default: 'Fabian Rivera - Portafolio y Perfil Profesional'
-    },
-    description: 'Explora los proyectos de software, certificaciones, habilidades técnicas y experiencia profesional de Fabian Rivera.',
-    icons: {
-        icon: [
-            { url: '/FLogo.webp', type: 'image/webp' }
-        ],
-        shortcut: '/FLogo.webp',
-        apple: '/FLogo.webp'
-    },
-    openGraph: {
-        title: 'Fabian Rivera - Portafolio y Perfil Profesional',
-        description: 'Explora los proyectos de software, certificaciones y habilidades de Fabian Rivera.',
-        url: 'https://fabianrivera.dev/fabianrivera',
-        siteName: 'Fabian Rivera',
-        images: [
-            {
-                url: '/perfil.jpeg',
-                width: 800,
-                height: 800,
-                alt: 'Fabian Rivera'
-            }
-        ],
-        locale: 'es_LA',
-        type: 'profile'
-    },
-    twitter: {
-        card: 'summary_large_image',
-        title: 'Fabian Rivera - Portafolio y Perfil Profesional',
-        description: 'Explora los proyectos de software, certificaciones y habilidades de Fabian Rivera.',
-        images: ['/perfil.jpeg']
+export async function generateMetadata(): Promise<Metadata> {
+    let config: any = null;
+    try {
+        config = await getMetadataUseCase.execute();
+    } catch {
+        config = null;
     }
+
+    const imagenUrl = config?.url_imagen || '/FLogo.webp';
+    const nombre = config?.nombre || 'Fabian Rivera';
+    const descripcion = config?.descripcion || 'Explora los proyectos de software, certificaciones, habilidades técnicas y experiencia profesional de Fabian Rivera.';
+
+    return {
+        title: {
+            template: '%s | Fabian Rivera',
+            default: `${nombre} - Portafolio y Perfil Profesional`
+        },
+        description: descripcion,
+        icons: {
+            icon: [
+                { url: '/FLogo.webp', type: 'image/webp' }
+            ],
+            shortcut: '/FLogo.webp',
+            apple: '/FLogo.webp'
+        },
+        openGraph: {
+            title: `${nombre} - Portafolio y Perfil Profesional`,
+            description: descripcion,
+            url: 'https://fabianrivera.dev/fabianrivera',
+            siteName: nombre,
+            images: [
+                {
+                    url: imagenUrl,
+                    width: 800,
+                    height: 800,
+                    alt: nombre
+                }
+            ],
+            locale: 'es_LA',
+            type: 'profile'
+        },
+        twitter: {
+            card: 'summary_large_image',
+            title: `${nombre} - Portafolio y Perfil Profesional`,
+            description: descripcion,
+            images: [imagenUrl]
+        }
+    };
 }
 
 export default async function FabianLayout({ children }: { children: React.ReactNode }) {

@@ -13,6 +13,25 @@ export const metadata: Metadata = {
     shortcut: '/iconCloud.webp',
     apple: '/iconCloud.webp'
   },
+  openGraph: {
+    title: 'GCP Cloud Console | Dashboard de Administración',
+    description: 'Panel de administración privado para gestión de proyectos, recursos y configuración.',
+    images: [
+      {
+        url: '/iconCloud.webp',
+        width: 512,
+        height: 512,
+        alt: 'GCP Cloud Console'
+      }
+    ],
+    type: 'website'
+  },
+  twitter: {
+    card: 'summary',
+    title: 'GCP Cloud Console | Dashboard de Administración',
+    description: 'Panel de administración privado.',
+    images: ['/iconCloud.webp']
+  },
   robots: {
     index: false,
     follow: false,

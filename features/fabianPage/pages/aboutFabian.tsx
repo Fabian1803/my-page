@@ -25,7 +25,7 @@ export default function AboutFabian({ metadata }: AboutFabianProps) {
   const abouttext = {
     name: metadata?.nombre || "",
     description: metadata?.descripcion || "",
-    image: metadata?.url_imagen || "/perfil.jpeg",
+    image: metadata?.url_imagen || "/FLogo.webp",
     experiences: metadata?.experiencias || [],
     education: metadata?.educacion || [],
   }
