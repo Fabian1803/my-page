@@ -14,8 +14,8 @@ export default async function Page() {
     const results = await Promise.all([
       getResourcesUseCase.execute({ tipo: "PROYECTO" }),
       getCategoriasUseCase.execute(),
-      getResourcesUseCase.execute({ tipo: "IMAGENES" }),
-      getResourcesUseCase.execute({ tipo: "CERTIFICADO" })
+      getResourcesUseCase.execute({ tipo: "IMAGEN_INTERNA", limit: 3 }),
+      getResourcesUseCase.execute({ tipo: "CERTIFICADO", limit: 3 })
     ]);
     proyectosRaw = results[0];
     categoriasRaw = results[1];
@@ -54,13 +54,13 @@ export default async function Page() {
     .filter((s) => s.proyectos.length > 0);
 
   return (
-    <FabianPageMain 
+    <FabianPageMain
       data={{
         proyectos,
         skills,
         imagenes,
         certificados
-      }} 
+      }}
     />
   );
 }

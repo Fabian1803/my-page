@@ -14,7 +14,7 @@ export default function ProjectsFabian({ proyectos }: ProjectsFabianProps) {
 
   return (
     <SearchMapComponent>
-      <div className=" flex flex-col">
+      <div className=" flex flex-col pb-24">
         {sortedProyectos.length === 0 ? (
           <div className="text-gray-500 text-sm py-10">
             No se han registrado proyectos aún en el portafolio.

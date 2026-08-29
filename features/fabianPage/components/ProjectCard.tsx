@@ -31,7 +31,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
               <img src="/wikiLog.webp" alt="Logo" className="w-full h-full object-contain" />
             </div>
           </div>
-          <h3 className="text-sm font-bold line-clamp-1">{project.nombre}</h3>
+          <h3 className="text-sm font-bold line-clamp-1">Codepedia</h3>
           <p className="text-xs line-clamp-1">{`https://fabianrivera.dev/Codepedia/project/${project.id}`}</p>
         </div>
       </div>

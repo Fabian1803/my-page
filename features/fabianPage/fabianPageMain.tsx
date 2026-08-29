@@ -28,9 +28,12 @@ export default function FabianPageMain({ data }: { data?: FabianMainData }) {
   const proyecto1 = sortedProyectos[0];
   const proyecto2 = sortedProyectos[1];
   const proyectosRestantes = sortedProyectos.slice(2);
+  const top5Skills = [...skills]
+    .sort((a, b) => (b.proyectos?.length || 0) - (a.proyectos?.length || 0))
+    .slice(0, 5);
 
-  const skill1 = skills[0];
-  const skillsRestantes = skills.slice(1);
+  const skill1 = top5Skills[0];
+  const skillsRestantes = top5Skills.slice(1);
 
   return (
     <SearchMapComponent>
@@ -54,9 +57,11 @@ export default function FabianPageMain({ data }: { data?: FabianMainData }) {
         {certificados.length > 0 && (
           <CertificatesPreviewSection certificates={certificados} />
         )}
+
         {proyectosRestantes.map((proj) => (
           <ProjectCard key={proj.id} project={proj} />
         ))}
+
         {skillsRestantes.map((sk) => (
           <div key={sk.id} className="p-4 max-w-200">
             <SkillCard skill={sk} />
@@ -64,5 +69,5 @@ export default function FabianPageMain({ data }: { data?: FabianMainData }) {
         ))}
       </div>
     </SearchMapComponent>
-  )
+  );
 }

@@ -6,7 +6,9 @@ interface SkillsFabianProps {
 }
 
 export default function SkillsFabian({ skills }: SkillsFabianProps) {
-  const visibleSkills = (skills || []).filter((skill) => skill.proyectos && skill.proyectos.length > 0);
+  const visibleSkills = (skills || [])
+    .filter((skill) => skill.proyectos && skill.proyectos.length > 0)
+    .sort((a, b) => (b.proyectos?.length || 0) - (a.proyectos?.length || 0));
 
   return (
     <SearchMapComponent>

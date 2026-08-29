@@ -2,8 +2,9 @@ import { ResourceRepository } from "../domain/ports/ResourceRepository";
 import { prisma } from "@/server/shared/infrastructure/prisma";
 
 export interface GetResourcesParams {
-  tipo?: "PROYECTO" | "CERTIFICADO" | "IMAGENES" | "ALL" | string;
+  tipo?: "PROYECTO" | "CERTIFICADO" | "IMAGENES" | "IMAGEN_INTERNA" | "ALL" | string;
   id?: string | null;
+  limit?: number;
 }
 
 export class GetResourcesUseCase {
@@ -12,139 +13,53 @@ export class GetResourcesUseCase {
   async execute(input?: Request | GetResourcesParams) {
     let tipo = "PROYECTO";
     let id: string | null = null;
+    let limit: number | undefined = undefined;
 
     if (input instanceof Request) {
       const { searchParams } = new URL(input.url);
       tipo = searchParams.get("tipo") || "PROYECTO";
       id = searchParams.get("id");
+      const limitParam = searchParams.get("limit");
+      if (limitParam) limit = parseInt(limitParam, 10);
     } else if (input) {
       tipo = input.tipo || "PROYECTO";
       id = input.id || null;
+      if (input.limit) limit = input.limit;
     }
 
     if (id) {
-      const cert = await prisma.mediaResource.findUnique({
+      const resource = await prisma.mediaResource.findUnique({
         where: { id },
         include: { categorias: true, vinetas: true }
       });
-
-      if (cert) {
-        return {
-          id: cert.id,
-          tipo: cert.tipo,
-          nombre: cert.nombre,
-          titulo: cert.nombre,
-          institucion: cert.instituto,
-          universidad: cert.instituto || 'Certificación Profesional',
-          descripcion: cert.descripcion,
-          destacado: cert.destacado,
-          imagenPrincipalUrl: cert.imagenPrincipalUrl,
-          imagenCertificado: cert.imagenPrincipalUrl,
-          miniaturaUrl: cert.miniaturaUrl,
-          imagenLogo: cert.miniaturaUrl || '/log.webp',
-          vinetas: cert.vinetas,
-          categorias: cert.categorias
-        };
-      }
-
+      if (resource) return resource;
       return await this.repository.findById(id);
     }
 
     if (tipo === "CERTIFICADO") {
-      const certificados = await prisma.mediaResource.findMany({
+      return await prisma.mediaResource.findMany({
         where: { tipo: "CERTIFICADO" },
         include: { categorias: true, vinetas: true },
-        orderBy: { createdAt: 'desc' }
+        orderBy: { createdAt: 'desc' },
+        ...(limit ? { take: limit } : {})
       });
+    }
 
-      return certificados.map(c => ({
-        id: c.id,
-        tipo: c.tipo,
-        nombre: c.nombre,
-        titulo: c.nombre,
-        institucion: c.instituto,
-        universidad: c.instituto || 'Certificación Profesional',
-        descripcion: c.descripcion,
-        destacado: c.destacado,
-        imagenPrincipalUrl: c.imagenPrincipalUrl,
-        imagenCertificado: c.imagenPrincipalUrl,
-        miniaturaUrl: c.miniaturaUrl,
-        imagenLogo: c.miniaturaUrl || '/log.webp',
-        vinetas: c.vinetas,
-        categorias: c.categorias
-      }));
+    if (tipo === "IMAGEN_INTERNA") {
+      return await prisma.mediaResource.findMany({
+        where: { tipo: "IMAGEN_INTERNA", imagenPrincipalUrl: { not: "" } },
+        include: { categorias: true, vinetas: true, proyecto: { include: { portada: true } } },
+        ...(limit ? { take: limit } : {})
+      });
     }
 
     if (tipo === "IMAGENES" || tipo === "ALL") {
-      const [certificados, proyectos, mediaInternas] = await Promise.all([
-        prisma.mediaResource.findMany({
-          where: { tipo: "CERTIFICADO" },
-          include: { categorias: true, vinetas: true },
-          orderBy: { createdAt: 'desc' }
-        }),
-        this.repository.findAll(),
-        prisma.mediaResource.findMany({
-          where: { tipo: { in: ["IMAGEN_INTERNA", "PORTADA"] } },
-          include: { categorias: true, vinetas: true },
-          orderBy: { createdAt: 'desc' }
-        })
-      ]);
-
-      const listaCertificados = certificados.map(c => ({
-        id: c.id,
-        tipo: "CERTIFICADO",
-        nombre: c.nombre,
-        titulo: c.nombre,
-        instituto: c.instituto,
-        universidad: c.instituto || 'Certificación Profesional',
-        descripcion: c.descripcion,
-        destacado: c.destacado,
-        imagenPrincipalUrl: c.imagenPrincipalUrl,
-        imagenCertificado: c.imagenPrincipalUrl,
-        miniaturaUrl: c.miniaturaUrl,
-        imagenLogo: c.miniaturaUrl || '/log.webp',
-        vinetas: c.vinetas,
-        categorias: c.categorias
-      }));
-
-      const listaProyectos = proyectos.filter(p => p.imagenPrincipalUrl).map(p => ({
-        id: p.id,
-        tipo: "PROYECTO",
-        nombre: p.nombre,
-        titulo: p.nombre,
-        instituto: p.categorias?.[0]?.nombre || 'Proyecto de Software',
-        universidad: p.categorias?.[0]?.nombre || 'Proyecto de Software',
-        descripcion: p.descripcion,
-        destacado: p.destacado,
-        imagenPrincipalUrl: p.imagenPrincipalUrl,
-        imagenCertificado: p.imagenPrincipalUrl,
-        miniaturaUrl: p.miniaturaUrl || '/FLogo.webp',
-        imagenLogo: p.miniaturaUrl || '/FLogo.webp',
-        vinetas: (p.vinetas || []).map((v: any, idx: number) => ({ id: `${p.id}-v-${idx}`, comentario: typeof v === 'string' ? v : v.comentario })),
-        categorias: p.categorias,
-        enlaces: p.enlaces
-      }));
-
-      const listaInternas = mediaInternas
-        .filter(m => m.imagenPrincipalUrl && !certificados.some(c => c.id === m.id) && !proyectos.some(p => p.portada?.id === m.id))
-        .map(m => ({
-          id: m.id,
-          tipo: m.tipo,
-          nombre: m.nombre || 'Diagrama / Documentación',
-          titulo: m.nombre || 'Diagrama / Documentación',
-          instituto: 'Arquitectura y Documentación',
-          universidad: 'Arquitectura y Documentación',
-          descripcion: m.descripcion || 'Recurso visual y documentación técnica del proyecto',
-          destacado: false,
-          imagenPrincipalUrl: m.imagenPrincipalUrl,
-          imagenCertificado: m.imagenPrincipalUrl,
-          miniaturaUrl: '/FLogo.webp',
-          imagenLogo: '/FLogo.webp',
-          vinetas: m.vinetas,
-          categorias: m.categorias
-        }));
-
-      return [...listaCertificados, ...listaProyectos, ...listaInternas];
+      return await prisma.mediaResource.findMany({
+        where: { imagenPrincipalUrl: { not: "" } },
+        include: { categorias: true, vinetas: true, proyecto: { include: { portada: true } } },
+        orderBy: { id: 'asc' },
+        ...(limit ? { take: limit } : {})
+      });
     }
 
     return await this.repository.findAll();
