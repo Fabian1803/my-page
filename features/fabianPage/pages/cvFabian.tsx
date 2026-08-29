@@ -11,6 +11,11 @@ interface CvFabianProps {
 export default function CvFabian({ metadata }: CvFabianProps) {
     const pdfUrl = metadata?.url_cv_pdf || '/prueba.pdf'
 
+    const isRemote = pdfUrl.startsWith('http://') || pdfUrl.startsWith('https://');
+    const embedUrl = isRemote
+        ? `https://docs.google.com/viewer?url=${encodeURIComponent(pdfUrl)}&embedded=true`
+        : `${pdfUrl}#toolbar=1&navpanes=0`;
+
     return (
         <SearchMapComponent>
             <div className="max-w-6xl py-8 px-3 sm:px-0 flex flex-col gap-4">
@@ -37,7 +42,7 @@ export default function CvFabian({ metadata }: CvFabianProps) {
                 </div>
                 <div className="w-full h-[70vh] lg:h-[85vh] rounded-2xl border border-gray-200 overflow-hidden bg-white shadow-sm">
                     <iframe
-                        src={`${pdfUrl}#toolbar=1&navpanes=0`}
+                        src={embedUrl}
                         title="CV Fabián Mauro Rivera Morales"
                         className="w-full h-full border-none"
                     />
