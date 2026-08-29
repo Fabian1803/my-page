@@ -19,7 +19,7 @@ export default function CvFabian({ metadata }: CvFabianProps) {
                         <h1 className="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight">
                             Currículum Vitae
                         </h1>
-                        <p className="text-sm text-gray-500">
+                        <p className="text-xs sm:text-sm text-gray-500">
                             Visualiza o descarga la versión más reciente de mi perfil profesional.
                         </p>
                     </div>
@@ -28,9 +28,9 @@ export default function CvFabian({ metadata }: CvFabianProps) {
                             href={pdfUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-medium text-gray-700 bg-white hover:bg-gray-50 border border-gray-300 rounded-lg shadow-2xs transition-colors"
+                            className="inline-flex items-center justify-center gap-2 px-4 py-2 text-xs sm:text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 active:bg-gray-100 border border-gray-300 rounded-xl shadow-2xs transition-all w-full sm:w-auto shrink-0"
                         >
-                            <FiExternalLink size={14} />
+                            <FiExternalLink size={15} />
                             <span>Abrir en pestaña</span>
                         </a>
                     )}
