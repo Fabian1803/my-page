@@ -19,55 +19,32 @@ export default function FabianPageMain({ data }: { data?: FabianMainData }) {
     certificados = []
   } = data || {};
 
-  const sortedProyectos = [...proyectos].sort((a, b) => {
-    if (a.destacado && !b.destacado) return -1;
-    if (!a.destacado && b.destacado) return 1;
-    return 0;
-  });
-
-  const proyecto1 = sortedProyectos[0];
-  const proyecto2 = sortedProyectos[1];
-  const proyectosRestantes = sortedProyectos.slice(2);
+  const sortedProyectos = [...proyectos].sort((a, b) => Number(b.destacado) - Number(a.destacado));
   const top5Skills = [...skills]
     .sort((a, b) => (b.proyectos?.length || 0) - (a.proyectos?.length || 0))
     .slice(0, 5);
 
-  const skill1 = top5Skills[0];
-  const skillsRestantes = top5Skills.slice(1);
+  const renderSkill = (skill?: SkillItemData) =>
+    skill ? (
+      <div key={skill.id} className="p-4 max-w-200">
+        <SkillCard skill={skill} />
+      </div>
+    ) : null;
 
   return (
     <SearchMapComponent>
       <div className="flex flex-col py-2">
-
-        {certificados.length > 0 && (
-          <CertificatesPreviewSection certificates={certificados} />
-        )}
-        {proyecto1 && (
-          <ProjectCard project={proyecto1} />
-        )}
-        {proyecto2 && (
-          <ProjectCard project={proyecto2} />
-        )}
-
-        {skill1 && (
-          <div className="p-4 max-w-200">
-            <SkillCard skill={skill1} />
-          </div>
-        )}
-
-        {imagenes.length > 0 && (
-          <ImagesPreviewSection images={imagenes} />
-        )}
-
-        {proyectosRestantes.map((proj) => (
+        {certificados.length > 0 && <CertificatesPreviewSection certificates={certificados} />}
+        {sortedProyectos[0] && <ProjectCard project={sortedProyectos[0]} />}
+        {sortedProyectos[1] && <ProjectCard project={sortedProyectos[1]} />}
+        {renderSkill(top5Skills[0])}
+        {imagenes.length > 0 && <ImagesPreviewSection images={imagenes} />}
+        {sortedProyectos[2] && <ProjectCard project={sortedProyectos[2]} />}
+        {renderSkill(top5Skills[1])}
+        {sortedProyectos.slice(3).map((proj) => (
           <ProjectCard key={proj.id} project={proj} />
         ))}
-
-        {skillsRestantes.map((sk) => (
-          <div key={sk.id} className="p-4 max-w-200">
-            <SkillCard skill={sk} />
-          </div>
-        ))}
+        {top5Skills.slice(2).map(renderSkill)}
       </div>
     </SearchMapComponent>
   );
