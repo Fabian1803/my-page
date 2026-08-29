@@ -1,6 +1,6 @@
 'use client'
 import SearchMapComponent from "../components/searchMapComponent"
-import { FiDownload, FiExternalLink } from 'react-icons/fi'
+import { FiExternalLink } from 'react-icons/fi'
 
 interface CvFabianProps {
     metadata: {
